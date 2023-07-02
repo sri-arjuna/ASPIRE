@@ -41,12 +41,17 @@ Usage
 
 Use as library or via pyinstaller:
 
-````
+```py
 from aspire import Aspire as tui
 
 tui.header(str1, str2, str3)
 tui.title("Hello World")
 tui.printe(v_left, v_center, v_right)
-````
+```
 
-For an example list of different use cases, please see: [usage](./docs/USAGE.md)
+For an example list of different use cases, please see: [USAGE](./docs/USAGE.md)
+
+Example:
+--------
+
+![prewview](./docs/preview1.jpg)
