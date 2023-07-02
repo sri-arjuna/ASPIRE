@@ -2,10 +2,12 @@
 	Created on:		2023.July.02
 	Created by:		Simon Arjuna Erat
 	License:		MIT
-	URL:			http://www.github.com/sri-arjuna/ASPIRE
+	URL:			https://www.github.com/sri-arjuna/ASPIRE
 """
 
+
 from dataclasses import dataclass
+
 
 @dataclass
 class TextCodes:
@@ -15,6 +17,8 @@ class TextCodes:
 	underline: str = '\033[4m'
 	invert: str = '\033[7m'
 	blink: str = '\033[5m'
+	line_up: str = '\033[1A'
+	line_down: str = '\033[1B'
 
 
 @dataclass

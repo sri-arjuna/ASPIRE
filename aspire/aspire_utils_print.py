@@ -9,7 +9,14 @@ from aspire_dc_colors import ColorsBackground as color_bg
 from aspire_dc_colors import ColorsForeground as color_fg
 from aspire_dc_colors import TextCodes as tc
 
-class UtilsPrint:
+from aspire_dc_theme import ThemeClass
+from aspire_dc_theme import ThemeEnum
+from aspire_dc_theme import Theme
+
+class PrintUtils:
+	def __init__():
+		theme = Theme.theme_set(ThemeEnum.Default)
+
 	@staticmethod
 	def print_text(text):
 		# Implementation for print_text function
