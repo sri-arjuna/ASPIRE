@@ -9,7 +9,7 @@ from aspire_dc_colors import ColorsBackground as color_bg
 from aspire_dc_colors import ColorsForeground as color_fg
 from aspire_dc_colors import TextCodes as tc
 
-class PrintUtils:
+class UtilsPrint:
 	@staticmethod
 	def print_text(text):
 		# Implementation for print_text function
