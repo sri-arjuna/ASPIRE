@@ -51,6 +51,45 @@ stew.splitpath(StringFull="C:\temp\project",StringCut="C:\")        ## Returns "
 
 ----
 
+Themes:
+-------
+
+
+```py
+from aspire_dc_theme import ThemeClass
+from aspire_dc_theme import ThemeEnum
+from aspire_dc_theme import Theme
+
+
+```
+
+You can even create / provide your own custom theme like this:
+```py
+custom_theme = ThemeClass(
+    border_left="...",
+    border_right="...",
+    color_fg="...",
+    color_bg="...",
+    prompt_read="...",
+    prompt_select="...",
+    bar_empty="...",
+    bar_half="...",
+    bar_full="...",
+    title_left="...",
+    title_right="...",
+    header_left="...",
+    header_right="...",
+    filler="..."
+)
+
+Theme.set_custom_theme(custom_theme)
+```
+
+
+
+
+----
+
 Print Utils:
 ------------
 
