@@ -72,16 +72,18 @@ class PrintUtils:
 		print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
 
 	@classmethod
-	def _right(cls, text, indention=0, end='\n'):
+	def _right(cls, text, end='\n'):
 		# Print text aligned to the right with specified indention and end character
-		indentation = cls._calculate_indentation(text, indention)
-		print(f"{cat.color_fg}{text:>{indentation}}{cat.reset}", flush=True, end=end)
+		pos = cls._calc_pos_right(text)
+		cls.cursor2pos(pos)
+		print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
 
 	@classmethod
-	def _center(cls, text, indention=0, end='\n'):
+	def _center(cls, text, end='\n'):
 		# Print text centered with specified indention and end character
-		indentation = cls._calculate_indentation(text, indention)
-		print(f"{cat.color_fg}{text:^{indentation}}{cat.reset}", flush=True, end=end)
+		pos = cls._calc_pos_center(text)
+		cls.cursor2pos(pos)
+		print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
 
 	@classmethod
 	def text(cls, *args, end='\n'):
@@ -104,11 +106,11 @@ class PrintUtils:
 			left_border = f"{cls.theme.color_fg}{cls.theme.border_left} "
 			right_border = f"{cat.reset}{cls.theme.color_fg}{cls.theme.border_right}"
 		elif style == 'header':
-			left_border = f"{cat.bg_blue}{cls.theme.color_fg}{cls.theme.border_left}"
-			right_border = f"{cat.reset}{cat.bg_blue}{cls.theme.color_fg}{cls.theme.border_right}"
+			left_border = f"{cat.bg_blue}{cls.theme.color_fg}{cls.theme.header_left}"
+			right_border = f"{cat.reset}{cat.bg_blue}{cls.theme.color_fg}{cls.theme.header_right}"
 		elif style == 'title':
-			left_border = f"{cls.theme.color_fg}{cls.theme.border_left} {cat.invert}{cls.theme.color_fg}"
-			right_border = f"{cat.reset} {cls.theme.color_fg}{cls.theme.border_right}"
+			left_border = f"{cls.theme.color_fg}{cls.theme.title_left} {cat.invert}{cls.theme.color_fg}"
+			right_border = f"{cat.reset} {cls.theme.color_fg}{cls.theme.title_right}"
 		else:
 			raise ValueError("Invalid style argument. Expected 'print', 'header', or 'title'.")
 

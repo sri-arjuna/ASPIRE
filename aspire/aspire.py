@@ -35,12 +35,13 @@ class Aspire:
 	def press(text=None):
 		# if no text is passed, prints "Press enter to continue" left and right
 		if text is None or text == "":
-			text = "Please press ENTER to continue"
+			text = "Please press any key to continue"
 		Aspire.print(text, text)
-		stdout = sys.stdout
-		sys.stdout = open(os.devnull, 'w')
-		input()
-		sys.stdout = stdout
+		# Workaround to hide the default message
+		stdout = os.dup(1)
+		os.dup2(os.open(os.devnull, os.O_WRONLY), 1)
+		os.system("pause")
+		os.dup2(stdout, 1)
 
 	@classmethod
 	def status(cls, text, end='\n'):
