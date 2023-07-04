@@ -28,12 +28,20 @@ def _get_terminal_width() -> int:
 		terminal_size = shutil.get_terminal_size((80, 20))  # Default size if terminal size cannot be determined
 		return int(terminal_size.columns)
 
+def get_os(cls):
+	if cls.bWINDOWS is None:
+		if os.name == 'nt':  # Windows
+			cls.bWINDOWS = True
+		else:  # Unix-like
+			cls.bWINDOWS = False
+	return #cls.bWINDOWS
 
 class PrintUtils:
 	theme = Theme.get()
 	width = _get_terminal_width()
 	_border_fd = _create_custom_fd()
-
+	os.system('')
+	bWINDOWS = None
 	
 	def _calc_pos_left(text) -> int:
 		# Calculate the indentation based on the length of the text
@@ -43,9 +51,9 @@ class PrintUtils:
 		# Calculate the indentation based on the length of the text
 		return abs(_get_terminal_width // 2 * 2 - (len(cat.remove_console_codes(text)) // 2) )
 	
-	def _calc_pos_right(cls, text) -> int:
+	def _calc_pos_right(self, text) -> int:
 		# Calculate the indentation based on the length of the text
-		return abs(_get_terminal_width - len(cat.remove_console_codes(text)) - 1 - len(cls.theme.border_right))
+		return abs(self._get_terminal_width - len(cat.remove_console_codes(text)) - 1 - len(cls.theme.border_right))
 	
 	def cursor2pos(pos: int):
 		# Move the cursor to column 0
@@ -56,34 +64,49 @@ class PrintUtils:
 		if pos > width:
 			sys.stderr.write(f"pos: {pos} is longer than width: {width}.")
 			return False
-		if pos <= 0:
+		if pos < 0:
 			sys.stderr.write(f"pos: {pos} must be 0 or larger.")
 			return False
 		else:
 			sys.stdout.write('\033[{}D'.format(pos))
 		sys.stdout.flush()
-		return True
+		return #True
 	
 	@classmethod
 	def _left(cls, text, end='\n'):
 		# Print text aligned to the left with specified indention and end character
 		pos = cls._calc_pos_left(text)
 		cls.cursor2pos(pos)
-		print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+		if PrintUtils.bWINDOWS:
+			os.system(f"{cls.theme.color_fg}{text}{cat.reset}")
+		else:
+			print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
 
 	@classmethod
 	def _right(cls, text, end='\n'):
 		# Print text aligned to the right with specified indention and end character
-		pos = cls._calc_pos_right(text)
-		cls.cursor2pos(pos)
-		print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+		if text != "":
+			pos = cls._calc_pos_right(self=PrintUtils, text)
+			cls.cursor2pos(pos)
+			if PrintUtils.bWINDOWS:
+				os.system(f"{cls.theme.color_fg}{text}{cat.reset}")
+			else:
+				print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+		else:
+			pass
 
 	@classmethod
 	def _center(cls, text, end='\n'):
 		# Print text centered with specified indention and end character
-		pos = cls._calc_pos_center(text)
-		cls.cursor2pos(pos)
-		print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+		if text != "":
+			pos = cls._calc_pos_center(cls,text)
+			cls.cursor2pos(pos)
+			if PrintUtils.bWINDOWS:
+				os.system(f"{cls.theme.color_fg}{text}{cat.reset}")
+			else:
+				print(f"{cls.theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+		else:
+			pass
 
 	@classmethod
 	def text(cls, *args, end='\n'):
@@ -103,17 +126,23 @@ class PrintUtils:
 	@classmethod
 	def border(cls, style='print'):
 		if style == 'print':
-			left_border = f"{cls.theme.color_fg}{cls.theme.border_left} "
-			right_border = f"{cat.reset}{cls.theme.color_fg}{cls.theme.border_right}"
+			left_border = f"{cls.theme.color_fg}{cls.theme.color_bg}{cls.theme.border_left} {cat.reset}"
+			center = ""
+			right_border = f" {cls.theme.color_fg}{cls.theme.color_bg}{cls.theme.border_right}{cat.reset}"
 		elif style == 'header':
-			left_border = f"{cat.bg_blue}{cls.theme.color_fg}{cls.theme.header_left}"
-			right_border = f"{cat.reset}{cat.bg_blue}{cls.theme.color_fg}{cls.theme.header_right}"
+			left_border = f"{cls.theme.color_fg}{cls.theme.color_bg}{cls.theme.header_left}"
+			right_border = f"{cat.reset}{cls.theme.color_fg}{cls.theme.color_bg}{cls.theme.header_right}"
+			center = cls.theme.filler * (cls.width - 2*len(right_border))
 		elif style == 'title':
-			left_border = f"{cls.theme.color_fg}{cls.theme.title_left} {cat.invert}{cls.theme.color_fg}"
-			right_border = f"{cat.reset} {cls.theme.color_fg}{cls.theme.title_right}"
+			left_border = f"{cls.theme.color_fg}{cls.theme.color_bg}{cls.theme.title_left} {cat.invert}{cls.theme.color_fg}"
+			right_border = f"{cat.reset}{cls.theme.color_fg}{cls.theme.color_bg} {cls.theme.title_right}"
+			center = cls.theme.filler * (cls.width - 2*len(right_border))
 		else:
 			raise ValueError("Invalid style argument. Expected 'print', 'header', or 'title'.")
 
-		print(f"{left_border}{cls.theme.filler * cls.width}{right_border}", file=cls._border_fd)
+		if PrintUtils.bWINDOWS:
+			os.system(f"{cls.cursor2pos(0)}{left_border}{center}{cls.cursor2pos(cls._calc_pos_right(right_border))}{right_border}")
+		else:
+			print(f"{cls.cursor2pos(0)}{left_border}{center}{right_border}", flush=True, file=cls._border_fd)
 
 	

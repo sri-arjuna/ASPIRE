@@ -9,30 +9,32 @@ from .aspire_utils_print import PrintUtils as put
 import sys
 import os
 
+
 class Aspire:
 	def __init__(self):
 		put.text("Hello, World!")
 		put.border()
 
 	@staticmethod
-	def header(str1, str2, str3):
+	def header(self, *args, end='\n'):
 		# Implementation for header method
-		pass
+		put.border(style="header")
+		put.text(self,*args, end=end)
 
 	@staticmethod
-	def title(text):
+	def title(self, text=None, end='\n'):
 		# Implementation for title method
-		pass
+		put.border(style="header")
+		put.text(self, text, end=end)
 
 	@staticmethod
-	def print(*args, end='\n'):
+	def print(self, *args, end='\n'):
 		# Implementation for printe method
 		put.border()
-		put.text(args, end=end)
-		pass
+		put.text(self, *args, end=end)
 
 	@staticmethod
-	def press(text=None):
+	def press(self,text=None):
 		# if no text is passed, prints "Press enter to continue" left and right
 		if text is None or text == "":
 			text = "Please press any key to continue"
@@ -44,7 +46,7 @@ class Aspire:
 		os.dup2(stdout, 1)
 
 	@classmethod
-	def status(cls, text, end='\n'):
+	def status(self, text, end='\n'):
 		# Prints the "text" on the left, and a status indicator on the right
 		pass
 

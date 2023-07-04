@@ -103,7 +103,7 @@ class Theme:
 		'Float': ThemesList.Float,
 		'Mono': ThemesList.Mono,
 	}
-	_default = 	"Fedora" #"Default"
+	_default = 	"Default"
 	_selected = None
 
 	@staticmethod
