@@ -7,13 +7,19 @@
 
 
 from dataclasses import dataclass
-
+import re
 
 @dataclass
 class ColorsAndTextCodes:
 	reset: str = '\033[0m'
 	invert: str = '\033[7m'
 	blink: str = '\033[5m'
+
+	@staticmethod
+	def remove_console_codes(text):
+		# Remove color codes from text
+		return re.sub(r'\033\[[0-9;]+m', '', text)
+
 	class line:
 		up: str = '\033[1A'
 		down: str = '\033[1B'
