@@ -6,6 +6,7 @@
 """
 
 
+# Imports
 from collections import namedtuple
 
 
@@ -29,8 +30,9 @@ Line = namedtuple('Line', ['up', 'down'])
 # Container for various codes
 Codes = namedtuple('Codes', ['beep', 'blink', 'invert'])
 
-'\a'
-
+################################################################################################################
+#####                                              Data Structures                                         #####
+################################################################################################################
 cat = CaT(
     reset='\033[0m',
     # This might be expaned in the future with more codes.
