@@ -92,10 +92,7 @@ class AspireCore:
         terminal_size = shutil.get_terminal_size((80, 20))  # Default size if terminal size cannot be determined
         return int(terminal_size.columns)
     
-    
     _console_width = _get_terminal_width()
-    #_isWindows = _isWindows()
-    #_border_fd = _create_custom_fd()
 
 
 #################################################################################################################
@@ -108,12 +105,13 @@ class Theme:
         'Float': ThemesList.Float,
         'Mono': ThemesList.Mono,
     }
-    _default = 	"Default"
+    _default = "Default"
     _selected = None
 
+    @staticmethod
     def _check_empty_variables(theme):
         empty_variables = []
-        var_skip = ["border_left", "border_right", "filler", ]
+        var_skip = ["border_left", "border_right", "filler"]
         for variable_name, variable_value in theme.__dict__.items():
             if variable_name not in var_skip and variable_value == "":
                 empty_variables.append(variable_name)
@@ -121,58 +119,61 @@ class Theme:
 
     @staticmethod
     def _get_color_code(foreground=None, background=None):
-        cat = AspireCore.codes
-        fg_code = getattr(cat.color.fg, foreground) if foreground else ""
-        bg_code = getattr(cat.color.bg, background) if background else ""
+        cat = AspireCore.cat
+        fg_code = getattr(cat.colors.front, foreground) if foreground else ""
+        bg_code = getattr(cat.colors.back, background) if background else ""
         return fg_code, bg_code
     
     @classmethod
-    def list(cls):
-        return cls.available_themes.keys()
+    def list_available(cls):
+        return list(cls.available.keys())
 
     @classmethod
     def set(cls, new_theme):
-        if new_theme in cls.available_themes:
-            cls.current_theme = cls.available_themes[new_theme]
+        if new_theme in cls.available:
+            cls._selected = new_theme
         else:
             print(f"Theme '{new_theme}' is not available.")
 
     @classmethod
     def set_custom(cls, custom):
-        cls.current_theme = custom
+        cls._selected = custom
     
     @classmethod
     def get(cls):
         # Get the right theme:
         if cls._selected:
-            current_theme = cls.available_themes[cls._selected]
+            current_theme = cls.available[cls._selected]
         else:
-            current_theme = cls.available_themes[cls._default]
+            current_theme = cls.available[cls._default]
         # Check for empty variables and fill if required:
-        empty_variables = cls._check_empty_variables(current_theme.value)
+        empty_variables = cls._check_empty_variables(current_theme)
         variables_to_remove = []
         if empty_variables:
             for ev in empty_variables:
                 # Try to fill required variables with "default" values, aka regular border
-                if "header_left" == ev:
-                    current_theme._value_.header_left = current_theme._value_.border_left
+                if ev == "header_left":
+                    current_theme.header_left = current_theme.border_left
                     variables_to_remove.append(ev)
-                if "header_right" == ev:
-                    current_theme._value_.header_right = current_theme._value_.border_right
+                if ev == "header_right":
+                    current_theme.header_right = current_theme.border_right
                     variables_to_remove.append(ev)
-                if "title_left" == ev:
-                    current_theme._value_.title_left = current_theme._value_.title_left
+                if ev == "title_left":
+                    current_theme.title_left = current_theme.title_left
                     variables_to_remove.append(ev)
-                if "title_right" == ev:
-                    current_theme._value_.title_right = current_theme._value_.title_right
+                if ev == "title_right":
+                    current_theme.title_right = current_theme.title_right
                     variables_to_remove.append(ev)
         # But we always need to encode color:
-        current_theme._value_.color_fg, current_theme._value_.color_bg = cls._get_color_code(current_theme._value_.color_fg, current_theme._value_.color_bg)
+        current_theme.color_fg, current_theme.color_bg = cls._get_color_code(
+            current_theme.color_fg, current_theme.color_bg
+        )
         for vrt in variables_to_remove:
             empty_variables.remove(vrt)
         if empty_variables:
             print(f"Warning: The following theme variables are still empty: --> {', '.join(empty_variables)}")
-        return current_theme.value
+        return current_theme
+
         
 #################################################################################################################
 #####                                           Print Utils (put                                            #####
@@ -283,7 +284,3 @@ class PrintUtils:
 			os.system(f"{cls.cursor2pos(0)}{left_border}{center}{cls.cursor2pos(cls._calc_pos_right(right_border))}{right_border}")
 		else:
 			print(f"{cls.cursor2pos(0)}{left_border}{center}{right_border}", flush=True, file=cls._border_fd)
-
-
-# 
-#AspireCore.initialize()
