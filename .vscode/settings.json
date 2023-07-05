@@ -1,0 +1,15 @@
+{
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": true,
+	"editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+	"editor.wordWrap": "wordWrapColumn",
+	"editor.wordWrapColumn": 120,
+	"editor.wrappingIndent": "indent",
+	"editor.stickyTabStops": true,
+	"editor.tabCompletion": "on",
+	"[python]": {
+		"editor.defaultFormatter": "ms-python.autopep8"
+	},
+	"python.formatting.provider": "none",
+	"editor.fontSize": 16
+}
