@@ -3,3 +3,4 @@ aspire/__pycache__/aspire_dc_colors.cpython-311.pyc
 aspire/__pycache__/aspire_dc_theme.cpython-311.pyc
 aspire/__pycache__/aspire_utils_print.cpython-311.pyc
 aspire/__pycache__/aspire.cpython-311.pyc
+*.pyc

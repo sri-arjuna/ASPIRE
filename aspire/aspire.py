@@ -5,7 +5,7 @@
 	URL:			https://www.github.com/sri-arjuna/ASPIRE
 """
 
-from .aspire_utils_print import PrintUtils as put
+from .aspire_core import PrintUtils as put
 import sys
 import os
 
