@@ -9,12 +9,9 @@ from .aspire_core import PrintUtils as put
 import sys
 import os
 
+os.system("")
 
 class Aspire:
-	def __init__(self):
-		put.text("Hello, World!")
-		put.border()
-
 	@staticmethod
 	def header(self, *args, end='\n'):
 		# Implementation for header method
@@ -34,7 +31,7 @@ class Aspire:
 		put.text(self, *args, end=end)
 
 	@staticmethod
-	def press(self,text=None):
+	def press(text=None):
 		# if no text is passed, prints "Press enter to continue" left and right
 		if text is None or text == "":
 			text = "Please press any key to continue"
