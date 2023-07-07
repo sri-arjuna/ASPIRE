@@ -16,7 +16,7 @@ Basics:
 This is what you want to read / look at if you're absolute new to modules and specialy to ASPIRE.
 
 - If you just need help to get started, please read: [[Usage](./USAGE.md)]
-- and you will be interest in looking at [[Hello World](../examples/Hello_World.py)] as well.
+- and you will be interested in looking at [[Hello World](../examples/Hello_World.py)] as well.
 <!-- Yes, I'm doing those double brackets on purpose, at least in this file! -->
 
 ----
