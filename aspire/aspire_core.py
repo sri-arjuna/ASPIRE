@@ -56,37 +56,62 @@ from .aspire_data_color_and_text import cat
 from .aspire_data_themes import ThemeAttributes
 from .aspire_data_themes import ThemesList
 
+################################################################################################################
+#####                                              One time constants                                 #####
+################################################################################################################
+
+# Used to set Constanst
+def __detect_OS():
+    # One time use to detect if MS Winodws or *nix based system like iOS or any GNU+Linux variant.
+    if os.name == 'nt':
+        # Basicly, detect if OS is Windows based
+        return True
+    else:
+        # Or *nix based
+        return False
+def __create_custom_fd():
+    # This aims to create a FileDescriptor to display the borders
+    # so stdout for text, and stderr is used for errors.
+    if IS_WINDOWS:
+        # Windows does need the terminal to be... "initialized"... by this for the colors to work.
+        # No, subprocess.popen("", shell=True) does not work
+        os.system("")
+        # Windows does not support custom FileDescriptors
+        return sys.stderr
+    else:
+        # *nix based Systems on the other hand, do support FD's
+        return os.fdopen(os.dup(sys.stderr.fileno()), 'w')
+
+# Assign value to constant
+IS_WINDOWS = __detect_OS()
+FD_BORDER = __create_custom_fd()
 
 ################################################################################################################
 #####                                              Top Class / Definitions                                 #####
 ################################################################################################################
 class AspireCore:
     _console_width = None
-    _is_Windows = None
-    _border_fd = None
+    IS_WINDOWS = None
+    FD_BORDER = None
     
     def __init__(self):
-        self._is_Windows = self.__is_Windows()
-        self._border_fd = self._create_custom_fd()
         self._console_width = self._get_terminal_width()
-        print("DEBUG : " + self._console_width)
 
-	
     @classmethod
-    def __is_Windows(cls):
+    def _IS_WINDOWS(cls):
         # Checks class attribute, if empty assign a bool to it
-        if cls.__is_Windows is None:
+        if cls._IS_WINDOWS is None:
             if os.name == 'nt':  # Windows
-                cls.__is_Windows = True
+                cls._IS_WINDOWS = True
             else:  # Unix-like
-                cls.__is_Windows = False
-        return cls.__is_Windows
+                cls._IS_WINDOWS = False
+        return 
     
     @classmethod
     def _create_custom_fd(cls):
         # This aims to create a FileDescriptor to display the borders
         # so stdout for text, and stderr is used for errors.
-        if cls.__is_Windows:
+        if cls._IS_WINDOWS:
             # Does not support custom FileDescriptors
             return sys.stderr
         else:
@@ -96,11 +121,7 @@ class AspireCore:
     @staticmethod
     def _get_terminal_width() -> int:
         terminal_size = shutil.get_terminal_size((80, 20))  # Default size if terminal size cannot be determined
-        return int(terminal_size.columns)
-    
-    
-
-
+        return int(terminal_size.columns // 2 * 2)
 
 #################################################################################################################
 #####                                           Theme Stuff                                                 #####
@@ -132,12 +153,16 @@ class Theme:
         # TODO FIX: for some reason it may happen that console codes are passed
         if "[" in foreground:
             fg_code = foreground
-        else:
+        elif foreground is not None:
             fg_code = getattr(cat.colors.front, foreground) if foreground else ""
         if "[" in background:
             bg_code = background
-        else:
+        elif background is not None:
             bg_code = getattr(cat.colors.back, background) if background else ""
+        if fg_code is None:
+            fg_code = ""
+        if bg_code is None:
+            bg_code = ""
         return fg_code, bg_code
 
     @classmethod
@@ -196,6 +221,8 @@ class  PrintUtils:
     def _calc_pos_left(text) -> int:
         theme = Theme.get()
         # Calculate the indentation based on the length of the text
+        if theme.border_right is None:
+            print("das ist es -----------------------------------")
         return abs(1 + len(theme.border_right))
 
     @staticmethod
@@ -207,7 +234,7 @@ class  PrintUtils:
     
     def _calc_pos_center(cls, text) -> int:
         # Calculate the indentation based on the length of the text
-        return abs(AspireCore._get_terminal_width() // 2 * 2 - (len(cls.remove_console_codes(text)) // 2) )
+        return abs(AspireCore._get_terminal_width() // 2 - (len(cls.remove_console_codes(text)) // 2) )
 
     def _calc_pos_right(cls, text) -> int:
         # Calculate the indentation based on the length of the text
@@ -227,51 +254,74 @@ class  PrintUtils:
             sys.stderr.write(f"pos: {pos} must be 0 or larger.")
             return False
         else:
-            sys.stdout.write('\033[{}D'.format(pos))
+            #sys.stdout.write('\033[{}D'.format(pos))
+            sys.stdout.write(f'\033[{pos}G')
         sys.stdout.flush()
         return #True
 
     @classmethod
-    def _left(cls, text, end='\n'):
+    def _left(cls, text, style='print', end='\n'):
         # Print text aligned to the left with specified indention and end character
         theme = Theme.get()
         pos = cls._calc_pos_left(text)
         cls.cursor2pos(pos)
-        if AspireCore._is_Windows:
-            os.system(f"{theme.color_fg}{text}{cat.reset}")
-        else:
-            print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+        #if AspireCore.IS_WINDOWS:
+        #    os.system(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}")
+        #else:
+        #    print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+
+        print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
 
     @classmethod
-    def _right(cls, text, end='\n'):
+    def _right(cls, text, style='print', end='\n'):
         # Print text aligned to the right with specified indention and end character
         theme = Theme.get()
         if text != "":
             pos = cls._calc_pos_right(cls, text)
             cls.cursor2pos(pos)
-            if AspireCore._is_Windows:
-                os.system(f"{theme.color_fg}{text}{cat.reset}")
-            else:
+            #if AspireCore.IS_WINDOWS:
+            #    os.system(f"{theme.color_fg}{text}{cat.reset}")
+            #else:
+            #    print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
+            if "print" == style:
+                # Default, just font
                 print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+            elif "header" == style:
+                # Regular bg, full
+                print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
+            elif "title" == style:
+                # TODO fix: Invert colors
+                print(f"{theme.color_fg}{theme.color_bg}{cat.codes.invert}{text}{cat.reset}", flush=True, end=end)
         else:
             pass
 
     @classmethod
-    def _center(cls, text, end='\n'):
+    def _center(cls, text, style='print', end='\n'):
         # Print text centered with specified indention and end character
         theme = Theme.get()
         if text != "":
             pos = cls._calc_pos_center(cls,text)
             cls.cursor2pos(pos)
-            if AspireCore._is_Windows:
-                os.system(f"{theme.color_fg}{text}{cat.reset}")
-            else:
+            #if AspireCore.IS_WINDOWS:
+            #    os.system(f"{theme.color_fg}{text}{cat.reset}")
+            #else:
+            #    print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
+            if "print" == style:
+                # Default, just font
                 print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+            elif "header" == style:
+                # Regular bg, full
+                print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
+            elif "title" == style:
+                # TODO fix: Invert colors
+                print(f"{theme.color_fg}{theme.color_bg}{cat.codes.invert}{text}{cat.reset}", flush=True, end=end)
+
+            
         else:
             pass
 
     @classmethod
-    def text(cls, *args, end='\n'):
+    def text(cls, *args, style='print', end='\n'):
         # Print text based on the number of arguments
         if len(args) == 0:
             return
@@ -288,27 +338,48 @@ class  PrintUtils:
     @classmethod
     def border(cls, style='print'):
         theme = Theme.get()
-        width = AspireCore._console_width
-        if width is None:
-            width = 80
-        # For border, left alignment is fix
-        pos_l = cls.cursor2pos(0)
-        if style == 'print':
-            left_border = f"{theme.color_fg}{theme.color_bg}{theme.border_left} {cat.reset}"
-            center = ""
-            right_border = f" {theme.color_fg}{theme.color_bg}{theme.border_right}{cat.reset}"
-        elif style == 'header':
+        width = AspireCore._get_terminal_width()
+        
+        if style == 'header':
             left_border = f"{theme.color_fg}{theme.color_bg}{theme.header_left}"
-            right_border = f"{cat.reset}{theme.color_fg}{theme.color_bg}{theme.header_right}"
-            center = theme.filler * (width - 2*len(right_border))
+            right_border = f"{theme.color_fg}{theme.color_bg}{theme.header_right}{cat.reset}"
+            #center = theme.filler * (width - 2*len(right_border))
         elif style == 'title':
-            left_border = f"{theme.color_fg}{theme.color_bg}{theme.title_left} {cat.invert}{theme.color_fg}"
-            right_border = f"{cat.reset}{theme.color_fg}{theme.color_bg} {theme.title_right}"
-            center = theme.filler * (width - 2*len(right_border))
+            left_border = f"{theme.color_fg}{theme.color_bg}{theme.title_left}"
+            right_border = f"{cat.reset}{theme.color_fg}{theme.color_bg} {theme.title_right}{cat.reset}"
+            #center = theme.filler * (width - 2*len(right_border))
+        elif style == 'print':
+            left_border = f"{theme.color_fg}{theme.color_bg}{theme.border_left}{cat.reset}"
+            #center = (width - 2 * len(theme.border_left)) // 2 * 2  * " "
+            right_border = f"{theme.color_fg}{theme.color_bg}{theme.border_right}{cat.reset}"
         else:
             raise ValueError("Invalid style argument. Expected 'print', 'header', or 'title'.")
 
-        if AspireCore._is_Windows:
-            os.system(f"{pos_l}{left_border}{center}{cls.cursor2pos(cls._calc_pos_right(right_border))}{right_border}")
+        #if AspireCore.IS_WINDOWS:
+        #    os.system(f"{pos_l}{left_border}{center}{cls.cursor2pos(cls._calc_pos_right(right_border))}{right_border}")
+        #else:
+        #print(f"{left_border}{center}{right_border}", flush=True, file=AspireCore.FD_BORDER, end="")
+
+        if theme.filler == "":
+            fill = " "
         else:
-            print(f"{pos_l}{left_border}{center}{right_border}", flush=True, file=AspireCore._border_fd)
+            fill = theme.filler
+        #print(f"\n\nfiller: '{theme.filler}'")
+        center = (width - 2 * len(theme.border_left)) // 2 * 2  * fill
+
+
+
+
+        # Print Border Left
+        cls.cursor2pos(0)
+        print(f"{left_border}", flush=True, file=AspireCore.FD_BORDER, end="")
+
+        if style == "title":
+            print(f"{center}", flush=True, file=AspireCore.FD_BORDER, end="")
+        else:
+            cls.cursor2pos(width - len(theme.border_right) )
+        
+        print(f"{right_border}", flush=True, file=AspireCore.FD_BORDER, end="")
+
+
+        

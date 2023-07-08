@@ -13,13 +13,13 @@ os.system("")
 
 class Aspire:
 	@staticmethod
-	def header(self, *args, end='\n'):
+	def header(self, *args, style="header", end='\n'):
 		# Implementation for header method
 		put.border(style="header")
 		put.text(self,*args, end=end)
 
 	@staticmethod
-	def title(self, text=None, end='\n'):
+	def title(self, text=None, style="title", end='\n'):
 		# Implementation for title method
 		put.border(style="header")
 		put.text(self, text, end=end)
