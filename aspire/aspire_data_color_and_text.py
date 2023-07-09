@@ -35,6 +35,7 @@ Codes = namedtuple('Codes', ['beep', 'blink', 'invert'])
 ################################################################################################################
 cat = CaT(
     reset='\033[0m',
+    clear='\033[2J',
     # This might be expaned in the future with more codes.
     codes = Codes(
         beep='\a',
