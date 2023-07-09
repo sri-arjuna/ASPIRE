@@ -11,7 +11,7 @@ from collections import namedtuple
 
 
 # Top level container
-CaT = namedtuple('CaT', ['colors', 'text', 'line' , 'codes', 'reset'])
+CaT = namedtuple('CaT', ['colors', 'text', 'line' , 'codes', 'reset', 'clear'])
 
 # Name grouping for colors
 ColorGroup = namedtuple('ColorContainer', ['front', 'back'])
