@@ -135,6 +135,7 @@ class Theme:
         'Classic': ThemesList.Classic,
         'Float': ThemesList.Float,
         'Mono': ThemesList.Mono,
+        'Admin': ThemesList.Admin,
     }
     _default = 	"Default"
     _selected = None
@@ -263,9 +264,9 @@ class  PrintUtils:
         pos = cls._calc_pos_left()
         cls.cursor2pos(pos)
         if "header" == style:
-            print(f"{theme.color_fg}{theme.color_bg}{text}", flush=True, end=end)
+            print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
         else:
-            print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+            print(f"{text}{cat.reset}", flush=True, end=end)
 
     @classmethod
     def _right(cls, text, style='print', end='\n'):
@@ -276,14 +277,13 @@ class  PrintUtils:
             cls.cursor2pos(pos)
             if "print" == style:
                 # Default, just font
-                print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+                print(f"{text}{cat.reset}", flush=True, end=end)
             elif "header" == style:
                 # Regular bg, full
                 print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
-            elif "title" == style:
+            #elif "title" == style:
                 # TODO fix: Invert colors
-                inv_BG, inv_FG = Theme._get_color_code(theme.color_bg, theme.color_fg)
-                print(f"{inv_BG}{inv_FG}{text}{cat.reset}", flush=True, end=end)
+            #    print(f"{theme.color_bg}{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
         else:
             pass
 
@@ -307,13 +307,13 @@ class  PrintUtils:
             cls.cursor2pos(pos)
             if "print" == style:
                 # Default, just font
-                print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+                print(f"{text}{cat.reset}", flush=True, end=end)
             elif "header" == style:
                 # Regular bg, full
                 print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
             elif "title" == style:
                 # TODO fix: Invert colors
-                print(f"{pre}{theme.color_fg}{theme.color_bg}{cat.codes.invert}{text}{cat.reset}", flush=True, end=end)
+                print(f"{theme.color_fg}{theme.color_bg}{cat.codes.invert}{pre}{text}{cat.reset}", flush=True, end=end)
         else:
             pass
 

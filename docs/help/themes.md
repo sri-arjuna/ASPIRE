@@ -15,6 +15,7 @@ If no THEME_PRESET is present, the default theme will be applied.
 | Attribute  | Description |
 |------------|--------------|
 | current 	| This is used to access the current theme data. <br>It is recommended to use an alias named ``theme`` upon import, so you can refer to the theme data like: ``theme.current.border_left`` |
+| _selected | Assign a string of an existing theme template and use the ``get`` function to update the theme used.
 
 The 'current' attribute is refered to and used by ``print_text`` and ``print_border`` in order to use the accurate theme you have had chosen (or: default). \
 They both are executed most often and use a cached function to retrieved updates on both, the theme and the width of the console.
@@ -32,16 +33,14 @@ Aside of the theme "Default", there are 3 more:
 - Classic
 - Float
 - Mono
+- Admin
 
 
 ```py
 # Intended use:
-THEME_PRESET = "Float"
-
-# Probably required until ASPIRE is stable....
-from aspire_data_themes import ThemesList
 from aspire_data_core import Theme as theme
-THEME_PRESET = theme.set(ThemesList.Classic)
+theme._selected = "Float"
+theme.get()
 ```
 
 
@@ -49,6 +48,10 @@ THEME_PRESET = theme.set(ThemesList.Classic)
 
 Use a custom theme:
 -------------------
+
+
+--> THIS IS WORK IN PROGRESS <--
+
 
 If you intend a different appearance, you can create your very own theme.
 

@@ -25,8 +25,9 @@ from aspire.aspire_core import Theme as theme
 for thisTheme in theme.available_themes:
         theme._selected = thisTheme
         theme.get()
-        print(cat.clear)
+        #print(cat.clear)
         tui.header(f"Selected: {thisTheme}", "TODO TIME")
         tui.title(f"{thisTheme} Theme")
-        tui.print("Left", "Center", "Right")
+        tui.print(f"Left: {cat.colors.front.red}{cat.colors.back.green}purple", "Center", "Right")
         tui.press()
+        print("")
