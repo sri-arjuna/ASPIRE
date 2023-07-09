@@ -39,9 +39,26 @@ All descriptions are based on the default theme.
 | list 		| Used by ``select`` to print a number to each item of the list |
 | bar 		| Provides a progress bar with different options that can be used within the project. |
 
-This is how "Hello World" (using ``header``, ``title`` and ``print``) can looks lke:
+
+
+Usage
+-----
+
+Use as library in your projects like this:
+
+```py
+from aspire import Aspire as tui
+
+tui.header("Aspire by (sea/sri-arjuna)", "Date + Time")
+tui.title("Hello World")
+tui.printe("Left string", "Center string", "Right string")
+tui.press()
+```
+
+This is how "Hello World" (using ``header``, ``title`` and ``print``) can look like:
 ![prewview](./docs/HelloWorld.jpg)
 
+There are some test projects in [[examples](./examples)]
 
 ----
 
@@ -55,24 +72,12 @@ pip install ASPIRE
 ```
 
 
-Usage
------
 
-Use as library in your projects like this:
-
-```py
-from aspire import Aspire as tui
-
-tui.header("Project ABR + ver", "Project Name", "Date + Time")
-tui.title("Hello World")
-tui.printe("Left string", "Center string", "Right string")
-```
-
-For an example list of different use cases, please see: [USAGE](./docs/USAGE.md)
+For an example list of different use cases, please see: [[USAGE](./docs/USAGE.md)]
 
 Example:
 --------
 
- How the original BASH shell variant looked like: (the "split up" progress bar, was on purpose (enter), just to demonstrate how it would look)
+ How the original BASH shell variant with the classic theme looked like: (just to demonstrate how it might look.
 
 ![Preview of old VHS bash variant](https://github.com/sri-arjuna/vhs/blob/master/screenshots/example-with-progressbar.jpg?raw=true)
