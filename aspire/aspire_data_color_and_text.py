@@ -38,8 +38,8 @@ cat = CaT(
     # This might be expaned in the future with more codes.
     codes = Codes(
         beep='\a',
-        blink='blink',
-        invert='invert',
+        blink='\033[5m',
+        invert='\033[7m',
     ),
     # Group color access
 	colors = ColorGroup(
