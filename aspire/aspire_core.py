@@ -252,10 +252,9 @@ class  PrintUtils:
             sys.stderr.write(f"pos: {pos} must be 0 or larger.")
             return False
         else:
-            #sys.stdout.write('\033[{}D'.format(pos))
             sys.stdout.write(f'\033[{pos}G')
         sys.stdout.flush()
-        return #True
+        return
 
     @classmethod
     def _left(cls, text, style='print', end='\n'):
@@ -263,11 +262,6 @@ class  PrintUtils:
         theme = Theme.get()
         pos = cls._calc_pos_left()
         cls.cursor2pos(pos)
-        #if AspireCore.IS_WINDOWS:
-        #    os.system(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}")
-        #else:
-        #    print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
-
         if "header" == style:
             print(f"{theme.color_fg}{theme.color_bg}{text}", flush=True, end=end)
         else:
@@ -280,10 +274,6 @@ class  PrintUtils:
         if text != "":
             pos = cls._calc_pos_right(cls, text)
             cls.cursor2pos(pos)
-            #if AspireCore.IS_WINDOWS:
-            #    os.system(f"{theme.color_fg}{text}{cat.reset}")
-            #else:
-            #    print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
             if "print" == style:
                 # Default, just font
                 print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
@@ -301,13 +291,20 @@ class  PrintUtils:
     def _center(cls, text, style='print', end='\n'):
         # Print text centered with specified indention and end character
         theme = Theme.get()
+        pre = ""
         if text != "":
-            pos = cls._calc_pos_center(cls,text)
+            if "title" in style:
+                text = f" {text} "
+                pos = cls._calc_pos_center(cls,text)
+                if theme.title_bold:
+                    pre += f"{cat.text.bold}"
+                if theme.title_underline:
+                    pre += cat.text.underline
+                if theme.title_italic:
+                    pre += cat.text.italic
+            else:
+                pos = cls._calc_pos_center(cls,text)
             cls.cursor2pos(pos)
-            #if AspireCore.IS_WINDOWS:
-            #    os.system(f"{theme.color_fg}{text}{cat.reset}")
-            #else:
-            #    print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
             if "print" == style:
                 # Default, just font
                 print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
@@ -316,7 +313,7 @@ class  PrintUtils:
                 print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
             elif "title" == style:
                 # TODO fix: Invert colors
-                print(f"{theme.color_fg}{theme.color_bg}{cat.codes.invert}{text}{cat.reset}", flush=True, end=end)
+                print(f"{pre}{theme.color_fg}{theme.color_bg}{cat.codes.invert}{text}{cat.reset}", flush=True, end=end)
         else:
             pass
 
@@ -333,11 +330,9 @@ class  PrintUtils:
             return
         elif len(args) == 1:
             if "title" == style:
-                print("------  testing+")
                 cls._center(args[0], style=style, end=end)
             else:
                 cls._left(args[0], style=style, end=end)
-                print("------  testing+ baldfkjabdlskfasdlbkf ------------------")
         elif len(args) == 2:
             cls._left(args[0], style=style, end='')
             cls._right(args[1], style=style, end=end)
@@ -366,28 +361,23 @@ class  PrintUtils:
         else:
             raise ValueError("Invalid style argument. Expected 'print', 'header', or 'title'.")
 
-        #if AspireCore.IS_WINDOWS:
-        #    os.system(f"{pos_l}{left_border}{center}{cls.cursor2pos(cls._calc_pos_right(right_border))}{right_border}")
-        #else:
-        #print(f"{left_border}{center}{right_border}", flush=True, file=AspireCore.FD_BORDER, end="")
-
-        if theme.filler == "":
-            fill = " "
+        # Prepare filler chars / line
+        if "header" == style:
+            fill = theme.header_filler
+        elif "title" == style:
+            fill = theme.title_filler
         else:
             if "print" == style:
                 fill = " "
-            else:
-                fill = theme.filler
+        if fill == "":
+            fill = " "
+        
+        # Print "filler"
         center = (width - 2 * len(theme.border_left)) // 2 * 2  * fill
 
         # Print Border Left
         cls.cursor2pos(0)
         print(f"{left_border}", flush=True, file=AspireCore.FD_BORDER, end="")
-
-        #if style == "title":
-        #    cls.cursor2pos(width - len(theme.border_right) )
-        #else:
-        #    print(f"{center}", flush=True, file=AspireCore.FD_BORDER, end="")
         
         print(f"{center}", flush=True, file=AspireCore.FD_BORDER, end="")
         print(f"{right_border}", flush=True, file=AspireCore.FD_BORDER, end="")

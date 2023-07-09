@@ -6,6 +6,7 @@
 	URL:			https://www.github.com/sri-arjuna/ASPIRE
 """
 
+
 # Imports
 from dataclasses import dataclass
 from enum import Enum
@@ -27,9 +28,13 @@ class ThemeAttributes:
     bar_full: str
     title_left: str
     title_right: str
+    title_filler: str
+    title_bold: bool
+    title_underline: bool
+    title_italic: bool
     header_left: str
     header_right: str
-    filler: str
+    header_filler: str
 
 class ThemesList(Enum):
     Default = ThemeAttributes(
@@ -42,11 +47,35 @@ class ThemesList(Enum):
         bar_empty=" ",
         bar_half="─",
         bar_full="═",
-        title_left=" ╠═",
-        title_right="═╣ ",
+        title_left=" ╟─",
+        title_right="─╢ ",
+        title_filler="─",
+        title_bold=True,
+        title_underline=False,
+        title_italic=True,
         header_left=" ╔═",
         header_right="═╗ ",
-        filler="═"
+        header_filler="═"
+    )
+    Default_Admin = ThemeAttributes(
+        border_left=" ║ ",
+        border_right=" ║ ",
+        color_fg="white",
+        color_bg="blue",
+        prompt_read="\076\076",
+        prompt_select="\076\076",
+        bar_empty=" ",
+        bar_half="─",
+        bar_full="═",
+        title_left=" ╠═",
+        title_right="═╣ ",
+        title_filler=" ",
+        title_bold=True,
+        title_underline=True,
+        title_italic=False,
+        header_left=" ╔═",
+        header_right="═╗ ",
+        header_filler="═"
     )
     Classic = ThemeAttributes(
         border_left="# |",
@@ -60,9 +89,13 @@ class ThemesList(Enum):
         bar_full="=",
         title_left="",
         title_right="",
+        title_filler=" ",
+        title_bold=True,
+        title_underline=False,
+        title_italic=False,
         header_left="",
         header_right="",
-        filler=""
+        header_filler=" "
     )
     Float = ThemeAttributes(
         border_left="  ",
@@ -76,9 +109,13 @@ class ThemesList(Enum):
         bar_full="=",
         title_left="",
         title_right="",
+        title_filler=" ",
+        title_bold=False,
+        title_underline=False,
+        title_italic=False,
         header_left="",
         header_right="",
-        filler=""
+        header_filler=" "
     )
     Mono = ThemeAttributes(
         border_left="| |",
@@ -92,7 +129,11 @@ class ThemesList(Enum):
         bar_full="=",
         title_left="",
         title_right="",
+        title_filler=" ",
+        title_bold=False,
+        title_underline=False,
+        title_italic=False,
         header_left="",
         header_right="",
-        filler=""
+        header_filler=" "
     )
