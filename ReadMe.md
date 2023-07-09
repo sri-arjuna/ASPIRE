@@ -39,10 +39,8 @@ All descriptions are based on the default theme.
 | list 		| Used by ``select`` to print a number to each item of the list |
 | bar 		| Provides a progress bar with different options that can be used within the project. |
 
- \
- How the original BASH shell variant looked like: (the "split up" progress bar, was on purpose (enter), just to demonstrate how it would look)
-
-![Preview of old VHS bash variant](https://github.com/sri-arjuna/vhs/blob/master/screenshots/example-with-progressbar.jpg?raw=true)
+This is how "Hello World" (using ``header``, ``title`` and ``print``) can looks lke:
+![prewview](./docs/HelloWorld.jpg)
 
 
 ----
@@ -75,4 +73,6 @@ For an example list of different use cases, please see: [USAGE](./docs/USAGE.md)
 Example:
 --------
 
-![prewview](./docs/preview1.jpg)
+ How the original BASH shell variant looked like: (the "split up" progress bar, was on purpose (enter), just to demonstrate how it would look)
+
+![Preview of old VHS bash variant](https://github.com/sri-arjuna/vhs/blob/master/screenshots/example-with-progressbar.jpg?raw=true)
