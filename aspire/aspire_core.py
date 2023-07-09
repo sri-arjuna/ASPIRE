@@ -218,13 +218,6 @@ class Theme:
 #################################################################################################################
 class  PrintUtils:
     theme = None
-    def _calc_pos_left(text) -> int:
-        theme = Theme.get()
-        # Calculate the indentation based on the length of the text
-        if theme.border_right is None:
-            print("das ist es -----------------------------------")
-        return abs(1 + len(theme.border_right))
-
     @staticmethod
     def remove_console_codes(text):
         # Remove color codes from text
@@ -232,6 +225,11 @@ class  PrintUtils:
             return ""
         return re.sub(r'\033\[[0-9;]+m', '', text)
     
+    def _calc_pos_left() -> int:
+        theme = Theme.get()
+        # Calculate the indentation based on the length of the text
+        return abs(2 + len(theme.border_right))
+
     def _calc_pos_center(cls, text) -> int:
         # Calculate the indentation based on the length of the text
         return abs(AspireCore._get_terminal_width() // 2 - (len(cls.remove_console_codes(text)) // 2) )
@@ -239,7 +237,7 @@ class  PrintUtils:
     def _calc_pos_right(cls, text) -> int:
         # Calculate the indentation based on the length of the text
         theme = Theme.get()
-        return abs(AspireCore._get_terminal_width() - len(cls.remove_console_codes(text)) - 1 - len(theme.border_right))
+        return abs(AspireCore._get_terminal_width() - len(cls.remove_console_codes(text)) - len(theme.border_right))
 
     def cursor2pos(pos: int):
         # Move the cursor to column 0
@@ -263,14 +261,17 @@ class  PrintUtils:
     def _left(cls, text, style='print', end='\n'):
         # Print text aligned to the left with specified indention and end character
         theme = Theme.get()
-        pos = cls._calc_pos_left(text)
+        pos = cls._calc_pos_left()
         cls.cursor2pos(pos)
         #if AspireCore.IS_WINDOWS:
         #    os.system(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}")
         #else:
         #    print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
 
-        print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
+        if "header" == style:
+            print(f"{theme.color_fg}{theme.color_bg}{text}", flush=True, end=end)
+        else:
+            print(f"{theme.color_fg}{text}{cat.reset}", flush=True, end=end)
 
     @classmethod
     def _right(cls, text, style='print', end='\n'):
@@ -291,7 +292,8 @@ class  PrintUtils:
                 print(f"{theme.color_fg}{theme.color_bg}{text}{cat.reset}", flush=True, end=end)
             elif "title" == style:
                 # TODO fix: Invert colors
-                print(f"{theme.color_fg}{theme.color_bg}{cat.codes.invert}{text}{cat.reset}", flush=True, end=end)
+                inv_BG, inv_FG = Theme._get_color_code(theme.color_bg, theme.color_fg)
+                print(f"{inv_BG}{inv_FG}{text}{cat.reset}", flush=True, end=end)
         else:
             pass
 
@@ -315,25 +317,34 @@ class  PrintUtils:
             elif "title" == style:
                 # TODO fix: Invert colors
                 print(f"{theme.color_fg}{theme.color_bg}{cat.codes.invert}{text}{cat.reset}", flush=True, end=end)
-
-            
         else:
             pass
 
     @classmethod
-    def text(cls, *args, style='print', end='\n'):
+    def text(cls, *args, **kwargs):
+        style = kwargs.get("style", "print")
+        end = kwargs.get("end", "\n")
         # Print text based on the number of arguments
+        if "title" == style:
+                cls._center(args[0], style=style, end=end)
+                return
+        
         if len(args) == 0:
             return
         elif len(args) == 1:
-            cls._left(args[0], end=end)
+            if "title" == style:
+                print("------  testing+")
+                cls._center(args[0], style=style, end=end)
+            else:
+                cls._left(args[0], style=style, end=end)
+                print("------  testing+ baldfkjabdlskfasdlbkf ------------------")
         elif len(args) == 2:
-            cls._left(args[0], end='')
-            cls._right(args[1], end=end)
+            cls._left(args[0], style=style, end='')
+            cls._right(args[1], style=style, end=end)
         elif len(args) == 3:
-            cls._left(args[0], end='')
-            cls._center(args[1], end='')
-            cls._right(args[2], end=end)
+            cls._left(args[0], style=style, end='')
+            cls._center(args[1], style=style, end='')
+            cls._right(args[2], style=style, end=end)
 
     @classmethod
     def border(cls, style='print'):
@@ -345,8 +356,8 @@ class  PrintUtils:
             right_border = f"{theme.color_fg}{theme.color_bg}{theme.header_right}{cat.reset}"
             #center = theme.filler * (width - 2*len(right_border))
         elif style == 'title':
-            left_border = f"{theme.color_fg}{theme.color_bg}{theme.title_left}"
-            right_border = f"{cat.reset}{theme.color_fg}{theme.color_bg} {theme.title_right}{cat.reset}"
+            left_border = f"{theme.color_fg}{theme.color_bg}{theme.title_left}{cat.codes.invert}" #{inv_BG}{inv_FG}"
+            right_border = f"{cat.reset}{theme.color_fg}{theme.color_bg}{theme.title_right}{cat.reset}"
             #center = theme.filler * (width - 2*len(right_border))
         elif style == 'print':
             left_border = f"{theme.color_fg}{theme.color_bg}{theme.border_left}{cat.reset}"
@@ -363,22 +374,22 @@ class  PrintUtils:
         if theme.filler == "":
             fill = " "
         else:
-            fill = theme.filler
-        #print(f"\n\nfiller: '{theme.filler}'")
+            if "print" == style:
+                fill = " "
+            else:
+                fill = theme.filler
         center = (width - 2 * len(theme.border_left)) // 2 * 2  * fill
-
-
-
 
         # Print Border Left
         cls.cursor2pos(0)
         print(f"{left_border}", flush=True, file=AspireCore.FD_BORDER, end="")
 
-        if style == "title":
-            print(f"{center}", flush=True, file=AspireCore.FD_BORDER, end="")
-        else:
-            cls.cursor2pos(width - len(theme.border_right) )
+        #if style == "title":
+        #    cls.cursor2pos(width - len(theme.border_right) )
+        #else:
+        #    print(f"{center}", flush=True, file=AspireCore.FD_BORDER, end="")
         
+        print(f"{center}", flush=True, file=AspireCore.FD_BORDER, end="")
         print(f"{right_border}", flush=True, file=AspireCore.FD_BORDER, end="")
 
 
