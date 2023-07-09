@@ -15,14 +15,14 @@ class Aspire:
 	@staticmethod
 	def header(self, *args, style="header", end='\n'):
 		# Implementation for header method
-		put.border(style="header")
-		put.text(self,*args, end=end)
+		put.border(style=style)
+		put.text(self,*args, style=style, end=end)
 
 	@staticmethod
 	def title(self, text=None, style="title", end='\n'):
 		# Implementation for title method
-		put.border(style="header")
-		put.text(self, text, end=end)
+		put.border(style=style)
+		put.text(self, text, style=style, end=end)
 
 	@staticmethod
 	def print(self, *args, end='\n'):
