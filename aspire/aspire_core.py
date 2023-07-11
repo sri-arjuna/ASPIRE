@@ -350,7 +350,7 @@ class  PrintUtils:
                 return
         
         if len(args) == 0:
-            return
+            cls._left("", style=style, end=end)
         elif len(args) == 1:
             if "title" == style:
                 cls._center(args[0], style=style, end=end)
