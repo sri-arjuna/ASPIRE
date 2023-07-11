@@ -8,6 +8,7 @@
 from .aspire_core import PrintUtils as put
 from .aspire_core import AspireCore as AC
 from .aspire_core import Theme
+from .aspire_data_status import EnumStatus # as ES
 import sys
 import os
 
@@ -73,8 +74,9 @@ class Aspire:
 			return False
 
 	@classmethod
-	def status(self, text, end='\n'):
+	def status(self, ID: EnumStatus, text, end='\n'):
 		# Prints the "text" on the left, and a status indicator on the right
+		self.print(text, f"[ {ID.value} ]")
 		pass
 
 	@classmethod
