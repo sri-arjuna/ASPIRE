@@ -45,6 +45,34 @@ class Aspire:
 		os.dup2(stdout, 1)
 
 	@classmethod
+	def yesno(self, question: str, yesno_option="yn") -> bool:
+		theme = Theme.get()
+		answer = ""
+		question_string = f"{question} ({yesno_option}) {theme.prompt_read} "
+		yes = yesno_option[:1]
+		no = yesno_option[1:]
+		
+		# Default Aspire / TUI output
+		put.border()
+		put.text(question_string, end="")
+		#sys.stdout.flush()		# Makes no difference
+
+		# Loop for proper input:
+		while True:
+			# Make input ready to be checked
+			answer = AC.get_input_charcount(1)
+			#answer = input()
+			if answer in yesno_option:
+				break
+		# Print answer
+		put._right(answer)
+		# Return the according bool
+		if answer in yes and "" != answer:
+			return True
+		elif answer in no and "" != answer:
+			return False
+
+	@classmethod
 	def status(self, text, end='\n'):
 		# Prints the "text" on the left, and a status indicator on the right
 		pass
@@ -69,11 +97,11 @@ class Aspire:
 			# Cut off what has been done from placeholder
 			prog_full = prog_full[:-cut_len]
 			# Final step
-			prog_out = f"[{prog_done}{prog_full}]"
 			#p = 100 / max * cur
 			p = format(100 * cur / max, ".2f")
+			prog_out = f"[{prog_done}{prog_full}] {p}%"
 		else:
 			prog_out = "failed progress"
 		put.border()
-		put.text(text, f"{prog_out} {p}%")
+		put.text(text, f"{prog_out}")
 

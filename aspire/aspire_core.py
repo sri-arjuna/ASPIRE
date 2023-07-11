@@ -41,9 +41,11 @@ Internal / Public:
 
 # Essential imports
 import os
-import platform
+#import platform
+import msvcrt
 import re
 import shutil
+import subprocess
 import sys
 
 # Prepare data structures
@@ -53,7 +55,7 @@ from enum import Enum
 
 # Import internal tools
 from .aspire_data_color_and_text import cat
-from .aspire_data_themes import ThemeAttributes
+#from .aspire_data_themes import ThemeAttributes
 from .aspire_data_themes import ThemesList
 
 ################################################################################################################
@@ -122,6 +124,27 @@ class AspireCore:
     def _get_terminal_width() -> int:
         terminal_size = shutil.get_terminal_size((80, 20))  # Default size if terminal size cannot be determined
         return int(terminal_size.columns // 2 * 2)
+    
+    @staticmethod
+    def get_input_charcount(count:int) -> str:
+        # Use the subprocess module to invoke the shell and read a single character
+        if IS_WINDOWS:
+            chars = []
+            while True:
+                char = msvcrt.getch()
+                # Check for Enter key press
+                if char == b'\r':  
+                    break
+                char_str = char.decode()
+                chars.append(char_str)
+                if len(chars) >= count:
+                    break
+            return ''.join(chars)
+        else:
+            # Expecting a linux based system
+            result = subprocess.run(["read", "-n", count], capture_output=True, text=True, shell=True)
+            chars = result.stdout.strip()
+            return chars
 
 #################################################################################################################
 #####                                           Theme Stuff                                                 #####
