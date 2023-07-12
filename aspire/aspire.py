@@ -86,16 +86,17 @@ class Aspire:
 		# Prints the "text" on the left, and a status indicator on the right
 		if isinstance(ID, int):
 			entry = dict_status[str(ID)]
+			# TODO: FIX use of eval
 			display = eval(entry)
-			Aspire.print(text, display.value, end=end)
+			Aspire.print(text, f"[ {display.value} ]", end=end)
 			return ID
 		elif isinstance(ID, bool):
 			entry = dict_status[str(ID)]
 			display = getattr(StatusEnum, entry)
-			Aspire.print(text, display.value, end=end)
+			Aspire.print(text, f"[ {display.value} ]", end=end)
 			return ID
 		elif isinstance(ID, Enum):
-			Aspire.print(text, ID.value, end=end)
+			Aspire.print(text, f"[ {ID.value} ]", end=end)
 		else:
 			print("Wrong type: ", ID)
 
