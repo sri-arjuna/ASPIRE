@@ -36,9 +36,11 @@ tui.status(10 + yesno, "Int result: On/Off = 10+Bool")
 tui.print()
 tui.title("Call by dict")
 for key in dict_status:
-    tui.print(dict_status[key], eval(dict_status[key]).value, key)
+    # It requires specificly INT or BOOL, since i'm just parsing key's here, they're any and wont work
+    # So I had to fallback using EVAL, eventhough that is not recomended.
+    tui.print(f"tui.status({key}, 'Some text'", f"[ {eval(dict_status[key]).value} ]")
 
 tui.print()
 tui.title("Call by Enum")
 for es in StatusEnum:
-    tui.status(es, f"Status: {es}")
+    tui.status(es, f"tui.status({es}, 'Message to user')")
