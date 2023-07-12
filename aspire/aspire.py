@@ -5,12 +5,20 @@
 	URL:			https://www.github.com/sri-arjuna/ASPIRE
 """
 
+
+# Imports
+import sys
+import os
+from enum import Enum
+
+# Internals
 from .aspire_core import PrintUtils as put
 from .aspire_core import AspireCore as AC
 from .aspire_core import Theme
-from .aspire_data_status import EnumStatus # as ES
-import sys
-import os
+from .aspire_data_status import StatusEnum
+from .aspire_data_status import dict_status
+
+
 
 os.system("")
 
@@ -73,11 +81,23 @@ class Aspire:
 		elif answer in no and "" != answer:
 			return False
 
-	@classmethod
-	def status(self, ID: EnumStatus, text, end='\n'):
+	@staticmethod
+	def status(ID, text, end='\n'):
 		# Prints the "text" on the left, and a status indicator on the right
-		self.print(text, f"[ {ID.value} ]")
-		pass
+		if isinstance(ID, int):
+			entry = dict_status[str(ID)]
+			display = eval(entry)
+			Aspire.print(text, display.value, end=end)
+			return ID
+		elif isinstance(ID, bool):
+			entry = dict_status[str(ID)]
+			display = getattr(StatusEnum, entry)
+			Aspire.print(text, display.value, end=end)
+			return ID
+		elif isinstance(ID, Enum):
+			Aspire.print(text, ID.value, end=end)
+		else:
+			print("Wrong type: ", ID)
 
 	@classmethod
 	def progress(self, text: str, cur: float, max: float, fstyle="bar"):

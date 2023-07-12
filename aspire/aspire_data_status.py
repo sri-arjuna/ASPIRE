@@ -26,7 +26,7 @@ from .aspire_data_color_and_text import cat
 	U+2718	✘	Heavy ballot X
 """
 
-class EnumStatus(Enum):
+class StatusEnum(Enum):
     Good = f"{cat.colors.front.green}{cat.text.bold}√{cat.reset}"
     Bad = f"{cat.colors.front.red}{cat.text.bold}X{cat.reset}"
     Todo = f"{cat.colors.front.cyan}{cat.text.bold}≡{cat.reset}"
@@ -36,4 +36,17 @@ class EnumStatus(Enum):
     Prev = f"<"
     On  = f"{cat.colors.front.green}{cat.text.bold}●{cat.reset}"
     Off = f"{cat.colors.front.red}{cat.text.bold}○{cat.reset}"
-    
+
+dict_status =  {
+    '0': f"{StatusEnum.Bad}",
+    '1': f"{StatusEnum.Good}",
+    'False': f"{StatusEnum.Bad}",
+    'True': f"{StatusEnum.Good}",
+    '10': f"{StatusEnum.Off}",
+    '11': f"{StatusEnum.On}",
+    '2': f"{StatusEnum.Todo}",
+    '3': f"{StatusEnum.Work}",
+    '4': f"{StatusEnum.Skip}",
+    '5': f"{StatusEnum.Next}",
+    '6': f"{StatusEnum.Prev}",
+}
