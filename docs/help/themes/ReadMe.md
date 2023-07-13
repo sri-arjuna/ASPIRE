@@ -3,6 +3,14 @@ Themes:
 
 This file will explain how themes work internaly and how you can make use of them and even create your own.
 
+### Preview:
+![ThemPreview](./themes_preview.jpg)
+
+- [[Sample code: ThemePreview](../../../examples/ThemePreview.py)]
+
+
+
+
 Theme internals:
 ----------------
 
