@@ -10,6 +10,8 @@ Brief
 -----
 ASPIRE is a Python 3.11+ module that offers an easy to use line-based text user interface framework.
 
+It aims to make the console output more appealing to end users and provide developers an easy to use framework for 'everyday tasks' and to put their output left, center and right oriented with some 'dividers' (header, title) using a theme for presentation.
+
 
 Target Audience
 ---------------
@@ -58,7 +60,8 @@ tui.press()
 This is how "Hello World" (using ``header``, ``title`` and ``print``) can look like:
 ![prewview](./docs/HelloWorld.jpg)
 
-There are some test projects in [[examples](./examples)]
+- There are some test projects in [[examples](./examples)]
+- You can find more detailed help in [[docs/help](./docs/help)]
 
 ----
 
