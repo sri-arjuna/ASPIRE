@@ -1,4 +1,22 @@
-# Make SPYRE as module:
+Roadmap / TODO list:
+====================
+
+
+1. Split (or shorten) strings for proper output (header, title, print, status, ask, etc.)
+2. Get rid of ``eval`` in status
+2. Add / make use of: bar_half for more 'dynamic' appearance.
+
+
+
+
+------------------------------------------------------------------------------------------
+
+> \
+> Below are just notes for myself. <br>
+>  <br>
+
+
+# Make ASPIRE as module:
 
 ----
 
