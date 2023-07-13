@@ -1,25 +1,47 @@
+# These are only required (here) for relative path import
 import os
 import sys
+from os.path import abspath, dirname, join
+# Add the ASPIRE directory to the system path
+aspire_dir = abspath(join(dirname(__file__), '..'))
+sys.path.append(aspire_dir)
 
+# Import Aspire modules
+# Usualy, this would be only:
+#	from aspire import Aspire as tui
+from aspire.aspire import Aspire as tui
+from aspire.aspire_data_color_and_text import cat
 
-os.system("")
+# Check for subprocess usage:
+#import subprocess
+#result = subprocess.Popen("")
+#subprocess.Popen('', shell=True)
+#os.system("")
 
+## Default output
+print("------")
+tui.header("Left", "TODO TIME")
+tui.title("Hello World")
+tui.print("Left", "Center", "Right")
+print("------")
 
-COLOR_RED = '\033[31m'
-COLOR_GREEN = '\033[32m'
-COLOR_YELLOW = '\033[33m'
-COLOR_RESET = '\033[0m'
-BACK_BLUE = '\033[44m'
-BACK_MAGENTA = '\033[45m'
-print_str = BACK_BLUE + COLOR_YELLOW + '/// --- This is yellow text.' + COLOR_RESET 
+# Why does cat.text.bold not work?
+bold_text = "\033[1mThis text is bold\033[0mcompare"
+bold_v2 = f"{cat.text.bold} my text{cat.reset}compare"
+print(bold_text)
+print(bold_v2)
+tui.print(bold_v2,bold_text)
 
-print(BACK_MAGENTA + '--PRINT ---' + print_str)
-sys.stdout.write(BACK_MAGENTA + "---stdout---" + print_str)
-sys.stdout.flush
-#os.system(BACK_MAGENTA + "---os.system---" + print_str)
-print("")
+# Change theme ??
+from aspire.aspire_core import Theme as theme
+from aspire.aspire_core import PrintUtils as put
+from aspire.aspire_data_themes import ThemesList
 
+#theme.set(theme.available_themes("Classic"))
+#theme.set_custom(theme.set("Classic"))
+#theme.current_theme = theme.set("Classic")
+#theme.current_theme = theme.set(theme.available_themes["Classic"])
 
-#from aspire.aspire_dc_colors import ColorsAndTextCodes as cat
-#my_colors = cat.bg.cyan + cat.fg.white
-#print(my_colors + "test string" + cat.reset)
+tui.progress("Progres bar test:", 1, 3)
+tui.progress("Progres bar test:", 1, 3, fstyle="num")
+
