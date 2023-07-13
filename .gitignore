@@ -5,3 +5,4 @@ aspire/__pycache__/aspire_utils_print.cpython-311.pyc
 aspire/__pycache__/aspire.cpython-311.pyc
 *.pyc
 *.7z
+examples/testing.py
