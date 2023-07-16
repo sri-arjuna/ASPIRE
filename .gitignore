@@ -4,3 +4,4 @@ aspire/__pycache__/*
 *.7z
 ASPIRE.egg-info/*
 build/*
+dist/*
