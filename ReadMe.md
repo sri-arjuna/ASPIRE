@@ -16,13 +16,13 @@ It aims to make the console output more appealing to end users and provide devel
 Target Audience
 ---------------
 For developers aiming to enhance the user experience with the console.
-
+![HelloWorld](./docs/help/Basic_HelloWorld/HelloWorld.jpg)
 
 Detail
 ------
 ASPIRE simplifies common tasks by providing various functions that wrap around frequently used code. It serves as a three-way interface between the system (MS Windows, any *Nix based system, and even Apple's iOS), the author/developer, and the end user.
 
-One of ASPIRE's key focuses is to enhance the console experience by offering themable designs. You, as the author, can choose from a variety of ASCII-based themes that include colors, symbols, bold and underline fonts, and more. Users also have the option to select a different theme or even create their own.
+One of ASPIRE's key focuses is to enhance the console experience by offering themable designs. You, as the author, can choose from a variety of ASCII-based themes that include colors, symbols, bold and underline fonts, and more. Users also have the option to select a different theme or even create their own (if you allow so).
 
 ASPIRE is designed with simplified usability in mind for both end users and developers. \
 These functions aim to streamline interactions and improve the overall experience.
@@ -46,7 +46,7 @@ All descriptions are based on the default theme.
 Usage
 -----
 
-Use as library in your projects like this:
+The code for the previous preview would look as simple as this, which is how you can use it as library in your projects:
 
 ```py
 from aspire import Aspire as tui
@@ -58,7 +58,7 @@ tui.press()
 ```
 
 This is how "Hello World" (using ``header``, ``title`` and ``print``) can look like:
-![prewview](./docs/HelloWorld.jpg)
+![preview](./docs/HelloWorld.jpg)
 
 - There are some test projects in [[examples](./examples)]
 - You can find more detailed help in [[docs/help](./docs/help)]
@@ -73,7 +73,6 @@ At least thats where i want to go:
 ```
 pip install ASPIRE
 ```
-
 
 
 For an example list of different use cases, please see: [[USAGE](./docs/USAGE.md)]
