@@ -38,8 +38,23 @@ class Aspire:
 	@staticmethod
 	def print(*args, end='\n'):
 		# Implementation for printe method
-		put.border()
-		put.text(*args, end=end)
+		if len(args) == 1:
+			single_arg = args[0]
+			if isinstance(single_arg, str) and '\n' in single_arg:
+				lines = single_arg.strip().split('\n')
+				for line in lines:
+					put.border()
+					put.text(line, end='\n')
+			elif isinstance(single_arg, list):
+				for line in single_arg:
+					put.border()
+					put.text(line, end='\n')
+			else:
+				put.border()
+				put.text(single_arg, end=end)
+		else:
+			put.border()
+			put.text(*args, end=end)
 
 	@staticmethod
 	def press(text=None):
@@ -69,7 +84,7 @@ class Aspire:
 		# Loop for proper input:
 		while True:
 			# Make input ready to be checked
-			answer = AC.get_input_charcount(1)
+			answer = AC.get_input_charcount(1) 
 			#answer = input()
 			if answer in yesno_option:
 				break
