@@ -5,9 +5,17 @@ In the first section we will handle how to show a ``progressbar``, ``yesno `` qu
 
 | Name 	   | Description |
 |----------|-------------|
-| progress | By default a basic progressbar, offering 2 alternative modes: <br>- ``style="num"`` = 'reduces' the progress to a basic number style: ``[ 2 /4 ]``<br>- ``style="dash"`` prints a simple 'animated dash' to indicate a process is running: ``\ - / \|`` ***(TODO / WIP)*** |
-| yesno    | Ask a simple "yes or no" question.<br>It read 1 character and will return ``True`` for 'y' and ``False`` for 'n'.<br>For non-english coders, you can simply pass the equivalent of 'yn' as argument, and till use those as identifiers for 'yesno'. |
+| progress | By default a basic progressbar, offering 2 alternative modes: <br>- ``style="num"`` = 'reduces' the progress to a basic number style: ``[ 2 / 4 ]``<br>- ``style="dash"`` prints a simple 'animated dash' to indicate a process is running: ``\ - / \|`` ***(TODO / WIP)*** |
+| yesno    | Ask a simple "yes or no" question.<br>It read 1 character and will return ``True`` for 'y' and ``False`` for 'n'.<br>For non-english coders, you can simply pass the equivalent of 'yn' as argument, and still use those as identifiers for 'yesno'. |
 | status   | Great to show certain status messages based on *nix based "init" style.<br>It accepts INT, BOOL, and its own ``StatusEnum`` type to print the (mostly) colored symbols.
+
+
+Details:
+--------
+
+### YesNo
+If you call ``tui.yesno("question","sn")`` you would be accepting "s" as yes (si), and "n" for no. \
+With this approach it should be very easy to code for the language you intend to.
 
 
 ----
