@@ -47,6 +47,7 @@ import re
 import shutil
 import subprocess
 import sys
+import string
 
 # Prepare data structures
 from collections import namedtuple
@@ -130,15 +131,15 @@ class AspireCore:
         # Use the subprocess module to invoke the shell and read a single character
         if IS_WINDOWS:
             chars = []
-            while True:
+            while len(chars) < count:
                 char = msvcrt.getch()
-                # Check for Enter key press
-                if char == b'\r':  
-                    break
-                char_str = char.decode()
-                chars.append(char_str)
-                if len(chars) >= count:
-                    break
+                # Check if char is printable
+                if char in string.printable.encode():
+                    char_str = char.decode()
+                    chars.append(char_str)
+                    # Check for Enter key press
+                    if char_str == '\r' and len(chars) >= 1:
+                        break
             return ''.join(chars)
         else:
             # Expecting a linux based system
