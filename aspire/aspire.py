@@ -13,11 +13,11 @@ from enum import Enum
 
 # Internals
 from .aspire_core import PrintUtils as put
-from .aspire_core import AspireCore as AC
+from .aspire_core import AspireCore
 from .aspire_core import Theme
 from .aspire_data_status import StatusEnum
 from .aspire_data_status import dict_status
-
+AC = AspireCore()
 
 
 os.system("")
@@ -121,21 +121,17 @@ class Aspire:
 			prog_out = f"{cur} / {max}"
 		elif "bar" == fstyle:
 			theme = Theme.get()
-			AC._console_width = AC._get_terminal_width()
-			# Get default subtractions
-			width = AC._console_width - 2 * len(theme.border_left) - len(text) -2
+			width = AC.width_line_inner()
 			# Get the actual size for the bar
 			width_work = width - 2 - int(width / 6)
 			# Placeholer - respece this space
 			prog_full = theme.bar_empty * width_work  #int(len(theme.bar_empty) / width_work * max)
 			# Prepare the progress that has been done
-			#prog_done = theme.bar_full * int(width_work / 100 * cur)
 			prog_done = theme.bar_full * int(width_work * (cur / max))
 			cut_len = len(prog_done)
 			# Cut off what has been done from placeholder
 			prog_full = prog_full[:-cut_len]
 			# Final step
-			#p = 100 / max * cur
 			p = format(100 * cur / max, ".2f")
 			prog_out = f"[{prog_done}{prog_full}] {p}%"
 		else:
