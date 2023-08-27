@@ -121,7 +121,7 @@ class Aspire:
 			prog_out = f"{cur} / {max}"
 		elif "bar" == fstyle:
 			theme = Theme.get()
-			width = AC.width_line_inner()
+			width = AC.width_line_inner
 			# Get the actual size for the bar
 			width_work = width - 2 - int(width / 6)
 			# Placeholer - respece this space
