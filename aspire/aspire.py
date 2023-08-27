@@ -18,25 +18,26 @@ from .aspire_core import Theme
 from .aspire_data_status import StatusEnum
 from .aspire_data_status import dict_status
 AC = AspireCore()
-
+LineLengthInner = AC.width_line_inner
+print("DEBUG :: ", LineLengthInner)
 
 os.system("")
 
 class Aspire:
 	@staticmethod
-	def header(*args, style="header", end='\n'):
+	def header(*args, LineLengthInner=LineLengthInner, style="header", end='\n'):
 		# Implementation for header method
 		put.border(style=style)
 		put.text(*args, style=style, end=end)
 
 	@staticmethod
-	def title(text=None, style="title", end='\n'):
+	def title(text=None, LineLengthInner=LineLengthInner, style="title", end='\n'):
 		# Implementation for title method
 		put.border(style=style)
 		put.text(text, style=style, end=end)
 
 	@staticmethod
-	def print(*args, end='\n'):
+	def print(*args, LineLengthInner=LineLengthInner, end='\n'):
 		# Implementation for printe method
 		if len(args) == 1:
 			single_arg = args[0]
@@ -57,7 +58,7 @@ class Aspire:
 			put.text(*args, end=end)
 
 	@staticmethod
-	def press(text=None):
+	def press(text=None, LineLengthInner=LineLengthInner):
 		# if no text is passed, prints "Press enter to continue" left and right
 		if text is None or text == "":
 			text = "Please press any key to continue"
@@ -69,7 +70,7 @@ class Aspire:
 		os.dup2(stdout, 1)
 
 	@classmethod
-	def yesno(self, question: str, yesno_option="yn") -> bool:
+	def yesno(self, question: str, yesno_option="yn", LineLengthInner=LineLengthInner) -> bool:
 		theme = Theme.get()
 		answer = ""
 		question_string = f"{question} ({yesno_option}) {theme.prompt_read} "
@@ -97,7 +98,7 @@ class Aspire:
 			return False
 
 	@staticmethod
-	def status(ID, text, end='\n'):
+	def status(ID, text, LineLengthInner=LineLengthInner, end='\n'):
 		# Prints the "text" on the left, and a status indicator on the right
 		if isinstance(ID, int):
 			entry = dict_status[str(ID)]
@@ -108,15 +109,15 @@ class Aspire:
 		elif isinstance(ID, bool):
 			entry = dict_status[str(ID)]
 			display = getattr(StatusEnum, entry)
-			Aspire.print(text, f"[ {display.value} ]", end=end)
+			Aspire.print(text, f"[ {display.value} ]", end=end, LineLengthInner=LineLengthInner)
 			return ID
 		elif isinstance(ID, Enum):
-			Aspire.print(text, f"[ {ID.value} ]", end=end)
+			Aspire.print(text, f"[ {ID.value} ]", end=end, LineLengthInner=LineLengthInner)
 		else:
 			print("Wrong type: ", ID)
 
 	@classmethod
-	def progress(self, text: str, cur: float, max: float, fstyle="bar"):
+	def progress(self, text: str, cur: float, max: float, LineLengthInner=LineLengthInner, fstyle="bar"):
 		if "num" == fstyle:
 			prog_out = f"{cur} / {max}"
 		elif "bar" == fstyle:
@@ -137,5 +138,5 @@ class Aspire:
 		else:
 			prog_out = "failed progress"
 		put.border()
-		put.text(text, f"{prog_out}")
+		put.text(text, f"{prog_out}", LineLengthInner=LineLengthInner)
 

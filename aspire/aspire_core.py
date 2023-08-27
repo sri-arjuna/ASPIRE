@@ -360,8 +360,10 @@ class  PrintUtils:
         end = kwargs.get("end", "\n")
         LineLength = kwargs.get("LineLength", 80)
         theme = Theme.get()
-        LineLengthOutter = int(AspireCore._get_terminal_width())
-        LineLength = LineLengthOutter - len(theme.border_left) - len(theme.border_right) - 2
+        #LineLengthOutter = int(AspireCore._get_terminal_width())
+        #LineLength = LineLengthOutter - len(theme.border_left) - len(theme.border_right) - 2
+        #AC = AspireCore()
+        #LineLength = AC.width_line_inner
         
         # Init variable to represent passed text
         len_arg = 0
