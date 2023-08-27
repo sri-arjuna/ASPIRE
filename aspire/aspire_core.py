@@ -58,6 +58,7 @@ from enum import Enum
 from .aspire_data_color_and_text import cat
 #from .aspire_data_themes import ThemeAttributes
 from .aspire_data_themes import ThemesList
+from .aspire_string_utils import StringUtils as stew
 
 ################################################################################################################
 #####                                              One time constants                                 #####
@@ -93,13 +94,20 @@ FD_BORDER = __create_custom_fd()
 #####                                              Top Class / Definitions                                 #####
 ################################################################################################################
 class AspireCore:
-    _console_width = None
+    #_console_width = None
     IS_WINDOWS = None
     FD_BORDER = None
-    
-    def __init__(self):
-        self._console_width = self._get_terminal_width()
+    width_line_full = 0
+    width_line_inner = 0
 
+    def __init__(self):
+        # TODO remove, this one is old now -- just as fallback
+        #self._console_width = self._get_terminal_width()
+        # Get 'static' workspace for this call
+        theme = Theme.get()
+        self.width_line_full = self._get_terminal_width()
+        self.width_line_inner = self.width_line_full - len(theme.border_left) - len(theme.border_right) - 2
+        
     @classmethod
     def _IS_WINDOWS(cls):
         # Checks class attribute, if empty assign a bool to it
@@ -123,8 +131,12 @@ class AspireCore:
     
     @staticmethod
     def _get_terminal_width() -> int:
-        terminal_size = shutil.get_terminal_size((80, 20))  # Default size if terminal size cannot be determined
-        return int(terminal_size.columns // 2 * 2)
+        try:
+            terminal_size = shutil.get_terminal_size((80, 20))
+            return int(terminal_size.columns // 2) * 2
+        except (AttributeError, KeyError):
+            # Fallback for cases where terminal size cannot be determined
+            return 80  # Default width
     
     @staticmethod
     def get_input_charcount(count:int) -> str:
@@ -343,32 +355,117 @@ class  PrintUtils:
 
     @classmethod
     def text(cls, *args, **kwargs):
+        # Get key arguments
         style = kwargs.get("style", "print")
         end = kwargs.get("end", "\n")
+        LineLength = kwargs.get("LineLength", 80)
+        theme = Theme.get()
+        LineLengthOutter = int(AspireCore._get_terminal_width())
+        LineLength = LineLengthOutter - len(theme.border_left) - len(theme.border_right) - 2
+        
+        # Init variable to represent passed text
+        len_arg = 0
+        for a in args:
+            # Just take printable chars into account
+            len_arg += len(cls.remove_console_codes(a))
+
         # Print text based on the number of arguments
+        # Start with the exception
         if "title" == style:
+            if stew.split_needed(len_arg, LineLength, 50, style=style):
+                pos = stew.split_calc_char_pos(LineLength, 50)
+                lines = stew.split_string_preserve_words(args[0], pos)
+                cls._center(lines[0], style=style, end="\n")
+                cls.text(lines[1], style=style, end="\n")
+                return
+            else:
                 cls._center(args[0], style=style, end=end)
                 return
+        elif "status" == style:
+            if stew.split_needed(args[1], LineLength, 50, style=style):
+                lines = stew.split_shorten(args[1], LineLength - len(args[0]) - 2)
+                cls.text(lines,args[1],style=style, end="\n")
+                return
+            else:
+                # Regular call, no shortening needed
+                cls.text(args[0], args[1], style=style, end="\n")
         
         if len(args) == 0:
             cls._left("", style=style, end=end)
+            return
         elif len(args) == 1:
-            if "title" == style:
-                cls._center(args[0], style=style, end=end)
+            if stew.split_needed(len_arg, LineLength, 75, style=style):
+                pos = stew.split_calc_char_pos(LineLength, 75)
+                lines = stew.split_string_preserve_words(args[0], pos)
+                cls._left(lines[0], style=style, end="\n")
+                cls.border(style=style)
+                cls._right(lines[1], style=style, end="\n")
+                return
             else:
+                #print(f"DEBUG SPLIT 2 - {width_inside} // {len_arg}")
                 cls._left(args[0], style=style, end=end)
+                return
         elif len(args) == 2:
-            cls._left(args[0], style=style, end='')
-            cls._right(args[1], style=style, end=end)
+            if stew.split_needed(len_arg, LineLength, 50, style=style):
+                # We do need splitting, lets check if we can solve it by one argument per line..
+                if len(args[0]) < AspireCore.width_line_inner and len(args[1]) < LineLength:
+                    # Each is smaller, so lets keep simple:
+                    cls._left(args[0], style=style, end="\n")
+                    cls.border(style=style)
+                    cls._right(args[1], style=style, end=end)
+                    return
+                else:
+                    # No, we actualy need to split both.
+                    pos = stew.split_calc_char_pos(LineLength, 50)
+                    linesL = stew.split_string_preserve_words(args[0], pos)
+                    linesR = stew.split_string_preserve_words(args[1], pos)
+
+                    #textL = args[0]
+                    #linesL = [textL[i:i+len_arg] for i in range(0, len(textL), len_arg)]
+                    #textR = args[1]
+                    #linesR = [textR[i:i+len_arg] for i in range(0, len(textR), len_arg)]
+                    cls.text(linesL[0], linesR[0], style=style, end="\n")
+                    cls.border(style=style)
+                    # TODO -- Should this not split up any text that is too long?
+                    cls.text(linesL[1], linesR[1], style=style, end="\n")
+                    return
+            else:
+                cls._left(args[0], style=style, end='')
+                cls._right(args[1], style=style, end=end)
+                return
         elif len(args) == 3:
-            cls._left(args[0], style=style, end='')
-            cls._center(args[1], style=style, end='')
-            cls._right(args[2], style=style, end=end)
+            #TODO 3 split
+            if stew.split_needed(len_arg, LineLength, 30, style=style):
+                # We do need splitting, lets check if we can solve it by one argument per line..
+                if len(args[0]) < LineLength and len(args[2]) < LineLength:
+                    # Each is smaller, so lets keep simple:
+                    cls.text(args[0], args[2], style=style, end="\n")
+                    cls.border(style=style)
+                    cls.text("", args[1], "", style=style, end=end)
+                    return
+                else:
+                    # Gotta split each text, just to be sure.
+                    pos = stew.split_calc_char_pos(LineLength, 30)
+                    linesL = stew.split_string_preserve_words(args[0], pos)
+                    linesC = stew.split_string_preserve_words(args[1], pos)
+                    linesR = stew.split_string_preserve_words(args[2], pos)
+
+                    cls.text(linesL[0], linesC[0], linesR[0], style=style, end="\n")
+                    cls.border(style=style)
+                    cls.text(linesL[1], linesC[1], linesR[1], style=style, end=end)
+                    return
+            else:
+                # No splitting required, nice :)
+                cls._left(args[0], style=style, end='')
+                cls._center(args[1], style=style, end='')
+                cls._right(args[2], style=style, end=end)
+                return
 
     @classmethod
     def border(cls, style='print'):
         theme = Theme.get()
         width = AspireCore._get_terminal_width()
+        len(theme.border_left)
         
         if style == 'header':
             left_border = f"{theme.color_fg}{theme.color_bg}{theme.header_left}"
