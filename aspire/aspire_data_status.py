@@ -36,6 +36,7 @@ class StatusEnum(Enum):
     Prev = f"<"
     On  = f"{cat.colors.front.green}{cat.text.bold}●{cat.reset}"
     Off = f"{cat.colors.front.red}{cat.text.bold}○{cat.reset}"
+    Info = f"{cat.colors.front.yellow}{cat.text.bold}!!!{cat.reset}"
 
 dict_status =  {
     '0': f"{StatusEnum.Bad}",
@@ -49,4 +50,5 @@ dict_status =  {
     '4': f"{StatusEnum.Skip}",
     '5': f"{StatusEnum.Next}",
     '6': f"{StatusEnum.Prev}",
+    '111': f"{StatusEnum.Info}",
 }
