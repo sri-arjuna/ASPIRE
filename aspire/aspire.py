@@ -80,7 +80,6 @@ class Aspire:
 		# Default Aspire / TUI output
 		put.border()
 		put.text(question_string, end="")
-		#sys.stdout.flush()		# Makes no difference
 
 		# Loop for proper input:
 		while True:
