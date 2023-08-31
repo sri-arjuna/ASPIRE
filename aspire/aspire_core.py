@@ -355,15 +355,12 @@ class  PrintUtils:
 
     @classmethod
     def text(cls, *args, **kwargs):
+        theme = Theme.get()
         # Get key arguments
         style = kwargs.get("style", "print")
         end = kwargs.get("end", "\n")
-        LineLength = kwargs.get("LineLength", 80)
+        LineLength = kwargs.get("LineLength", AspireCore._get_terminal_width() - 2*(len(theme.border_left)) - 2  )
         theme = Theme.get()
-        #LineLengthOutter = int(AspireCore._get_terminal_width())
-        #LineLength = LineLengthOutter - len(theme.border_left) - len(theme.border_right) - 2
-        #AC = AspireCore()
-        #LineLength = AC.width_line_inner
         
         # Init variable to represent passed text
         len_arg = 0
@@ -374,8 +371,11 @@ class  PrintUtils:
         # Print text based on the number of arguments
         # Start with the exception
         if "title" == style:
-            if stew.split_needed(len_arg, LineLength, 50, style=style):
-                pos = stew.split_calc_char_pos(LineLength, 50)
+            split_percent = 50
+            #if stew.split_needed(len_arg, LineLength, split_percent, style=style):
+            if split_percent <= 100 // LineLength * len_arg:
+                #print(f"DBBUG: {args} // {len_arg} // {LineLength} // {split_percent}")
+                pos = stew.split_calc_char_pos(LineLength, split_percent)
                 lines = stew.split_string_preserve_words(args[0], pos)
                 cls._center(lines[0], style=style, end="\n")
                 cls.text(lines[1], style=style, end="\n")
@@ -383,15 +383,7 @@ class  PrintUtils:
             else:
                 cls._center(args[0], style=style, end=end)
                 return
-        elif "status" == style:
-            if stew.split_needed(args[1], LineLength, 50, style=style):
-                lines = stew.split_shorten(args[1], LineLength - len(args[0]) - 2)
-                cls.text(lines,args[1],style=style, end="\n")
-                return
-            else:
-                # Regular call, no shortening needed
-                cls.text(args[0], args[1], style=style, end="\n")
-        
+        # General output
         if len(args) == 0:
             cls._left("", style=style, end=end)
             return
@@ -421,11 +413,6 @@ class  PrintUtils:
                     pos = stew.split_calc_char_pos(LineLength, 50)
                     linesL = stew.split_string_preserve_words(args[0], pos)
                     linesR = stew.split_string_preserve_words(args[1], pos)
-
-                    #textL = args[0]
-                    #linesL = [textL[i:i+len_arg] for i in range(0, len(textL), len_arg)]
-                    #textR = args[1]
-                    #linesR = [textR[i:i+len_arg] for i in range(0, len(textR), len_arg)]
                     cls.text(linesL[0], linesR[0], style=style, end="\n")
                     cls.border(style=style)
                     # TODO -- Should this not split up any text that is too long?
@@ -436,8 +423,56 @@ class  PrintUtils:
                 cls._right(args[1], style=style, end=end)
                 return
         elif len(args) == 3:
-            #TODO 3 split
-            if stew.split_needed(len_arg, LineLength, 30, style=style):
+            # First lets handle the exception... status
+            if "status" == style:
+                # TODO
+                # 0 Left
+                # 1 Center
+                # 2 Status (console codes)
+                len_status = len(cls.remove_console_codes(args[2]))
+
+                #print("todo status")
+
+                if len(args[0]) < LineLength:
+                    # L is small enough and can be printed.
+                    # Lets check center output
+                    if len(args[1]) < LineLength - len_status:
+                        # Center is small enough
+                        cls.border(style=style)
+                        cls.text(f"{args[0]}", f"{args[1]}", f"{args[2]}", style="print", end=end)
+                        return
+                    else:
+                        # Center needs to be split or shortened
+                        print("TODO DEBUG LATER -- Shorten or split center of stats")
+                        cls.text(f"{args[0]} LL:{LineLength} // {len(args[1])}", style=style, end="")
+                        pos = stew.split_calc_char_pos(LineLength, 90)
+                        linesC = stew.split_string_preserve_words(args[1], pos)
+                        cls.text("", "", f"{linesC[0]}",style=style, end="\n")
+                        return
+                else:
+                    # First var is too long already....
+                    # Second as well?
+                    if len(args[1]) < LineLength - len_status:
+                        # Yes, both needs splitting
+                        pos = stew.split_calc_char_pos(LineLength, 90)
+                        linesL = stew.split_string_preserve_words(args[0], pos)
+                        linesC = stew.split_string_preserve_words(args[1], pos)
+                        # Print 
+                        cls.text(linesL[0], linesC[0], "", style=style, end="\n")
+                        cls.border(style=style)
+                        cls.text(linesL[1], linesC[1], f"{args[2]}", style=style, end=end)
+                        return
+                    else:
+                        # No, only first needs splitting
+                        pos = stew.split_calc_char_pos(LineLength, 90)
+                        linesL = stew.split_string_preserve_words(args[0], pos)
+                        # Print 
+                        cls.text(linesL[0], "", "", style=style, end="\n")
+                        cls.border(style=style)
+                        cls.text(linesL[1], f"{args[1]}", f"{args[2]}", style=style, end=end)
+                        return
+            # Back to default handling
+            elif stew.split_needed(len_arg, LineLength, 30, style=style):
                 # We do need splitting, lets check if we can solve it by one argument per line..
                 if len(args[0]) < LineLength and len(args[2]) < LineLength:
                     # Each is smaller, so lets keep simple:
@@ -467,7 +502,7 @@ class  PrintUtils:
     def border(cls, style='print'):
         theme = Theme.get()
         width = AspireCore._get_terminal_width()
-        len(theme.border_left)
+        #len(theme.border_left)
         
         if style == 'header':
             left_border = f"{theme.color_fg}{theme.color_bg}{theme.header_left}"
@@ -477,7 +512,7 @@ class  PrintUtils:
             left_border = f"{theme.color_fg}{theme.color_bg}{theme.title_left}{cat.codes.invert}" #{inv_BG}{inv_FG}"
             right_border = f"{cat.reset}{theme.color_fg}{theme.color_bg}{theme.title_right}{cat.reset}"
             #center = theme.filler * (width - 2*len(right_border))
-        elif style == 'print':
+        elif style == 'print' or style == 'status':
             left_border = f"{theme.color_fg}{theme.color_bg}{theme.border_left}{cat.reset}"
             #center = (width - 2 * len(theme.border_left)) // 2 * 2  * " "
             right_border = f"{theme.color_fg}{theme.color_bg}{theme.border_right}{cat.reset}"
@@ -490,7 +525,7 @@ class  PrintUtils:
         elif "title" == style:
             fill = theme.title_filler
         else:
-            if "print" == style:
+            if "print" == style or style == 'status':
                 fill = " "
         if fill == "":
             fill = " "
@@ -501,7 +536,6 @@ class  PrintUtils:
         # Print Border Left
         cls.cursor2pos(0)
         print(f"{left_border}", flush=True, file=AspireCore.FD_BORDER, end="")
-        
         print(f"{center}", flush=True, file=AspireCore.FD_BORDER, end="")
         print(f"{right_border}", flush=True, file=AspireCore.FD_BORDER, end="")
 

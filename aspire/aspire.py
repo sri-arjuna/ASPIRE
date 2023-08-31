@@ -17,24 +17,25 @@ from .aspire_core import AspireCore
 from .aspire_core import Theme
 from .aspire_data_status import StatusEnum
 from .aspire_data_status import dict_status
-AC = AspireCore()
-LineLengthInner = AC.width_line_inner
-print("DEBUG :: ", LineLengthInner)
 
 os.system("")
+
+AC = AspireCore()
+LineLengthInner = AC.width_line_inner
+print("DEBUG - aspire.py:: ", LineLengthInner)
 
 class Aspire:
 	@staticmethod
 	def header(*args, LineLengthInner=LineLengthInner, style="header", end='\n'):
 		# Implementation for header method
 		put.border(style=style)
-		put.text(*args, style=style, end=end)
+		put.text(*args,LineLengthInner=LineLengthInner, style=style, end=end)
 
 	@staticmethod
-	def title(text=None, LineLengthInner=LineLengthInner, style="title", end='\n'):
+	def title(text="", LineLengthInner=LineLengthInner, style="title", end='\n'):
 		# Implementation for title method
 		put.border(style=style)
-		put.text(text, style=style, end=end)
+		put.text(text, LineLengthInner=LineLengthInner, style=style, end=end)
 
 	@staticmethod
 	def print(*args, LineLengthInner=LineLengthInner, end='\n'):
@@ -97,21 +98,24 @@ class Aspire:
 			return False
 
 	@staticmethod
-	def status(ID, text, LineLengthInner=LineLengthInner, end='\n'):
+	def status(ID, text_L, text_C="", LineLengthInner=LineLengthInner, end='\n'):
 		# Prints the "text" on the left, and a status indicator on the right
 		if isinstance(ID, int):
 			entry = dict_status[str(ID)]
 			# TODO: FIX use of eval
 			display = eval(entry)
-			Aspire.print(text, f"[ {display.value} ]", end=end)
+			put.border() #style="status")
+			put.text(text_L, text_C, f"[ {display.value} ]", LineLengthInner=LineLengthInner, end=end, style="status")
 			return ID
 		elif isinstance(ID, bool):
 			entry = dict_status[str(ID)]
 			display = getattr(StatusEnum, entry)
-			Aspire.print(text, f"[ {display.value} ]", end=end, LineLengthInner=LineLengthInner)
+			put.border() #style="status")
+			put.text(text_L, text_C, f"[ {display.value} ]", end=end, LineLengthInner=LineLengthInner, style="status")
 			return ID
 		elif isinstance(ID, Enum):
-			Aspire.print(text, f"[ {ID.value} ]", end=end, LineLengthInner=LineLengthInner)
+			put.border() #style="status")
+			put.text(text_L, text_C, f"[ {ID.value} ]", end=end, LineLengthInner=LineLengthInner, style="status")
 		else:
 			print("Wrong type: ", ID)
 
