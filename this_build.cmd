@@ -4,6 +4,6 @@ echo Creating package build data...
 py -m build
 
 
-#python setup.py build_py
-#echo Creating actual package...
-#python setup.py sdist
+REM #python setup.py build_py
+REM #echo Creating actual package...
+REM #python setup.py sdist

@@ -3,5 +3,8 @@ aspire/__pycache__/*
 *.pyc
 *.7z
 ASPIRE.egg-info/*
+ASPIRETUI.egg-info/*
 build/*
 dist/*
+z_bkup/*
+
