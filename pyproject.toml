@@ -10,14 +10,14 @@
 # There are some restrictions on what makes a valid project name
 # specification here:
 # https://packaging.python.org/specifications/core-metadata/#name
-name = "ASPIRETUI"  # Required
+name = "AspireTUI"  # Required
 
 # Versions should comply with PEP 440:
 # https://www.python.org/dev/peps/pep-0440/
 #
 # For a discussion on single-sourcing the version, see
 # https://packaging.python.org/guides/single-sourcing-package-version/
-version = "0.0.4a"  # Required
+version = "0.0.5"  # Required
 
 # https://packaging.python.org/specifications/core-metadata/#summary
 description = "A framework for a line based TUI"  # Optional
