@@ -99,7 +99,7 @@ def press(text=None):
 	if text is None or text == "":
 		text = _("Please press any key to continue.")
 	put.border()
-	if settings("inner") >= 2 * (len(text) + 1):
+	if settings["inner"] >= 2 * (len(text) + 1):
 		# Fits twice
 		put.text(text, text)
 	else:
