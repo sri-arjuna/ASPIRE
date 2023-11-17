@@ -5,7 +5,6 @@
 	URL:			https://www.github.com/sri-arjuna/ASPIRE
 """
 
-
 # These are only required (here) for relative path import
 import sys
 from os.path import abspath, dirname, join
@@ -13,21 +12,15 @@ from os.path import abspath, dirname, join
 aspire_dir = abspath(join(dirname(__file__), '..'))
 sys.path.append(aspire_dir)
 
-
-# Usualy, this would be only:
-#		from aspire import Aspire as tui
-from aspire.aspire import Aspire as tui
-from aspire.aspire_data_color_and_text import cat
-from aspire.aspire_core import Theme as theme
-
+from AspireTUI import tui
+from AspireTUI.ColorAndText import cat
+import AspireTUI._theme as Theme
 
 # Loop all available themes
-for thisTheme in theme.available_themes:
-        theme._selected = thisTheme
-        theme.get()
-        #print(cat.clear)
-        tui.header(f"Selected: {thisTheme}", "TODO TIME")
-        tui.title(f"{thisTheme} Theme")
-        tui.print(f"Left: {cat.colors.front.red}{cat.colors.back.green}purple", "Center", "Right")
-        tui.press()
-        print("")
+for thisTheme in Theme.list():
+	Theme.set(thisTheme)
+	tui.header(f"Selected: {thisTheme}", "TODO TIME")
+	tui.title(f"{thisTheme} Theme")
+	tui.print(f"Left: {cat.front.blue}{cat.back.light_yellow}blue on yellow", "Center", "Right")
+	tui.press()
+	print("")

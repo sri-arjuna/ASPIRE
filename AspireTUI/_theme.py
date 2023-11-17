@@ -210,6 +210,27 @@ class _ThemesList(Enum):
 		header_right="═╗ ",
 		header_filler="═"
 	)
+	# Blocks = https://en.wikipedia.org/wiki/Block_Elements
+	Blocks = _ThemeAttributes(
+		border_left=" █ ",
+		border_right=" █ ",
+		color_fg="white",
+		color_bg="light_blue",
+		prompt_read="\076",
+		prompt_select="\076",
+		bar_empty="░",
+		bar_half="▒",
+		bar_full="▓",
+		title_left=" █▄",
+		title_right="▄█ ",
+		title_filler="▀",
+		title_bold=True,
+		title_underline=False,
+		title_italic=False,
+		header_left=" █▀",
+		header_right="▀█ ",
+		header_filler="▀"
+	)
 # Internal themes
 #_available_themes = {theme.name: theme.value for theme in _ThemesList}
 #################################################################################################################
@@ -219,14 +240,14 @@ def list() -> list:
 	"""
 	Returns a list of themese
 	"""
-	return {theme.key for theme in _ThemesList}
+	return {theme for theme in _ThemesList.__members__}
 
 def set(newTheme: str):
 	"""
 	Saves passed string as settings["theme"] and returns True
 	If newTheme is not found in _ThemesList, nothing happens but return False.
 	"""
-	if newTheme in _ThemesList:
+	if newTheme in _ThemesList.__members__:
 		settings["theme"] = newTheme
 		return True
 	else:
