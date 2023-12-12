@@ -50,7 +50,8 @@ translation.install()
 #	Internals
 # 
 from AspireTUI import settings, FD_BORDER #, IS_WINDOWS
-import AspireTUI._internal #import StringUtils as stew
+import AspireTUI._internal as _internal
+#import AspireTUI.StringUtils as stew
 from AspireTUI.ColorAndText import cat
 import AspireTUI._theme as Theme
 
@@ -91,7 +92,7 @@ def _update(forced=False, DEBUG=""):
 		settings["full"] = _width_full()
 		settings["inner"] = _width_inner()
 		settings["due"] = 0
-		print(f"DEBUG: inner:{settings['inner']} //full:{settings['full']} // width: {_width_inner()} // DEBUG: {len(DEBUG)}")
+		#print(f"DEBUG-Update: full:{settings['full']} // inner:{settings['inner']} // width: {_width_inner()} // DEBUG: {len(DEBUG)} // txt: {DEBUG}")
 	else:
 		settings["due"] += 1
 	
@@ -196,10 +197,12 @@ def _cursor2pos(pos: int, as_str=False):
 def _left(text, style='print', end='\n'):
 	"""
 	Internal use.			\n
-	Print text aligned to the left with specified indention and end character.			\n
+	Returns text-string aligned to the left with specified indention and end character.			\n
 	"""
 	cur_theme = Theme.get()
 	pos = _calc_pos_left()
+	if "" == text:
+		return ""
 	#_cursor2pos(pos)
 	if "header" == style:
 		output = f"{cur_theme.color_fg}{cur_theme.color_bg}{text}{cat.reset}"
@@ -210,9 +213,11 @@ def _left(text, style='print', end='\n'):
 def _right(text, style='print', end='\n'):
 	"""
 	Internal use.			\n
-	Print text aligned to the right with specified indention and end character.			\n
+	Returns text-string aligned to the right with specified indention and end character.			\n
 	"""
 	cur_theme = Theme.get()
+	if "" == text:
+		return ""
 	output = ""
 	if text != "":
 		pos = _calc_pos_right(text)
@@ -229,7 +234,7 @@ def _right(text, style='print', end='\n'):
 def _center(text, style='print', end='\n'):
 	"""
 	Internal use.			\n
-	Print text centered with specified indention and end character.			\n
+	Returnss text-string centered with specified indention and end character.			\n
 	"""
 	cur_theme = Theme.get()
 	pre = ""
@@ -267,7 +272,7 @@ def border(style='print'):
 	Accepts: header, title, print, status			\n
 	"""
 	cur_theme = Theme.get()
-	#cur_theme.
+	#cur_theme. --- ChatGPT this is line 271
 	width = settings["full"]
 	if style == 'header':
 		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_left}"
@@ -302,9 +307,10 @@ def border(style='print'):
 def text(*args, **kwargs):
 	"""
 	Supposed for internal use, can be used by other developers.			\n
-	Prints up to 3 strings L, LR, LCR
+	Prints up to 3 strings L, LR, LCR 		\n
+	Valid kwargs are: end, style={header/title/print/status} 
 	"""
-	# Get args
+	# Get args -- ChatGPT, this is line 309
 	style = kwargs.get("style", "print")
 	end = kwargs.get("end", "\n")
 	LineLength = settings["inner"]
@@ -320,12 +326,105 @@ def text(*args, **kwargs):
 	# Prepare values
 	if len(args) > 0:
 		for a in args:
-			length_total += len(str(remove_console_codes(a)))
+			#print("DEbug split: ", len(a), a)
+			if a == "":
+				length_total += 0
+			else:
+				length_total += len(str(remove_console_codes(a)))
 	if length_total > LineLength:
 		need_split = True
 	# Before we do anything, lets go back so we can properly print:
 	if need_split:
+		if 1 == arg_count:
+			if "title" == style:
+				w = LineLength * 0.5
+				linesC = _internal.split_string_preserve_words(args[0], w)
+				print(_center(linesC[0],style=style))
+				border(style=style)
+				text(linesC[1],style=style)
+			else:
+				# print and header
+				w = LineLength * 0.8
+				linesL = _internal.split_string_preserve_words(args[0], w)
+				text(linesL[0], style=style)
+				# 2nd line
+				tmp = linesL[1]
+				while len(tmp) > 0:
+					tmp2, tmp3 = _internal.split_string_preserve_words(tmp, w)
+					border(style=style)
+					print(_right(tmp2, style=style))
+					tmp = tmp3
+			# Single args done
+			return True
+		if 2 == arg_count:
+			# print and header
+			if len(args[0]) < LineLength:
+				# L fits on one line
+				linesL = _left(args[0], style=style, end="")
+				# R maybe too?
+				if len(args[1]) < LineLength:
+					# Yes, so easy mode
+					linesR = _right(args[1], style=style, end="")
+					# Output
+					print(linesL) #, end="")
+					border(style=style)
+					text("", linesR, style=style)
+				else:
+					# Nope, needs 2 lines
+					# More complex handling
+					w = LineLength * 0.45
+					linesR = _internal.split_string_preserve_words(args[1], w)
+					# First line
+					print(_left(linesL, style=style), _right(linesR[0], style=style))
+					# Loop through remaining linesR
+					tmp = linesR[1]
+					while len(tmp) > 0:
+						tmp2, tmp3 = _internal.split_string_preserve_words(tmp, w)
+						border(style=style)
+						print(_right(tmp2, style=style))
+						tmp = tmp3 #[len(tmp2) + 1:].strip() # fix tailing space (len + strip)
+				return True
+			else:
+				# L does not fit on one line.
+				w = LineLength * 0.45
+				linesL = _internal.split_string_preserve_words(args[0], w)
+				linesR = _internal.split_string_preserve_words(args[1], w)
+				len_todo = len(linesL[1]) + len(linesR[1])
+				print(_left(linesL[0], style=style) , _right(linesR[0], style=style))
+
+				# Loop for all remaining output:
+				while len_todo > 0:
+					L = linesL[1]
+					R = linesR[1]
+					linesL = _internal.split_string_preserve_words(L, w)
+					linesR = _internal.split_string_preserve_words(R, w)
+					if len(linesL) <= 1:
+						return True
+					len_todo = len(linesL[1]) + len(linesR[1])
+					# Acctual output
+					border(style=style)
+					print(_left(linesL[0], style=style) , _right(linesR[0], style=style))
+				return True
+		elif 3 == arg_count:
+			# Most complex - simple approach first.
+			w = LineLength * 0.3
+			count_simple = len(args[0]) + len(args[2])
+			if count_simple < LineLength:
+				# Simple approach should work:
+				text(args[0], args[2], style=style)
+				# Loop through remaining linesR
+				tmp = linesC[1]
+				while len(tmp) > 0:
+					tmp2, tmp3 = _internal.split_string_preserve_words(tmp, w)
+					border(style=style)
+					linesC = _center(tmp2, style=style)
+					print(linesC)
+					tmp = tmp3
+
 		# TODO
+		#print("todo string splitting")
+		DEBUG = f"{args}"
+		print(f"DEBUG - print-split: full:{settings['full']} // inner:{settings['inner']} // length_total: {length_total} // txt: {DEBUG}")
 		return "todo string splitting" #, args, LineLength, length_total)
 		return False
 	else:
@@ -335,6 +434,7 @@ def text(*args, **kwargs):
 			C = _center(args[1], style=style, end="")
 			R = _right(args[2], style=style, end="")
 		elif arg_count == 2:
+			#print("DEBUG: ",args)
 			L = _left(args[0], style=style, end="")
 			R = _right(args[1], style=style, end="")
 		elif arg_count <= 1:
@@ -348,7 +448,7 @@ def text(*args, **kwargs):
 		else:
 			print(_("Holy guackamoly, you should never see this, please report!"))
 			print("--> from put.text")
-			return 1
+			return False
 		print(f"{_cursor2pos(0, True)}{L}{C}{R}", end=end)
 		return True
 
