@@ -90,71 +90,56 @@ def split_calc_char_pos(LineLength: int, Percentage: int):
 	split_pos = 100 // LineLength * Percentage
 	return split_pos
 
-# Split string at provided percentage
-# prfered at white space, or if not possible, hard value
 def split_string_preserve_words(text, max_chars):
-	total_length = len(text)
-	
-	if total_length <= max_chars:
-		return [text.strip(), ""]
-	
-	# Find the nearest whitespace before or at the max_chars index
-	split_index = max_chars
-	while split_index > 0 and not text[split_index].isspace():
-		split_index -= 1
-	
-	# If we didn't find a whitespace, just split at the provided index
-	if split_index == 0:
-		split_index = max_chars
-	
-	line0 = text[:split_index].strip()
-	line1 = text[split_index:].strip()
-	
-	# If line0 or line1 is empty, consider splitting the string without preserving words
-	if not line0 or not line1:
-		split_index = max_chars
-		line0 = text[:split_index].strip()
-		line1 = text[split_index:].strip()
-	
-	return [line0, line1]
+	"""
+	Split string at provided length, preferred at whitespace.
+	Returns 2 strings: line0, line1
+	"""
+	words = text.split()
+	line0 = ""
+	current_length = 0
+	rem_words = []
+	# Parse each word
+	for word in words:
+		if current_length + len(word) <= max_chars:
+			line0 += word + " "
+			current_length += len(word) + 1  # Add 1 for space
+			rem_words.append(word)
+		else:
+			break
+	# Remove used words
+	for w in rem_words:
+		words.remove(w)
+	# Fill line1
+	line1 = text[current_length:].strip()
+	return [line0.strip(), line1.strip()]
 
 def shorten(txt: str, char_count: int, cut_from_middle: bool = False) -> str:
 	"""
 	Shorten text to fit into char_count, mostly used for tui.status.
-	optional: can shorten text in the middle of the string.
+	Optional: can shorten text in the middle of the string.
 	"""
 	if len(txt) <= char_count:
 		return txt
 
 	if cut_from_middle:
-		if char_count < 7:
-			return "..." + txt[-(char_count - 3):]
-
-		middle = len(txt) // 2
-		offset = (char_count - 3) // 2
-		start_index = middle - offset
-		end_index = middle + offset + 1 if char_count % 2 != 0 else middle + offset
-
-		shortened_text = f"{txt[:start_index]}...{txt[end_index:]}"
-		return shortened_text
+		# TODO: Why do i need another "- 10" and a "- 12"
+		# Despite the fact i had already subtracted - 12 from in tui.progress...
+		remaining_chars = char_count - 10 # org - 3, then 4...
+		side_chars = int(remaining_chars // 2)
+		shortened_text = f"{txt[:side_chars]}...{txt[-side_chars:]}"
 	else:
-		# Split text into words and calculate the length of each word
+		# Attempt to cut at word boundaries for better readability
 		words = txt.split()
-		lengths = [len(word) for word in words]
-
-		# Construct the shortened text by taking whole words until char_count is reached
-		shortened_text = ""
+		shortened_words = []
 		current_length = 0
-		for word, length in zip(words, lengths):
-			if current_length + length <= char_count - 3:
-				shortened_text += f"{word} "
-				current_length += length + 1  # Add 1 for the space after the word
-			else:
-				break
 		
-		# If the shortened text doesn't match the input text length, add '...' at the end
-		if len(shortened_text) < len(txt):
-			shortened_text += "..."
-
-		return shortened_text.rstrip()
-
+		for word in words:
+			if current_length + len(word) <= char_count - 12:	# org 3
+				shortened_words.append(word)
+				current_length += len(word) + 1  # Add 1 for space between words
+		
+		shortened_text = ' '.join(shortened_words)
+		shortened_text += '...'  # Adding ellipsis
+		
+	return shortened_text
