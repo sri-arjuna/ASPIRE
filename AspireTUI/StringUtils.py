@@ -53,30 +53,3 @@ def now(clean=False, sep="/"):
 		return f"{date()} {time()}"
 	else:
 		return f"{date()} {sep} {time()}"
-
-def shorten(txt: str, char_count: int, cut_from_middle: bool = False) -> str:
-	"""
-	Shorten text to fit into char_count, mostly used for tui.status.
-	Optional: can shorten text in the middle of the string.
-	"""
-	if len(txt) <= char_count:
-		return txt
-
-	if cut_from_middle:
-		remaining_chars = char_count - 3
-		side_chars = remaining_chars // 2
-		shortened_text = f"{txt[:side_chars]}...{txt[-side_chars:]}"
-	else:
-		words = txt.split()
-		total_len = 0
-		shortened_words = []
-		for word in words:
-			total_len += len(word)
-			if total_len > char_count - 3:
-				break
-			shortened_words.append(word)
-		
-		shortened_text = ' '.join(shortened_words) + '...'
-
-	return shortened_text
-
