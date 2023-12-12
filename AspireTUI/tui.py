@@ -36,9 +36,11 @@ translation.install()
 #
 #	Internals
 #
+import AspireTUI._internal as _internal
 import AspireTUI._PrintUtils as put
 import AspireTUI._theme as Theme
-import AspireTUI.StringUtils as stew
+#import AspireTUI.StringUtils as stew
+
 from . import settings
 ################################################################################################################
 #####                                           Public Functions                                           #####
@@ -176,15 +178,16 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 	Valid styles are: bar, num	\n
 	"""
 	put._update(DEBUG=text)
+	if text:
+		width = settings["inner"] / 2
+	else:
+		# TODO: Why do i need " - 12" for this value???
+		width = settings["inner"] - 12
+	# Styles
 	if "num" == style:
-		prog_out = f"{cur} / {max}"
-		return True
+		prog_out = f"[ {cur} / {max} ]"
+		#return True
 	elif "bar" == style:
-		if text:
-			width = settings["inner"] / 2
-		else:
-			# TODO: Why do i need " - 14" for this value???
-			width = settings["inner"] - 12
 		prog_out = f"{put.bar(cur,max,width,reverse=reverse)}"
 	else:
 		msg_progress_style = _("Wrong style for progress, only 'bar' and 'num' are supported.")
@@ -193,10 +196,12 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 	if text == "":
 		text_new = ""	# There is no text anyway... idk...
 	else:
+		# Send to shorten anyway, 
+		# this should avoid the split test in put.text().
 		if cut_from_end:
-			text_new = stew.shorten(text, width)
+			text_new = _internal.shorten(text, width)
 		else:
-			text_new = stew.shorten(text, width, True)
+			text_new = _internal.shorten(text, width, True)
 	put.border()
 	put.text(text_new, prog_out, end="")
 	if cur == max:
