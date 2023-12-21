@@ -179,6 +179,19 @@ def _cursor2pos(pos: int, as_str=False):
 	sys.stdout.write('\r')
 	# Get width of terminal window
 	width = settings["full"]
+	# Get current pos:
+#	sys.stdout.write("\033[6n")
+#	sys.stdout.flush()
+#	response = sys.stdin.read(16)
+	# Extract row and column from the response
+#	try:
+#		row, col = map(int, response[2:-1].split(";"))
+#	except ValueError:
+#		return None
+	# Calculate the difference
+#	pos_dif = col - width
+#	pos_new = pos + pos_dif 
+
 	# Move the cursor to the desired column
 	if pos > width:
 		sys.stderr.write(f"pos: {pos} is longer than width: {width}.")
@@ -188,8 +201,10 @@ def _cursor2pos(pos: int, as_str=False):
 		return False
 	else:
 		if as_str:
+			#return f'\033[{pos_new}G'
 			return f'\033[{pos}G'
 		else:
+			#sys.stdout.write(f'\033[{pos_new}G')
 			sys.stdout.write(f'\033[{pos}G')
 			sys.stdout.flush()
 			return
@@ -389,21 +404,53 @@ def text(*args, **kwargs):
 				w = LineLength * 0.45
 				linesL = _internal.split_string_preserve_words(args[0], w)
 				linesR = _internal.split_string_preserve_words(args[1], w)
-				len_todo = len(linesL[1]) + len(linesR[1])
-				print(_left(linesL[0], style=style) , _right(linesR[0], style=style))
-
+				print(_left(linesL[0], style=style), _right(linesR[0], style=style))
 				# Loop for all remaining output:
-				while len_todo > 0:
-					L = linesL[1]
-					R = linesR[1]
-					linesL = _internal.split_string_preserve_words(L, w)
-					linesR = _internal.split_string_preserve_words(R, w)
-					if len(linesL) <= 1:
-						return True
-					len_todo = len(linesL[1]) + len(linesR[1])
-					# Acctual output
+				while True:
+					#if not linesL[0] and not linesR[0]:
+					#	# Both lines are empty, exit the loop
+					#	break
+					# Has content, so we can print border anyway
 					border(style=style)
-					print(_left(linesL[0], style=style) , _right(linesR[0], style=style))
+					# Check which output is required
+					if len(linesL) > 1 and len(linesR) > 1:
+						L = linesL[1]
+						R = linesR[1]
+						linesL = _internal.split_string_preserve_words(L, w)
+						linesR = _internal.split_string_preserve_words(R, w)
+						print(_left(linesL[0], style=style), _right(linesR[0], style=style))
+						if not linesL[1] and not linesR[1]:
+							# Both lines are empty, exit the loop
+							break
+					elif len(linesL) > 1:
+						# Only linesR is exhausted, print remaining linesL
+						#border(style=style)
+
+						# This has proper border
+						#print(_left(linesL[0], style=style))
+						text(linesL[0], style=style)			
+					elif len(linesR) > 1:
+						# Only linesL is exhausted, print remaining linesR
+						#border(style=style)
+
+						# This left border is missing first background char 	# TODO
+						#print(_right(linesR[0], style=style))
+						text("", linesR[0], style=style)
+						border(style=style)		# this does not solve the missing char??? # TODO
+					else:
+						# Exit the loop as both lists are exhausted
+						break
+				return True
+				
+				w = LineLength * 0.45
+				linesL = _internal.split_string_preserve_words(args[0], w)
+				linesR = _internal.split_string_preserve_words(args[1], w)
+				#print("DEBUG L:" , linesL[1] , "\nDebug R:" , linesR[1]) ;return True
+				print(_left(linesL[0], style=style) , _right(linesR[0], style=style))
+				#text(linesL[0], linesR[0], style=style)
+				#print("testing HERE") ;return True
+				border(style=style)
+				text(linesL[1], linesR[1], style=style)
 				return True
 		elif 3 == arg_count:
 			# Most complex - simple approach first.
