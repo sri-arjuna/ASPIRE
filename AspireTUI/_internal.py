@@ -24,14 +24,14 @@ import AspireTUI.MESSAGE as _MSG
 #import os as _os
 #import sys as _sys
 #import re as _re
-#import string as _string
+import string as _string
 #
 #	Cross Platform & Advanced usage
 #
 #import platform as _platform
-#import msvcrt as _msvcrt
+import msvcrt as _msvcrt
 #import shutil as _shutil
-#import subprocess as _subprocess
+import subprocess as _subprocess
 #
 #	Prepare data structures
 #
@@ -43,15 +43,6 @@ from enum import Enum, EnumMeta as _Enum, _EnumMeta
 ################################################################################################################
 #####                                            Error Handler                                             #####
 ################################################################################################################
-#ERROR_MSG_THEME_NONE 		= f"_('You have not provided a proper theme.')"
-ERROR_MSG_THEME_NONE 		=  #_("You have not provided a proper theme.")
-ERROR_MSG_THEME_CANT_READ 	= # _("Cant read theme.")
-ERROR_MSG_THEME_EMPTY_VAR	=  # _("The provided theme contains empty variables and can not be used!")
-ERROR_MSG_COLOR_CANT_READ	= _("Cant read color code, please use plain text, not console code.")
-ERROR_MSG_PRINT_COUNT		= _("You can only pass up to 3 strings as argument.")
-ERROR_MSG_STATUS_ID			= _("The first argument to 'status' must be INT.")
-ERROR_MSG_STATUS_COUNT		= _("You can only pass 2 string arguments to 'status' (= 3 with id).")
-
 class _AspireErrorEnum(_Enum):
 	THEME_NONE 			= _MSG.theme_none,
 	THEME_CANT_READ 	= _MSG.theme_cant_read,
@@ -139,3 +130,25 @@ def shorten(txt: str, char_count: int, cut_from_middle: bool = False) -> str:
 		shortened_text += '...'  # Adding ellipsis
 		
 	return shortened_text
+################################################################################################################
+#####                                           Charcount                                                  #####
+################################################################################################################
+def get_input_charcount(count:int) -> str:
+	# Use the subprocess module to invoke the shell and read a single character
+	if IS_WINDOWS:
+		chars = []
+		while len(chars) < count:
+			char = _msvcrt.getch()
+			# Check if char is printable
+			if char in _string.printable.encode():
+				char_str = char.decode()
+				chars.append(char_str)
+				# Check for Enter key press
+				if char_str == '\r' and len(chars) >= 1:
+					break
+		return ''.join(chars)
+	else:
+		# Expecting a linux based system
+		result = _subprocess.run(["read", "-n", count], capture_output=True, text=True, shell=True)
+		chars = result.stdout.strip()
+		return chars

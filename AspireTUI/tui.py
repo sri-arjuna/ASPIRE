@@ -122,7 +122,7 @@ def yesno(question: str, yesno_option="yn") -> bool:
 	# Loop for proper input:
 	while True:
 		# Make input ready to be checked
-		answer = AC.get_input_charcount(1) 
+		answer = _internal.get_input_charcount(1) 
 		#answer = input()
 		if answer in yesno_option:
 			break
