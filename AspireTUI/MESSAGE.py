@@ -34,7 +34,7 @@ word_fatal			= _("Fatal")
 ################################################################################################################
 args_too_many 		= _("Too many arguments!")
 args_2_status		= _("Too many arguments, max 2 strings allowed after ID (int/bool)!")
-args_status_first	= _("The first argument to 'status' must be INT.")
+args_status_first	= _("The first argument to 'status' must be INT or BOOL.")
 args_max3 			= _("Too many arguments, max 3 allowed!")
 args_missing 		= _("Missing arguments!")
 
@@ -63,5 +63,7 @@ theme_color_invalid	= _("Cant read color code, please use plain text, not consol
 #####                                            TUI                                                       #####
 ################################################################################################################
 tui_press			= _("Press any key to continue.")
+tui_progress_bar	= _("Wrong style for progress, only 'bar' and 'num' are supported.")
+tui_style_invalid	= _("Invalid style argument. Expected 'print', 'header', or 'title'. // passed:")
 
 #tui_press			= _("")
