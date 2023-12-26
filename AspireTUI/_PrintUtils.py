@@ -19,33 +19,14 @@
 #
 #	Essential imports
 #
-import os
-import sys
-import re
-import string
-# 
+import sys as _sys
+import re as _re
+#
 #	Cross Platform & Advanced usage
 #
-import platform
-import msvcrt
-import shutil
-import subprocess
-#
-#	Prepare data structures
-#
-from collections import namedtuple
-from dataclasses import dataclass
-from enum import Enum, EnumMeta
-from typing import Union
-#
-#	Prepare for multi language support
-#
-import gettext #as _
-from pathlib import Path
-# Lang setup
-translation_directory = Path("locales")
-translation = gettext.translation("AspireTUI", translation_directory, fallback=True)
-translation.install()
+import shutil as _shutil
+from typing import Union as _Union
+from enum import Enum, EnumMeta as _Enum, _EnumMeta
 #
 #	Internals
 # 
@@ -54,8 +35,7 @@ import AspireTUI._internal as _internal
 #import AspireTUI.StringUtils as stew
 from AspireTUI.ColorAndText import cat
 import AspireTUI._theme as Theme
-
-#from AspireTUI import __internal
+from AspireTUI import MESSAGE as _MSG
 ################################################################################################################
 #####                                            Internal Functions                                        #####
 ################################################################################################################
@@ -64,7 +44,7 @@ def _width_terminal_raw() -> int:
 	try:
 		# This __SHOULD__ return 80 colums if it could not detect the actual value
 		# But in all my tests, this did not work.. not at all..
-		terminal_size = shutil.get_terminal_size((80, 20))
+		terminal_size = _shutil.get_terminal_size((80, 20))
 		return terminal_size.columns
 	except (AttributeError, KeyError):
 		# Fallback for cases where terminal size cannot be determined
@@ -109,7 +89,7 @@ def _update(forced=False, DEBUG=""):
 	U+2717	✗	Ballot X
 	U+2718	✘	Heavy ballot X
 """
-class _StatusEnum(Enum):
+class _StatusEnum(_Enum):
 	Good = f"{cat.front.green}{cat.text.bold} √ {cat.reset}"
 	Bad = f"{cat.front.red}{cat.text.bold} X {cat.reset}"
 	Todo = f"{cat.front.cyan}{cat.text.bold} ≡ {cat.reset}"
@@ -136,14 +116,14 @@ _dict_status = {
 	'111': _StatusEnum.Info,
 }
 
-def status(ID: Union[int, bool]):
+def status(ID: _Union[int, bool]):
 	if not isinstance(ID, (int, bool)):
-		msg_status_bool_int = _("STATUS: ID should be an int or bool.")
+		msg_status_bool_int = _MSG.args_status_first
 		raise TypeError(msg_status_bool_int)
 	try:
 		return f"[ {_dict_status[ID].value} ]"
 	except KeyError:
-		msg_status_no_entry = _("STATUS: Could not find entry for: ")
+		msg_status_no_entry = _MSG.args_status_first
 		raise ValueError(msg_status_no_entry, f"{ID}")
 
 #################################################################################################################
@@ -153,7 +133,7 @@ def remove_console_codes(text) -> str:
 	# Remove console/color codes from text
 	if text is None:
 		return ""
-	return re.sub(r'\033\[[0-9;]+m', '', text)
+	return _re.sub(r'\033\[[0-9;]+m', '', text)
 
 def _calc_pos_left() -> int:
 	style = Theme.get()
@@ -176,7 +156,7 @@ def _cursor2pos(pos: int, as_str=False):
 	Returns the according console code if "as_str=True"			\n
 	"""
 	# Move the cursor to column 0
-	sys.stdout.write('\r')
+	_sys.stdout.write('\r')
 	# Get width of terminal window
 	width = settings["full"]
 	# Get current pos:
@@ -194,10 +174,10 @@ def _cursor2pos(pos: int, as_str=False):
 
 	# Move the cursor to the desired column
 	if pos > width:
-		sys.stderr.write(f"pos: {pos} is longer than width: {width}.")
+		_sys.stderr.write(f"pos: {pos} is longer than width: {width}.")
 		return False
 	if pos < 0:
-		sys.stderr.write(f"pos: {pos} must be 0 or larger.")
+		_sys.stderr.write(f"pos: {pos} must be 0 or larger.")
 		return False
 	else:
 		if as_str:
@@ -205,8 +185,8 @@ def _cursor2pos(pos: int, as_str=False):
 			return f'\033[{pos}G'
 		else:
 			#sys.stdout.write(f'\033[{pos_new}G')
-			sys.stdout.write(f'\033[{pos}G')
-			sys.stdout.flush()
+			_sys.stdout.write(f'\033[{pos}G')
+			_sys.stdout.flush()
 			return
 
 def _left(text, style='print', end='\n'):
@@ -299,8 +279,7 @@ def border(style='print'):
 		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_left}{cat.reset}"
 		right_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_right}{cat.reset}"
 	else:
-		msg_invalid_style = _("Invalid style argument. Expected 'print', 'header', or 'title'. // passed: ")
-		raise ValueError(msg_invalid_style, f"{style}")
+		raise ValueError(_MSG.tui_style_invalid, f"{style}")
 
 	# Prepare filler chars / line
 	if "header" == style:
@@ -484,7 +463,8 @@ def text(*args, **kwargs):
 					border(style=style)
 					print(L, C, R)
 		else:
-			print(_("Too many arguments"))
+			print(_MSG.args_too_may)
+			#print(_("Too many arguments"))
 			return 1
 	else:
 		# Expected default behavior:
@@ -502,7 +482,8 @@ def text(*args, **kwargs):
 				L = _left(args[0], style=style, end="")
 			pass
 		else:
-			print(_("Holy guacamole, you should never see this, please report!"))
+			# This is supposed to NOT use MSG
+			print("Holy guacamole, you should never see this, please report!")
 			print("--> from put.text")
 			return False
 		print(f"{_cursor2pos(0, True)}{L}{C}{R}", end=end)

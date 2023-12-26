@@ -12,33 +12,23 @@
 #
 #	Essential imports
 #
-import os
-import sys
-import re
-import string
+import os as _os
 #
 #	Cross Platform & Advanced usage
 #
-import platform
-import msvcrt
-import shutil
-import subprocess
-from typing import Union
-#
-#	Prepare for multi language support
-#
-import gettext #as _
-from pathlib import Path
-# Lang setup
-translation_directory = Path("locales")
-translation = gettext.translation("AspireTUI", translation_directory, fallback=True)
-translation.install()
+#import platform as _platform
+#import msvcrt as _msvcrt
+#import shutil as _shutil
+#import subprocess as _subprocess
+from typing import Union as _Union
+
 #
 #	Internals
 #
 import AspireTUI._internal as _internal
 import AspireTUI._PrintUtils as put
 import AspireTUI._theme as Theme
+from AspireTUI import MESSAGE as _MSG
 #import AspireTUI.StringUtils as stew
 
 from . import settings
@@ -93,13 +83,13 @@ def print(*args, end='\n'):
 
 def press(text=None):
 	"""
-	Theme conform wrapper for os.system("pause").
+	Theme conform wrapper for _os.system("pause").
 	If no text is passed, "Please press any key to continue." is used.
 	If passed or default text fits twice on the line, it will do so, otherwise center.
 	"""
 	put._update()
 	if text is None or text == "":
-		text = _("Please press any key to continue.")
+		text = _MSG.tui_press
 	put.border()
 	if settings["inner"] >= 2 * (len(text) + 1):
 		# Fits twice
@@ -108,10 +98,10 @@ def press(text=None):
 		# Fits only once
 		put.text(text)
 	# Workaround to hide the default message
-	stdout = os.dup(1)
-	os.dup2(os.open(os.devnull, os.O_WRONLY), 1)
-	os.system("pause")
-	os.dup2(stdout, 1)
+	stdout = _os.dup(1)
+	_os.dup2(_os.open(_os.devnull, _os.O_WRONLY), 1)
+	_os.system("pause")
+	_os.dup2(stdout, 1)
 
 def yesno(question: str, yesno_option="yn") -> bool:
 	"""
@@ -144,7 +134,7 @@ def yesno(question: str, yesno_option="yn") -> bool:
 	elif answer in no and "" != answer:
 		return False
 
-def status(ID: Union[int, bool], *args, align_right=True, end='\n'):
+def status(ID: _Union[int, bool], *args, align_right=True, end='\n'):
 	"""
 	Requires ID to be int or bool, and 1 additional string as message for the status.					\n
 	By default (orientation=right), text is printed left, center, and the actual status on the right.	\n
@@ -153,7 +143,7 @@ def status(ID: Union[int, bool], *args, align_right=True, end='\n'):
 	main text will be in the center and the optional text on the right.
 	"""
 	if len(args) > 2:
-		msg_status_many_args = _("Too many strings, only 2 accepted.")
+		msg_status_many_args = _MSG.args_2_status
 		raise SyntaxError(msg_status_many_args)
 
 	put._update()
@@ -190,7 +180,7 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 	elif "bar" == style:
 		prog_out = f"{put.bar(cur,max,width,reverse=reverse)}"
 	else:
-		msg_progress_style = _("Wrong style for progress, only 'bar' and 'num' are supported.")
+		msg_progress_style = _MSG.tui_progress_bar
 		raise ValueError(msg_progress_style)
 	
 	if text == "":
@@ -208,7 +198,7 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 		print()
 	return True
 
-def wait(Time: Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False):
+def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False):
 	"""
 	If just used as: tui.wait(1), it waits for 1 second before it continues. \n
 	To save effort, you can change unit="h" if you want to wait 1 hour instead,

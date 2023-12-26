@@ -20,56 +20,52 @@
 #
 #	Essential imports
 #
-import os
-import sys
-import re
-import string
+import AspireTUI.MESSAGE as _MSG
+#import os as _os
+#import sys as _sys
+#import re as _re
+#import string as _string
 #
 #	Cross Platform & Advanced usage
 #
-import platform
-import msvcrt
-import shutil
-import subprocess
+#import platform as _platform
+#import msvcrt as _msvcrt
+#import shutil as _shutil
+#import subprocess as _subprocess
 #
 #	Prepare data structures
 #
-from collections import namedtuple
-from dataclasses import dataclass
-from enum import Enum, EnumMeta
-#
-#	Prepare for multi language support
-#
-import gettext #as _
-from pathlib import Path
-# Lang setup
-translation_directory = Path("locales")
-translation = gettext.translation("AspireTUI", translation_directory, fallback=True)
-translation.install()
+#from collections import namedtuple as _namedtuple
+#from dataclasses import dataclass as _dataclass
+from enum import Enum, EnumMeta as _Enum, _EnumMeta
+#from typing import Union as _Union
+
 ################################################################################################################
 #####                                            Error Handler                                             #####
 ################################################################################################################
 #ERROR_MSG_THEME_NONE 		= f"_('You have not provided a proper theme.')"
-ERROR_MSG_THEME_NONE 		= _("You have not provided a proper theme.")
-ERROR_MSG_THEME_CANT_READ 	= _("Cant read theme.")
-ERROR_MSG_THEME_EMPTY_VAR	= _("The provided theme contains empty variables and can not be used!")
+ERROR_MSG_THEME_NONE 		=  #_("You have not provided a proper theme.")
+ERROR_MSG_THEME_CANT_READ 	= # _("Cant read theme.")
+ERROR_MSG_THEME_EMPTY_VAR	=  # _("The provided theme contains empty variables and can not be used!")
 ERROR_MSG_COLOR_CANT_READ	= _("Cant read color code, please use plain text, not console code.")
 ERROR_MSG_PRINT_COUNT		= _("You can only pass up to 3 strings as argument.")
 ERROR_MSG_STATUS_ID			= _("The first argument to 'status' must be INT.")
 ERROR_MSG_STATUS_COUNT		= _("You can only pass 2 string arguments to 'status' (= 3 with id).")
 
-class _AspireErrorEnum(Enum):
-	THEME_NONE 			= ERROR_MSG_THEME_NONE,
-	THEME_CANT_READ 	= ERROR_MSG_THEME_CANT_READ,
-	THEME_EMPTY_VAR		= ERROR_MSG_THEME_EMPTY_VAR,
-	COLOR_CANT_READ		= ERROR_MSG_COLOR_CANT_READ,
-	PRINT_COUNT			= ERROR_MSG_PRINT_COUNT,
-	STATUS_ID			= ERROR_MSG_STATUS_ID,
-	STATUS_COUNT		= ERROR_MSG_STATUS_COUNT
+class _AspireErrorEnum(_Enum):
+	THEME_NONE 			= _MSG.theme_none,
+	THEME_CANT_READ 	= _MSG.theme_cant_read,
+	THEME_EMPTY_VAR		= _MSG.theme_empty_var,
+	COLOR_CANT_READ		= _MSG.theme_color_invalid,
+	PRINT_COUNT			= _MSG.args_max3,
+	STATUS_ID			= _MSG.args_status_first,
+	STATUS_COUNT		= _MSG.args_2_status
+class _AspireErrorSeverityEnum(_Enum):
+	FATAL = _MSG.word_fatal,
+	ERROR = _MSG.word_error
 
-def ErrMsg(id: _AspireErrorEnum) -> str:
-	str_type = _("Fatal")
-	print(str_type + "\n" + id)
+def ErrMsg(id: _AspireErrorEnum, severity: _AspireErrorSeverityEnum) -> str:
+	print(severity + "\n" + id)
 ################################################################################################################
 #####                                           String Utils (stew)                                        #####
 ################################################################################################################
