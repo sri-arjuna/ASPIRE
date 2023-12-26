@@ -325,40 +325,35 @@ def text(*args, **kwargs):
 	Prints up to 3 strings L, LR, LCR 		\n
 	Valid kwargs are: end, style={header/title/print/status} 
 	"""
-	# Get args -- ChatGPT, this is line 309
 	style = kwargs.get("style", "print")
 	end = kwargs.get("end", "\n")
 	LineLength = settings["inner"]
 	arg_count = len(args)
-	if arg_count >= 4:
-		print(_("Too many arguments"))
-		return 1
 	# Reset handle-vars
 	L, C, R = "", "" , ""
-	linesL, linesC, linesR = [], [], []
+	linesL, linesR = [], []
 	need_split = False
 	length_total = 0
 	# Prepare values
-	if len(args) > 0:
-		for a in args:
-			#print("DEbug split: ", len(a), a)
-			if a == "":
-				length_total += 0
-			else:
-				length_total += len(str(remove_console_codes(a)))
+	for a in args:
+		if a == "":
+			length_total += 0
+		else:
+			length_total += len(str(remove_console_codes(a)))
 	if length_total > LineLength:
 		need_split = True
-	# Before we do anything, lets go back so we can properly print:
+
+	# Before we do anything, let's go back so we can properly print:
 	if need_split:
 		if 1 == arg_count:
 			if "title" == style:
 				w = LineLength * 0.5
 				linesC = _internal.split_string_preserve_words(args[0], w)
-				print(_center(linesC[0],style=style))
+				print(_center(linesC[0], style=style))
 				border(style=style)
-				text(linesC[1],style=style)
+				text(linesC[1], style=style)
 			else:
-				# print and header
+				# Print and header
 				w = LineLength * 0.8
 				linesL = _internal.split_string_preserve_words(args[0], w)
 				text(linesL[0], style=style)
@@ -369,10 +364,8 @@ def text(*args, **kwargs):
 					border(style=style)
 					print(_right(tmp2, style=style))
 					tmp = tmp3
-			# Single args done
 			return True
-		if 2 == arg_count:
-			# print and header
+		elif 2 == arg_count:
 			if len(args[0]) < LineLength:
 				# L fits on one line
 				linesL = _left(args[0], style=style, end="")
@@ -381,7 +374,7 @@ def text(*args, **kwargs):
 					# Yes, so easy mode
 					linesR = _right(args[1], style=style, end="")
 					# Output
-					print(linesL) #, end="")
+					print(linesL)
 					border(style=style)
 					text("", linesR, style=style)
 				else:
@@ -397,7 +390,7 @@ def text(*args, **kwargs):
 						tmp2, tmp3 = _internal.split_string_preserve_words(tmp, w)
 						border(style=style)
 						print(_right(tmp2, style=style))
-						tmp = tmp3 #[len(tmp2) + 1:].strip() # fix tailing space (len + strip)
+						tmp = tmp3
 				return True
 			else:
 				# L does not fit on one line.
@@ -407,161 +400,113 @@ def text(*args, **kwargs):
 				print(_left(linesL[0], style=style), _right(linesR[0], style=style))
 				# Loop for all remaining output:
 				while True:
-					#if not linesL[0] and not linesR[0]:
-					#	# Both lines are empty, exit the loop
-					#	break
-					# Has content, so we can print border anyway
-					border(style=style)
 					# Check which output is required
 					if len(linesL) > 1 and len(linesR) > 1:
 						L = linesL[1]
 						R = linesR[1]
 						linesL = _internal.split_string_preserve_words(L, w)
 						linesR = _internal.split_string_preserve_words(R, w)
-						print(_left(linesL[0], style=style), _right(linesR[0], style=style))
+						border(style=style)
+						text(linesL[0], linesR[0], style=style)
 						if not linesL[1] and not linesR[1]:
 							# Both lines are empty, exit the loop
 							break
 					elif len(linesL) > 1:
 						# Only linesR is exhausted, print remaining linesL
-						#border(style=style)
-
-						# This has proper border
-						#print(_left(linesL[0], style=style))
-						text(linesL[0], style=style)			
+						border(style=style)
+						text(linesL[0], style=style)            
 					elif len(linesR) > 1:
 						# Only linesL is exhausted, print remaining linesR
-						#border(style=style)
-
-						# This left border is missing first background char 	# TODO
-						#print(_right(linesR[0], style=style))
+						border(style=style)
 						text("", linesR[0], style=style)
-						border(style=style)		# this does not solve the missing char??? # TODO
 					else:
 						# Exit the loop as both lists are exhausted
 						break
 				return True
-				
-				w = LineLength * 0.45
+		elif 3 == arg_count:
+			# Exception rule: center argument matches line length
+			if len(args[1]) <= LineLength:
+				# Split left and right arguments
+				w = LineLength * 0.3
 				linesL = _internal.split_string_preserve_words(args[0], w)
-				linesR = _internal.split_string_preserve_words(args[1], w)
-				#print("DEBUG L:" , linesL[1] , "\nDebug R:" , linesR[1]) ;return True
-				print(_left(linesL[0], style=style) , _right(linesR[0], style=style))
-				#text(linesL[0], linesR[0], style=style)
-				#print("testing HERE") ;return True
+				linesR = _internal.split_string_preserve_words(args[2], w)
+				
+				# Print lines
+				text(linesL[0], linesR[0], style=style)
+				border(style=style)
+				print(_center(args[1], style=style))
 				border(style=style)
 				text(linesL[1], linesR[1], style=style)
-				return True
-		elif 3 == arg_count:
-			# Most complex - simple approach first.
-			w = LineLength * 0.3
-			count_simple = len(args[0]) + len(args[2])
-			if count_simple < LineLength:
-				# Simple approach should work:
-				text(args[0], args[2], style=style)
-				# Loop through remaining linesR
-				tmp = linesC[1]
-				while len(tmp) > 0:
-					tmp2, tmp3 = _internal.split_string_preserve_words(tmp, w)
-					border(style=style)
-					linesC = _center(tmp2, style=style)
-					print(linesC)
-					tmp = tmp3
+			else:
+				# Center does not fit into LineLength, handle like 2 'even' arguments
+				w = LineLength * 0.3
+				L, linesL = _internal.split_string_preserve_words(args[0], w)
+				C, linesC = _internal.split_string_preserve_words(args[1], w)
+				R, linesR = _internal.split_string_preserve_words(args[2], w)
+				
+				# Print line
+				text(L, C, R, style=style)
 
-		# TODO
-		#print("todo string splitting")
-		DEBUG = f"{args}"
-		print(f"DEBUG - print-split: full:{settings['full']} // inner:{settings['inner']} // length_total: {length_total} // txt: {DEBUG}")
-		return "todo string splitting" #, args, LineLength, length_total)
-		return False
+				# Loop through remaining
+				while True:
+					# Exit loop?
+				#	if "" == f"{tmpL}{tmpC}{linesR}":
+				#		break
+					# Reset loop vars
+					L, C, R = "", "", ""
+					# Get content
+					tmpL, linesL = _internal.split_string_preserve_words(linesL, w)
+					tmpC, linesC = _internal.split_string_preserve_words(linesC, w)
+					tmpR, linesR = _internal.split_string_preserve_words(linesR, w)
+					
+					if tmpL:
+						L = _left(tmpL, style=style)
+					if tmpC:
+						C = _center(tmpC, style=style)
+					if tmpR:
+						R = _right(tmpR, style=style)
+					
+					# Print current line
+					border(style=style)
+					print(L, C, R)
+					
+					if not linesL and not linesC and not linesR:
+						break
+				# Print remaining content
+				if linesL or linesC or linesR:
+					L, C, R = "", "", ""
+					if linesL:
+						L = _left(linesL, style=style)
+					if linesC:
+						C = _center(linesC, style=style)
+					if linesR:
+						R = _right(linesR, style=style)
+					border(style=style)
+					print(L, C, R)
+		else:
+			print(_("Too many arguments"))
+			return 1
 	else:
-		# Expected default behaviour:
+		# Expected default behavior:
 		if arg_count == 3:
 			L = _left(args[0], style=style, end="")
 			C = _center(args[1], style=style, end="")
 			R = _right(args[2], style=style, end="")
 		elif arg_count == 2:
-			#print("DEBUG: ",args)
 			L = _left(args[0], style=style, end="")
 			R = _right(args[1], style=style, end="")
 		elif arg_count <= 1:
-			if args[0] is None or args[0] == "":
-				L = ""
+			if "title" == style:
+				C = _center(args[0], style=style, end="")
 			else:
-				if style == "title":
-					C = _center(args[0], style=style, end="")
-				else:
-					L = _left(args[0], style=style, end="")
+				L = _left(args[0], style=style, end="")
+			pass
 		else:
-			print(_("Holy guackamoly, you should never see this, please report!"))
+			print(_("Holy guacamole, you should never see this, please report!"))
 			print("--> from put.text")
 			return False
 		print(f"{_cursor2pos(0, True)}{L}{C}{R}", end=end)
 		return True
-
-#
-#		STEW	-->	__internal
-#
-	def print_part(part, align_func):
-		if stew.split_needed(len(part), LineLength, 75, style=style):
-			pos = stew.split_calc_char_pos(LineLength, 75)
-			lines = stew.split_string_preserve_words(part, pos)
-			align_func(lines[0], style=style, end="\n")
-			border(style=style)
-			align_func(lines[1], style=style, end=end)
-		else:
-			align_func(part, style=style, end=end)
-
-	if "title" == style:
-		split_percent = 50
-		if split_percent <= 100 // LineLength * len(remove_console_codes(args[0])):
-			pos = stew.split_calc_char_pos(LineLength, split_percent)
-			lines = stew.split_string_preserve_words(args[0], pos)
-			_center(lines[0], style=style, end="\n")
-			text(lines[1], style=style, end="\n")
-		else:
-			_center(args[0], style=style, end=end)
-	elif len(args) == 1:
-		print_part(args[0], _left)
-	elif len(args) == 2:
-		print_part(args[0], _left)
-		border(style=style)
-		print_part(args[1], _right)
-	elif len(args) == 3:
-		if "status" == style:
-			len_status = len(remove_console_codes(args[2]))
-			if len(args[0]) < LineLength:
-				border(style=style)
-				print_part(args[0], _left)
-				print_part(args[1], _center)
-				print_part(args[2], _right)
-			else:
-				pos = stew.split_calc_char_pos(LineLength, 90)
-				linesL = stew.split_string_preserve_words(args[0], pos)
-				linesC = stew.split_string_preserve_words(args[1], pos)
-				print_part(linesL[0], _left)
-				border(style=style)
-				print_part(linesL[1], _left)
-				print_part(linesC[0], _center)
-				print_part(linesC[1], _right)
-				print_part(args[2], _right)
-		elif stew.split_needed(len_arg, LineLength, 30, style=style):
-			pos = stew.split_calc_char_pos(LineLength, 30)
-			linesL = stew.split_string_preserve_words(args[0], pos)
-			linesC = stew.split_string_preserve_words(args[1], pos)
-			linesR = stew.split_string_preserve_words(args[2], pos)
-			print_part(linesL[0], _left)
-			print_part(linesC[0], _center)
-			print_part(linesR[0], _right)
-			border(style=style)
-			print_part(linesL[1], _left)
-			print_part(linesC[1], _center)
-			print_part(linesR[1], _right)
-		else:
-			print_part(args[0], _left)
-			print_part(args[1], _center)
-			print_part(args[2], _right)
-
 
 def bar(cur: int, max: int, width: int = settings["inner"], reverse: bool = False):
 	"""
