@@ -50,6 +50,7 @@ dir_not_found 		= _("Directory not found.")
 #####                                            Database                                                  #####
 ################################################################################################################
 registry_hkey		= _("Invalid or missing HKEY")
+registry_success	= _("Successfully changed variable to value.")
 
 ################################################################################################################
 #####                                            Theme                                                     #####
