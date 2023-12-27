@@ -36,7 +36,8 @@ import configparser as _configparser
 #
 from collections import namedtuple as _namedtuple
 from dataclasses import dataclass as _dataclass
-from enum import Enum, EnumMeta as _Enum, _EnumMeta
+from enum import Enum as _Enum
+from enum import EnumMeta as _EnumMeta
 
 #################################################################################################################
 #####                                           String Utils (stew)                                         #####

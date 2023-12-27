@@ -21,6 +21,7 @@
 #	Essential imports
 #
 import AspireTUI.MESSAGE as _MSG
+from . import IS_WINDOWS
 #import os as _os
 #import sys as _sys
 #import re as _re
@@ -37,7 +38,8 @@ import subprocess as _subprocess
 #
 #from collections import namedtuple as _namedtuple
 #from dataclasses import dataclass as _dataclass
-from enum import Enum, EnumMeta as _Enum, _EnumMeta
+from enum import Enum as _Enum
+#from enum import EnumMeta as _EnumMeta
 #from typing import Union as _Union
 
 ################################################################################################################
