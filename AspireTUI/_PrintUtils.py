@@ -27,7 +27,7 @@ import re as _re
 import shutil as _shutil
 from typing import Union as _Union
 from enum import Enum as _Enum
-from enum import EnumMeta as _EnumMeta
+#from enum import EnumMeta as _EnumMeta
 #
 #	Internals
 # 
