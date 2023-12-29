@@ -16,20 +16,20 @@
 #
 #	Prepare data structures
 #
-from collections import namedtuple
+from collections import namedtuple as _namedtuple
 ################################################################################################################
 #####                                            Color And Text (cat)                                      #####
 ################################################################################################################
 #
 #	Structure containers
 #
-_CaT = namedtuple('CaT', ['front', 'back', 'text', 'line' , 'codes', 'reset', 'clear'])
-_ColorList = namedtuple('Color', ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light_gray',
+_CaT = _namedtuple('CaT', ['front', 'back', 'text', 'line' , 'codes', 'reset', 'clear'])
+_ColorList = _namedtuple('Color', ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light_gray',
 								'dark_gray', 'light_red', 'light_green', 'light_yellow', 'light_blue', 
 								'light_magenta', 'light_cyan', 'white'])
-_Text = namedtuple('Text', ['bold', 'italic', 'underline'])
-_Line = namedtuple('Line', ['up', 'down'])
-_Codes = namedtuple('Codes', ['beep', 'blink', 'invert'])
+_Text = _namedtuple('Text', ['bold', 'italic', 'underline'])
+_Line = _namedtuple('Line', ['up', 'down'])
+_Codes = _namedtuple('Codes', ['beep', 'blink', 'invert'])
 #
 #	Entry point for dot notation
 #
