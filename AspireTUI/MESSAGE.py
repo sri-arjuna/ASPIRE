@@ -17,6 +17,8 @@
 #	Prepare for multi language support
 #
 import gettext as _gettext
+from gettext import gettext as _
+
 from pathlib import Path as _Path
 # Lang setup
 translation_directory = _Path("locales")
