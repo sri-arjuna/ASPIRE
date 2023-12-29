@@ -34,7 +34,7 @@ from enum import Enum as _Enum
 from AspireTUI import settings, FD_BORDER #, IS_WINDOWS
 import AspireTUI._internal as _internal
 #import AspireTUI.StringUtils as stew
-from AspireTUI.ColorAndText import cat
+from AspireTUI.ColorAndText import cat as _cat
 import AspireTUI._theme as Theme
 from AspireTUI import MESSAGE as _MSG
 ################################################################################################################
@@ -60,7 +60,7 @@ def _width_inner() -> int:
 	style = Theme.get()
 	return settings["full"] - len(style.border_left) - len(style.border_right) - 2
 
-def _update(forced=False, DEBUG=""):
+def _update(forced=False, DEBUG=None):
 	"""
 	Internal use!		\n
 	Updates settings["full"] and settings["inner"] every 5th tui.* call.		\n
@@ -73,9 +73,10 @@ def _update(forced=False, DEBUG=""):
 		settings["full"] = _width_full()
 		settings["inner"] = _width_inner()
 		settings["due"] = 0
-		#print(f"DEBUG-Update: full:{settings['full']} // inner:{settings['inner']} // width: {_width_inner()} // DEBUG: {len(DEBUG)} // txt: {DEBUG}")
 	else:
 		settings["due"] += 1
+	if DEBUG:
+		print(f"DEBUG-Update: full:{settings['full']} // inner:{settings['inner']} // width: {_width_inner()} // DEBUG: {len(DEBUG)} // txt: {DEBUG}")
 	
 ################################################################################################################
 #####                                            Status                                                    #####
@@ -85,22 +86,22 @@ def _update(forced=False, DEBUG=""):
 
 	U+2713	✓	Check mark
 	U+2714	✔	Heavy check mark
-	U+2715	✕	Multiplication X
-	U+2716	✖	Heavy multiplication X
+	U+2715	✕	Multipli_cation X
+	U+2716	✖	Heavy multipli_cation X
 	U+2717	✗	Ballot X
 	U+2718	✘	Heavy ballot X
 """
 class _StatusEnum(_Enum):
-	Good = f"{cat.front.green}{cat.text.bold} √ {cat.reset}"
-	Bad = f"{cat.front.red}{cat.text.bold} X {cat.reset}"
-	Todo = f"{cat.front.cyan}{cat.text.bold} ≡ {cat.reset}"
-	Work = f"{cat.front.yellow}{cat.text.bold} ∞ {cat.reset}"
+	Good = f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}"
+	Bad = f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}"
+	Todo = f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}"
+	Work = f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}"
 	Skip = f" » "
 	Next = f" > "
 	Prev = f" < "
-	On  = f"{cat.front.green}{cat.text.bold} ● {cat.reset}"
-	Off = f"{cat.front.red}{cat.text.bold} ○ {cat.reset}"
-	Info = f"{cat.front.yellow}{cat.text.bold}!!!{cat.reset}"
+	On  = f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}"
+	Off = f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}"
+	Info = f"{_cat.front.yellow}{_cat.text.bold}!!!{_cat.reset}"
 
 _dict_status = {
 	'0': _StatusEnum.Bad,
@@ -117,15 +118,13 @@ _dict_status = {
 	'111': _StatusEnum.Info,
 }
 
-def status(ID: _Union[int, bool]):
+def status(ID: _Union[int, bool, _Enum]):
 	if not isinstance(ID, (int, bool)):
-		msg_status_bool_int = _MSG.args_status_first
-		raise TypeError(msg_status_bool_int)
+		raise TypeError(_MSG.args_status_first)
 	try:
 		return f"[ {_dict_status[ID].value} ]"
 	except KeyError:
-		msg_status_no_entry = _MSG.args_status_first
-		raise ValueError(msg_status_no_entry, f"{ID}")
+		raise ValueError(_MSG.args_status_first, f"{ID}")
 
 #################################################################################################################
 #####                                           Print Utils (_put)                                          #####
@@ -201,9 +200,9 @@ def _left(text, style='print', end='\n'):
 		return ""
 	#_cursor2pos(pos)
 	if "header" == style:
-		output = f"{cur_theme.color_fg}{cur_theme.color_bg}{text}{cat.reset}"
+		output = f"{cur_theme.color_fg}{cur_theme.color_bg}{text}{_cat.reset}"
 	else:
-		output = f"{text}{cat.reset}"
+		output = f"{text}{_cat.reset}"
 	return f"{_cursor2pos(pos, True)}{output}"
 
 def _right(text, style='print', end='\n'):
@@ -219,10 +218,10 @@ def _right(text, style='print', end='\n'):
 		pos = _calc_pos_right(text)
 		if "print" == style:
 			# Default, just font
-			output = f"{text}{cat.reset}"
+			output = f"{text}{_cat.reset}"
 		elif "header" == style:
 			# Regular bg, full
-			output = f"{cur_theme.color_fg}{cur_theme.color_bg}{text}{cat.reset}"
+			output = f"{cur_theme.color_fg}{cur_theme.color_bg}{text}{_cat.reset}"
 	else:
 		pass
 	return f"{_cursor2pos(pos, True)}{output}"
@@ -239,22 +238,22 @@ def _center(text, style='print', end='\n'):
 			text = f" {text} "
 			pos = _calc_pos_center(text)
 			if cur_theme.title_bold:
-				pre += f"{cat.text.bold}"
+				pre += f"{_cat.text.bold}"
 			if cur_theme.title_underline:
-				pre += cat.text.underline
+				pre += _cat.text.underline
 			if cur_theme.title_italic:
-				pre += cat.text.italic
+				pre += _cat.text.italic
 		else:
 			pos = _calc_pos_center(text)
 		if "print" == style:
 			# Default, just font
-			output = f"{text}{cat.reset}"
+			output = f"{text}{_cat.reset}"
 		elif "header" == style:
 			# Regular bg, full
-			output = f"{cur_theme.color_fg}{cur_theme.color_bg}{text}{cat.reset}"
+			output = f"{cur_theme.color_fg}{cur_theme.color_bg}{text}{_cat.reset}"
 		elif "title" == style:
 			# TODO fix: Invert colors
-			output = f"{cur_theme.color_fg}{cur_theme.color_bg}{cat.codes.invert}{pre}{text}{cat.reset}"
+			output = f"{cur_theme.color_fg}{cur_theme.color_bg}{_cat.codes.invert}{pre}{text}{_cat.reset}"
 		#print(f"{output}", flush=True, end=end)
 		return f"{_cursor2pos(pos, True)}{output}"
 	else:
@@ -272,13 +271,13 @@ def border(style='print'):
 	width = settings["full"]
 	if style == 'header':
 		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_left}"
-		right_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_right}{cat.reset}"
+		right_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_right}{_cat.reset}"
 	elif style == 'title':
-		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.title_left}{cat.codes.invert}"
-		right_border = f"{cat.reset}{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.title_right}{cat.reset}"
+		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.title_left}{_cat.codes.invert}"
+		right_border = f"{_cat.reset}{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.title_right}{_cat.reset}"
 	elif style == 'print' or style == 'status':
-		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_left}{cat.reset}"
-		right_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_right}{cat.reset}"
+		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_left}{_cat.reset}"
+		right_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_right}{_cat.reset}"
 	else:
 		raise ValueError(_MSG.tui_style_invalid, f"{style}")
 
