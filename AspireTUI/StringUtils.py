@@ -16,19 +16,19 @@
 #
 #	Essential imports
 #
-import os as _os
-import sys as _sys
+#import os as _os
+#import sys as _sys
 import re as _re
-import string as _string
+#import string as _string
 from datetime import datetime as _datetime
-from AspireTUI import MESSAGE as _MSG
+#from AspireTUI import MESSAGE as _MSG
 # 
 #	Cross Platform & Advanced usage
 #
-import platform as _platform
-import msvcrt as _msvcrt
-import shutil as _shutil
-import subprocess as _subprocess
+#import platform as _platform
+#import msvcrt as _msvcrt
+#import shutil as _shutil
+#import subprocess as _subprocess
 
 #
 #	Prepare data structures

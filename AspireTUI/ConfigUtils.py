@@ -16,25 +16,25 @@
 #
 #	Essential imports
 #
-import os as _os
-import sys as _sys
-import re as _re
-import string as _string
+#import os as _os
+#import sys as _sys
+#import re as _re
+#import string as _string
 from AspireTUI import MESSAGE as _MSG
 # 
 #	Cross Platform & Advanced usage
 #
-import platform as _platform
-import msvcrt as _msvcrt
-import shutil as _shutil
-import subprocess as _subprocess
+#import platform as _platform
+#import msvcrt as _msvcrt
+#import shutil as _shutil
+#import subprocess as _subprocess
 import winreg as _winreg
 import configparser as _configparser
 #
 #	Prepare data structures
 #
-from enum import Enum as _Enum
-from enum import EnumMeta as _EnumMeta
+#from enum import Enum as _Enum
+#from enum import EnumMeta as _EnumMeta
 #################################################################################################################
 #####                                           Get registry value                                          #####
 #################################################################################################################
