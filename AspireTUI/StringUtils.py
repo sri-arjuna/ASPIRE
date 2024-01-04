@@ -105,3 +105,14 @@ def esc2hex(strESC:str) -> str:
 			# Fallback: Close color tags
 			return _re.sub(r'<color=[^>]+>', '</color>', strESC)
 	return ""
+
+def conf2dict(config_string) -> dict:
+	"""
+	Splits the content of a conf file, or env/set outputs to a dictionary
+	"""
+	tmp_dict = {}
+	for line in config_string.split('\n'):
+		if '=' in line:
+			key, value = line.split('=', 1)
+			tmp_dict[key] = value
+	return tmp_dict
