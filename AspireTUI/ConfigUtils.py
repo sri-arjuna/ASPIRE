@@ -39,12 +39,12 @@ import configparser as _configparser
 #####                                           Get registry value                                          #####
 #################################################################################################################
 # Registry access map
-_HKEY_MAP = {
-	"HKEY_CLASSES_ROOT": _winreg.HKEY_CLASSES_ROOT,
-	"HKEY_CURRENT_USER": _winreg.HKEY_CURRENT_USER,
-	"HKEY_LOCAL_MACHINE": _winreg.HKEY_LOCAL_MACHINE,
-	"HKEY_USERS": _winreg.HKEY_USERS,
-	"HKEY_CURRENT_CONFIG": _winreg.HKEY_CURRENT_CONFIG
+_HKEY = {
+	"CLASSES_ROOT": _winreg.HKEY_CLASSES_ROOT,
+	"CURRENT_USER": _winreg.HKEY_CURRENT_USER,
+	"LOCAL_MACHINE": _winreg.HKEY_LOCAL_MACHINE,
+	"USERS": _winreg.HKEY_USERS,
+	"CURRENT_CONFIG": _winreg.HKEY_CURRENT_CONFIG
 }
 def reg_value_get(hive_key, key_path, value_name):
 	"""
@@ -54,8 +54,8 @@ def reg_value_get(hive_key, key_path, value_name):
 			tui.status(success, message)
 	"""
 	try:
-		if hive_key in _HKEY_MAP:
-			hkey = _HKEY_MAP[hive_key]
+		if hive_key in _HKEY:
+			hkey = _HKEY[hive_key]
 			# Open the specified registry key
 			with _winreg.OpenKey(hkey, key_path) as key:
 				# Read the value of the specified name
@@ -74,8 +74,8 @@ def reg_value_set(hive_key, key_path, value_name, value, value_type=_winreg.REG_
 			tui.status(success, message)
 	"""
 	try:
-		if hive_key in _HKEY_MAP:
-			hkey = _HKEY_MAP[hive_key]
+		if hive_key in _HKEY:
+			hkey = _HKEY[hive_key]
 			with _winreg.OpenKey(hkey, key_path, 0, _winreg.KEY_SET_VALUE) as key:
 				_winreg.SetValueEx(key, value_name, 0, value_type, value)
 			return True, _MSG.registry_success
@@ -92,8 +92,8 @@ def reg_value_list_key(hive_key, key_path):
 			tui.status(success, message)
 	"""
 	try:
-		if hive_key in _HKEY_MAP:
-			hkey = _HKEY_MAP[hive_key]
+		if hive_key in _HKEY:
+			hkey = _HKEY[hive_key]
 			with _winreg.OpenKey(hkey, key_path) as key:
 				subkeys_count, _, _ = _winreg.QueryInfoKey(key)
 				subkeys = [_winreg.EnumKey(key, i) for i in range(subkeys_count)]
@@ -111,8 +111,8 @@ def reg_value_list_var(hive_key, key_path):
 			tui.status(success, message)
 	"""
 	try:
-		if hive_key in _HKEY_MAP:
-			hkey = _HKEY_MAP[hive_key]
+		if hive_key in _HKEY:
+			hkey = _HKEY[hive_key]
 			with _winreg.OpenKey(hkey, key_path) as key:
 				values_count, _, _ = _winreg.QueryInfoKey(key)
 				values = [_winreg.EnumValue(key, i)[0] for i in range(values_count)]
@@ -185,3 +185,4 @@ def ini_list_vars(c_file, c_key):
 		return None
 	except FileNotFoundError as e:
 		return False, f"{_MSG.word_error}:\n{_MSG.file_not_found}: {e}"
+

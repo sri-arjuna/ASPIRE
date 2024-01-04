@@ -267,7 +267,6 @@ def border(style='print'):
 	Accepts: header, title, print, status			\n
 	"""
 	cur_theme = Theme.get()
-	#cur_theme. --- ChatGPT this is line 271
 	width = settings["full"]
 	if style == 'header':
 		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_left}"
