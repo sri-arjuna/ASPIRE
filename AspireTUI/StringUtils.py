@@ -40,7 +40,7 @@ from dataclasses import dataclass as _dataclass
 #################################################################################################################
 #####                                           String Utils (stew)                                         #####
 #################################################################################################################
-def date(bNames=False):
+def date(bNames=False) -> str:
 	"""
 	Returns date like:
 	2024.12.30
@@ -51,7 +51,7 @@ def date(bNames=False):
 		formatted_date += f" {current_date.strftime('%A, %B')}"
 	return formatted_date
 
-def time(bLong=False):
+def time(bLong=False) -> str:
 	"""
 	Returns time like:
 	15:30
@@ -62,7 +62,7 @@ def time(bLong=False):
 		formatted_time += f":{current_time.strftime('%S')}"
 	return formatted_time
 
-def now(clean=False, sep="/", bLong=False, bNames=False):
+def now(clean=False, sep="/", bLong=False, bNames=False) -> str:
 	"""
 	Returns date and time like: \n
 	2024.12.30 / 15:45
@@ -71,6 +71,14 @@ def now(clean=False, sep="/", bLong=False, bNames=False):
 		return f"{date(bNames)} {time(bLong)}"
 	else:
 		return f"{date(bNames)} {sep} {time(bLong)}"
+
+def logtime() -> str:
+	"""
+	Returns a string to be used for safe-file-names.
+	"""
+	current_time = _datetime.now()
+	formatted_time = current_time.strftime("%Y.%m.%d_%H.%M.%S")
+	return formatted_time
 
 def close_html_tags(html_string: str, exclude="") -> str:
 	"""
