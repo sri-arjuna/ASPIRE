@@ -77,7 +77,7 @@ class Settings:
 			"""
 			Get or Set a str
 			"""
-			if new_Desc not None:
+			if new_Desc is not None:
 				self.Description = new_Desc
 				self._current_config[_str_Desc] = new_Desc
 			else:
@@ -86,7 +86,7 @@ class Settings:
 			"""
 			Get or Set a str
 			"""
-			if new_Title not None:
+			if new_Title is not None:
 				self.Title = new_Title
 				self._current_config[_str_Title] = new_Title
 			else:
@@ -95,7 +95,7 @@ class Settings:
 			"""
 			Get or Set a bool
 			"""
-			if new_Val not None:
+			if new_Val is not None:
 				self.bUseDate = new_Val
 				self._current_config[_str_bUseDate] = new_Val
 			else:
@@ -104,7 +104,7 @@ class Settings:
 			"""
 			Get or Set a bool
 			"""
-			if new_Val not None:
+			if new_Val is not None:
 				self.bUseDateSections = new_Val
 				self._current_config[_str_bUseDateSections] = new_Val
 			else:
@@ -113,7 +113,7 @@ class Settings:
 			"""
 			Get or Set a bool
 			"""
-			if new_Val not None:
+			if new_Val is not None:
 				self.bUseTime = new_Val
 				self._current_config[_str_bUseTime] = new_Val
 			else:
@@ -122,7 +122,7 @@ class Settings:
 			"""
 			Get or Set a bool
 			"""
-			if new_Val not None:
+			if new_Val is not None:
 				self.bbVerbose = new_Val
 				self._current_config[_str_bVerbose] = new_Val
 			else:
@@ -131,7 +131,7 @@ class Settings:
 			"""
 			Get or Set an int
 			"""
-			if new_Val not None:
+			if new_Val is not None:
 				self.LogLevel_ShowUser = new_Val
 				self._current_config[_str_LL_ShowUser] = new_Val
 			else:
@@ -140,7 +140,7 @@ class Settings:
 			"""
 			Get or Set an int
 			"""
-			if new_Val not None:
+			if new_Val is not None:
 				self.LogLevel_SaveLog = new_Val
 				self._current_config[_str_LL_SaveLog] = new_Val
 			else:
@@ -149,7 +149,7 @@ class Settings:
 			"""
 			Get or Set a bool
 			"""
-			if new_Val not None:
+			if new_Val is not None:
 				self.LogLevel_SaveLog = new_Val
 				self._current_config[_str_LL_SaveLog] = new_Val
 			else:
@@ -229,8 +229,6 @@ class log:
 				len_sev_max = len_tmp
 		# Now save longest count to attrtibue
 		self._internal_indent_severity = len_sev_max
-
-
 		
 	#
 	def _print_log(self, level: int, message: str)
@@ -242,7 +240,6 @@ class log:
 
 		if self.Settings.LogLevel_SaveLog >= level:
 			
-
 	# 
 	def DEBUG(self, message: str):
 		""""
