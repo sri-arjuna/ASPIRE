@@ -185,4 +185,3 @@ def ini_list_vars(c_file, c_key):
 		return None
 	except FileNotFoundError as e:
 		return False, f"{_MSG.word_error}:\n{_MSG.file_not_found}: {e}"
-
