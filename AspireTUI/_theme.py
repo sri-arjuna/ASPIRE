@@ -2,7 +2,7 @@
 	Description:
 					Handles themes, data and references.
 	Provides:
-					style = settings["theme-data"] ; print(theme.border_left)	\n
+					style = _settings["theme-data"] ; print(theme.border_left)	\n
 					list = themes.list()	\n
 					themes.set(NAME)		\n
 					
@@ -57,18 +57,18 @@
 #
 #	Prepare data structures
 #
-from collections import namedtuple
-from dataclasses import dataclass
-from enum import Enum
+from collections import namedtuple as _namedtuple
+from dataclasses import dataclass as _dataclass
+from enum import Enum as _Enum
 #
 #	Internals
 #
-from . import settings
+from . import settings as _settings
 from .ColorAndText import cat
 ################################################################################################################
 #####                                            Theme Structure                                           #####
 ################################################################################################################
-@dataclass
+@_dataclass
 class _ThemeAttributes:
 	border_left: str
 	border_right: str
@@ -89,7 +89,7 @@ class _ThemeAttributes:
 	header_right: str
 	header_filler: str
 
-class _ThemesList(Enum):
+class _ThemesList(_Enum):
 	Default = _ThemeAttributes(
 		border_left=" ║ ",
 		border_right=" ║ ",
@@ -244,21 +244,21 @@ def list() -> list:
 
 def set(newTheme: str):
 	"""
-	Saves passed string as settings["theme"] and returns True
+	Saves passed string as _settings["theme"] and returns True
 	If newTheme is not found in _ThemesList, nothing happens but return False.
 	"""
 	if newTheme in _ThemesList.__members__:
-		settings["theme"] = newTheme
+		_settings["theme"] = newTheme
 		return True
 	else:
 		return False
 
 def get():
 	"""
-	Retrieves current theme from settings["theme"] and returns an iterable object (not notation)
+	Retrieves current theme from _settings["theme"] and returns an iterable object (not notation)
 	"""
 	# Get theme values
-	theme_raw = _ThemesList[settings["theme"]].value
+	theme_raw = _ThemesList[_settings["theme"]].value
 
 	# Apply console codes to color attribbutes
 	theme_use = {}

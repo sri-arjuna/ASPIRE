@@ -35,7 +35,11 @@ from datetime import datetime as _datetime
 #
 from collections import namedtuple as _namedtuple
 from dataclasses import dataclass as _dataclass
-
+from typing import Union as _Union
+#
+#	Internal imports
+#
+from . import MESSAGE as _MSG
 
 #################################################################################################################
 #####                                           String Utils (stew)                                         #####
@@ -124,3 +128,24 @@ def conf2dict(config_string) -> dict:
 			key, value = line.split('=', 1)
 			tmp_dict[key] = value
 	return tmp_dict
+
+def sec2time(sec:, format=None) -> str:
+	"""
+	Transforms given seconds to proper HH:MM:SS format.
+	"""
+	if isinstance(sec, int):
+		# Default, basic seconds
+		format_fmt = "%H:%M:%S"
+	elif isinstance(sec, float):
+		# It is microseconds
+		format_fmt = "%H:%M:%S.%f"
+	else:
+		# Unsupported
+		raise ValueError(_MSG.word_error, _MSG.cl_log_err_must_int, _MSG.cl_log_err_must_float)
+
+	# Prefer passed format over default
+	if format is None:
+		format = format_fmt
+
+	# Return passed seconds as time according to format
+	return _datetime.datetime.utcfromtimestamp(sec).strftime(format)

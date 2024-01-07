@@ -84,6 +84,7 @@ cl_log_severity5	= _("FATAL")
 cl_log_fatal_no_file 			= _("No file provided, can not create class!")
 cl_log_warn_file_without_path	= _("Logfile does not contain any path information.\nThis could lead to unexpected behaviour")
 cl_log_err_must_bool		= _("Provided argument must be: bool")
+cl_log_err_must_float		= _("Provided argument must be: float")
 cl_log_err_must_int			= _("Provided argument must be: int")
 cl_log_err_must_str			= _("Provided argument must be: str")
 

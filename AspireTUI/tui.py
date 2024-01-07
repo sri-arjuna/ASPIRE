@@ -220,8 +220,10 @@ def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False)
 		str_left = msg
 	
 
-
 def msgbox(*args, bOutside=False):
+	"""
+	
+	"""
 	# Print "border"
 	put._update()
 	if bOutside:
@@ -239,3 +241,8 @@ def msgbox(*args, bOutside=False):
 		header()
 	else:
 		title()
+
+def list(*args, ):
+	"""
+	
+	"""
