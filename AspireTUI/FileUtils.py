@@ -72,111 +72,83 @@ class Settings:
 		"""
 		Settings of the LOG file
 		"""
-		# Prepare get/set functions
-		def _desc(new_Desc = None) -> str:
-			"""
-			Get or Set a str
-			"""
-			if new_Desc is not None:
-				self.Description = new_Desc
-				self._current_config[_str_Desc] = new_Desc
-			else:
-				return self._current_config[_str_Desc]
-		def _title(new_Title = None) -> str:
-			"""
-			Get or Set a str
-			"""
-			if new_Title is not None:
-				self.Title = new_Title
-				self._current_config[_str_Title] = new_Title
-			else:
-				return self._current_config[_str_Title]
-		def _bUseDate(new_Val = None) -> bool:
-			"""
-			Get or Set a bool
-			"""
-			if new_Val is not None:
-				self.bUseDate = new_Val
-				self._current_config[_str_bUseDate] = new_Val
-			else:
-				return self._current_config[_str_bUseDate]
-		def _bUseDateSections(new_Val = None) -> bool:
-			"""
-			Get or Set a bool
-			"""
-			if new_Val is not None:
-				self.bUseDateSections = new_Val
-				self._current_config[_str_bUseDateSections] = new_Val
-			else:
-				return self._current_config[_str_bUseDateSections]
-		def _bUseTime(new_Val = None) -> bool:
-			"""
-			Get or Set a bool
-			"""
-			if new_Val is not None:
-				self.bUseTime = new_Val
-				self._current_config[_str_bUseTime] = new_Val
-			else:
-				return self._current_config[_str_bUseTime]
-		def _bVerbose(new_Val = None) -> bool:
-			"""
-			Get or Set a bool
-			"""
-			if new_Val is not None:
-				self.bbVerbose = new_Val
-				self._current_config[_str_bVerbose] = new_Val
-			else:
-				return bool(self._current_config[_str_bVerbose])
-		def _LogLevel_ShowUser(new_Val = None) -> int:
-			"""
-			Get or Set an int
-			"""
-			if new_Val is not None:
-				self.LogLevel_ShowUser = new_Val
-				self._current_config[_str_LL_ShowUser] = new_Val
-			else:
-				return self._current_config[_str_LL_ShowUser]
-		def _LogLevel_SaveLog(new_Val = None) -> int:
-			"""
-			Get or Set an int
-			"""
-			if new_Val is not None:
-				self.LogLevel_SaveLog = new_Val
-				self._current_config[_str_LL_SaveLog] = new_Val
-			else:
-				return self._current_config[_str_LL_SaveLog]
-		def _bTranslated(new_Val = None) -> bool:
-			"""
-			Get or Set a bool
-			"""
-			if new_Val is not None:
-				self.LogLevel_SaveLog = new_Val
-				self._current_config[_str_LL_SaveLog] = new_Val
-			else:
-				return self._current_config[_str_LL_SaveLog]
+		# Set default values
+		self.Description = ""
+		self.Title = ""
+		self.bUseDate = False
+		self.bUseDateSections = True
+		self.bUseTime = True
+		self.bVerbose = False
+		self.LogLevel_ShowUser = 3
+		self.LogLevel_SaveLog = 4
+		self.bTranslated = False
 		
-		# Actualy assign functions to attributes
-		self.Description = _desc()
-		self.Title = _title()
-		self.bUseDate = _bUseDate()
-		self.bUseDateSections = _bUseDateSections()
-		self.bUseTime = _bUseTime()
-		self.bVerbose = _bVerbose()
-		self.LogLevel_ShowUser = _LogLevel_ShowUser()
-		self.LogLevel_SaveLog = _LogLevel_SaveLog()
-		self.bTranslated = _bTranslated()
-
+		# Prepare get/set functions
 		@property
 		def desc(self):
 			return self.desc
-		
 		@desc.setter
-		def desc(self, new_desc: str):
-			if not isinstance(new_desc, str):
-				self.WARNING(_MSG.cl_log_err_must_str)
-				raise ValueError(_MSG.cl_log_err_must_str)
-			# Add additional validation logic if needed
-			self.desc = new_desc
+		def desc(self, new_val: str):
+			msg = _MSG.cl_log_err_must_str
+			if not isinstance(new_val, str):
+				self.WARNING(msg)
+				raise ValueError(msg)
+			self.desc = new_val
+		
+		@property
+		def title(self):
+			return self.title
+		@title.setter
+		def title(self, new_val: str):
+			msg = _MSG.cl_log_err_must_str
+			if not isinstance(new_val, str):
+				self.WARNING(msg)
+				raise ValueError(msg)
+			self.title = new_val
+
+		@property
+		def bUseDate(self):
+			return self.bUseDate
+		@bUseDate.setter
+		def bUseDate(self, new_val: bool):
+			msg = _MSG.cl_log_err_must_bool
+			if not isinstance(new_val, bool):
+				self.WARNING(msg)
+				raise ValueError(msg)
+			self.bUseDate = new_val
+		
+		@property
+		def bUseDateSections(self):
+			return self.bUseDateSections
+		@bUseDateSections.setter
+		def bUseDateSections(self, new_val: bool):
+			msg = _MSG.cl_log_err_must_bool
+			if not isinstance(new_val, bool):
+				self.WARNING(msg)
+				raise ValueError(msg)
+			self.bUseDateSections = new_val
+		
+		@property
+		def bUseTime(self):
+			return self.bUseTime
+		@bUseTime.setter
+		def bUseTime(self, new_val: bool):
+			msg = _MSG.cl_log_err_must_bool
+			if not isinstance(new_val, bool):
+				self.WARNING(msg)
+				raise ValueError(msg)
+			self.bUseTime = new_val
+		
+		@property
+		def bVerbose(self):
+			return self.bVerbose
+		@bVerbose.setter
+		def bVerbose(self, new_val: bool):
+			msg = _MSG.cl_log_err_must_bool
+			if not isinstance(new_val, bool):
+				self.WARNING(msg)
+				raise ValueError(msg)
+			self.bVerbose = new_val
 
 class log:
 	def __init__(self, filename: _Union[str,]):
@@ -188,7 +160,7 @@ class log:
 		prj_log = log( str_filename ) 			\n
 		prj_log.Settings.Title = "Title in new logfile"			\n
 		prj_log.Settings.LogLevel_ShowUser = log.LEVEL.WARNING	\n
-		prj_log.DEBUG("Only shown if LogLevel_ShowUser is 0")	\n
+		prj_log.DEBUG(f"Only shown if LogLevel_ShowUser is {prj_log.Settings.LogLevel_ShowUser}")	\n
 
 		SEVERITY[0] = "DEBUG" 		\n
 		SEVERITY[1] = "INFO" 		\n
@@ -196,18 +168,7 @@ class log:
 		SEVERITY[3] = "ERROR" 		\n
 		SEVERITY[4] = "CRITICAL" 	\n
 		SEVERITY[5] = "FATAL" 		\n
-		"""
-		# Prepare default values:
-		self._current_config[_str_Title] = ""
-		self._current_config[_str_Desc] = ""
-		self._current_config[_str_bUseDate] = False
-		self._current_config[_str_bUseDateSections] = True
-		self._current_config[_str_bUseTime] = True
-		self._current_config[_str_bVerbose] = False
-		self._current_config[_str_LL_ShowUser] = 3
-		self._current_config[_str_LL_SaveLog] = 1
-		self._current_config[_str_bTranslated] = False
-		
+		"""		
 		# Actual initialize class
 		self.Filename = filename
 		self.Settings = Settings()
@@ -217,12 +178,14 @@ class log:
 		self._internal_severity_eng = SEVERITY
 		self._internal_severity_translated = _severity_translated
 		len_sev_max = 0
+		if self.Settings.bTranslated:
+			self._internal_severity_use = _severity_translated
+		else:
+			self._internal_severity_use = SEVERITY
+		
 		for lvl in LEVEL.items:
 			# Get the right strings:
-			if self._current_config[_str_bTranslated] == True:
-				sStr = _severity_translated[lvl]
-			else:
-				sStr = SEVERITY[lvl]
+			sStr = self._internal_severity_use[lvl]				
 			len_tmp = len(sStr)
 			# Save new max value if current is longer
 			if len_sev_max < len_tmp:
@@ -231,28 +194,68 @@ class log:
 		self._internal_indent_severity = len_sev_max
 		
 	#
-	def _print_log(self, level: int, message: str)
+	def _print_log(self, level: int, *args)
 		"""
 		INTERNAL:
 		Check if a file needs to be opened
 		"""
+		# Simple things
 		log_file = self.Filename
-
-		if self.Settings.LogLevel_SaveLog >= level:
+		iLen = self._internal_indent_severity
+		
+		# Prepare message from *args
+		if 1 == len(*args):
+			message = args[0]
+		else:
+			msg_str = args[0] 	;	args[0].remove()
+			message = print(msg_str, *args)
+		
+		def __print_log_savefile(level:int, message=message, fn=log_file):
+			prefix = self._in
+			output = ""
 			
-	# 
-	def DEBUG(self, message: str):
-		""""
-		Shows / Saves message to user / file
-		"""
-		# Prepare message
-		#message = *args.join()
-		message = print(*args.join())
-		
+			
+
+			while open(fn, "a")
 		# Show to user?
-		if self.Settings.bVerbose or self.Settings.LogLevel_ShowUser >= LEVEL.DEBUG.value:
+		if self.Settings.LogLevel_SaveLog >= level:
 			_tui.status(111, message)
-		# Save to Log?
-		
-			self._print_log(LEVEL.DEBUG.value, message)
+			#pass
+		else:
+			__print_log_savefile()
+	# 
+	def DEBUG(self, *args):
+		""""
+		Show / Save message to user / file
+		"""
+		self._print_log(LEVEL.DEBUG.value, *args)
+
+	def INFO(self, *args):
+		""""
+		Show / Save message to user / file
+		"""
+		self._print_log(LEVEL.INFO.value, *args)
 	
+	def WARNING(self, *args):
+		""""
+		Show / Save message to user / file
+		"""
+		self._print_log(LEVEL.WARNING.value, *args)
+		
+	def ERROR(self, *args):
+		""""
+		Show / Save message to user / file
+		"""
+		self._print_log(LEVEL.ERROR.value, *args)
+	
+	def CRITICAL(self, *args):
+		""""
+		Show / Save message to user / file
+		"""
+		self._print_log(LEVEL.CRITICAL.value, *args)
+		
+	def FATAL(self, *args):
+		""""
+		Show / Save message to user / file
+		"""
+		self._print_log(LEVEL.FATAL.value, *args)
