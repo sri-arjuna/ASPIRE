@@ -31,7 +31,7 @@ import AspireTUI._theme as Theme
 from AspireTUI import MESSAGE as _MSG
 #import AspireTUI.StringUtils as stew
 
-from . import settings
+from . import settings as _settings
 ################################################################################################################
 #####                                           Public Functions                                           #####
 ################################################################################################################
@@ -91,7 +91,7 @@ def press(text=None):
 	if text is None or text == "":
 		text = _MSG.tui_press
 	put.border()
-	if settings["inner"] >= 2 * (len(text) + 1):
+	if _settings["inner"] >= 2 * (len(text) + 1):
 		# Fits twice
 		put.text(text, text)
 	else:
@@ -169,10 +169,10 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 	"""
 	put._update(DEBUG=text)
 	if text:
-		width = settings["inner"] / 2
+		width = _settings["inner"] / 2
 	else:
 		# TODO: Why do i need " - 12" for this value???
-		width = settings["inner"] - 12
+		width = _settings["inner"] - 12
 	# Styles
 	if "num" == style:
 		prog_out = f"[ {cur} / {max} ]"
