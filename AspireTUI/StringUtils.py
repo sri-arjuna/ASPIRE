@@ -129,7 +129,7 @@ def conf2dict(config_string) -> dict:
 			tmp_dict[key] = value
 	return tmp_dict
 
-def sec2time(sec:, format=None) -> str:
+def sec2time(sec:_Union[int, float], format=None) -> str:
 	"""
 	Transforms given seconds to proper HH:MM:SS format.
 	"""
@@ -149,3 +149,56 @@ def sec2time(sec:, format=None) -> str:
 
 	# Return passed seconds as time according to format
 	return _datetime.datetime.utcfromtimestamp(sec).strftime(format)
+
+def num2roman(num: int):
+	"""
+	Converts an integer to Roman numeral
+	"""
+	if not 0 < num:
+		raise ValueError("Input must be a positive integer")
+
+	roman_numerals = {
+		10000: 'X̅', 9000: 'IX̅', 5000: 'V̅', 4000: 'IV̅',
+		1000: 'M', 900: 'CM', 500: 'D', 400: 'CD',
+		100: 'C', 90: 'XC', 50: 'L', 40: 'XL',
+		10: 'X', 9: 'IX', 5: 'V', 4: 'IV',
+		1: 'I'
+	}
+
+	result = ''
+	for value, numeral in roman_numerals.items():
+		count = num // value
+		result += numeral * count
+		num %= value
+
+	return result
+
+# Example usage:
+result = num2roman(123456)  # Should return 'CXXIII'
+print(result)
+
+
+def roman2num(roman: str):
+	"""
+	Converts Roman numeral to integer
+	"""
+	roman_numerals = {
+		'I': 1, 'V': 5, 'X': 10, 'L': 50,
+		'C': 100, 'D': 500, 
+		'M': 1000, 'V̅': 5000, 
+		'X̅': 10000, 'L̅': 50000, 
+		'C̅': 100000
+	}
+
+	result = 0
+	prev_value = 0
+
+	for numeral in reversed(roman):
+		value = roman_numerals[numeral]
+		if value < prev_value:
+			result -= value
+		else:
+			result += value
+		prev_value = value
+
+	return result
