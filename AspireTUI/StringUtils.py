@@ -150,7 +150,7 @@ def sec2time(sec:_Union[int, float], format=None) -> str:
 	# Return passed seconds as time according to format
 	return _datetime.datetime.utcfromtimestamp(sec).strftime(format)
 
-def num2roman(num: int):
+def num2roman(num: int) -> chr:
 	"""
 	Converts an integer to Roman numeral
 	"""
@@ -167,12 +167,7 @@ def num2roman(num: int):
 
 	return result
 
-# Example usage:
-result = num2roman(123456)  # Should return 'CXXIII'
-print(result)
-
-
-def roman2num(roman: str):
+def roman2num(roman: str) -> int:
 	"""
 	Converts Roman numeral to integer
 	"""
@@ -191,3 +186,22 @@ def roman2num(roman: str):
 		prev_value = value
 
 	return result
+
+def char2morse(input_data):
+	"""
+	Converts characters or a multiline string to Morse code.
+	"""
+	from AspireTUI.Lists import morse_code as _MORSE_CODE_DICT
+	if isinstance(input_data, str):
+		input_data = input_data.upper().splitlines()
+	return '\n'.join([' '.join([_MORSE_CODE_DICT[char] if char in _MORSE_CODE_DICT else char for char in line]) for line in input_data])
+
+def morse2char(input_data):
+	"""
+	Converts Morse code to characters.
+	"""
+	from AspireTUI.Lists import morse_code as _MORSE_CODE_DICT
+	if isinstance(input_data, str):
+		input_data = input_data.splitlines()
+	morse_dict_reverse = {value: key for key, value in _MORSE_CODE_DICT.items()}
+	return '\n'.join([''.join([morse_dict_reverse[code] if code in morse_dict_reverse else code for code in line.split()]) for line in input_data])
