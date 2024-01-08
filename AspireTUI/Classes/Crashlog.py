@@ -23,7 +23,7 @@ import re as _re
 #
 #	Internals
 # 
-#from . import IS_WINDOWS
+from . import IS_WINDOWS as _IS_WINDOWS
 from . import tui as _tui
 from . import StringUtils as _stew
 
@@ -33,7 +33,7 @@ from . import StringUtils as _stew
 #
 #	Sub-Sections
 #
-class Section:
+class _Section:
 	"""
 	In case of need, provides the literal string of the section _name_ within the crashlog.		\n
 	And of course, all the _lines_ of this section.		\n
@@ -44,7 +44,7 @@ class Section:
 		self.name = name
 		self.lines = lines
 
-class SectionSystemSpec:
+class _SectionSystemSpec:
 	"""
 	Predefined system specs.
 	"""
@@ -58,7 +58,7 @@ class SectionSystemSpec:
 		self.PagefileSize = ""
 		self.lines = []
 
-class SectionUnhandled:
+class _SectionUnhandled:
 	"""
 	The "Unhandled" line split up.
 	"""
@@ -70,7 +70,7 @@ class SectionUnhandled:
 		self.Extra = ""
 		self.lines = []
 
-class SectionHeading:
+class _SectionHeading:
 	"""
 	Data that should be in headings.
 	"""
@@ -94,20 +94,20 @@ class CrashLog:
 			INGNORE = str1, str2, str3 	# To remove lines that contain these strings
 		"""
 		self.filename = filename
-		self.Heading = SectionHeading()
-		self.Stack_Call = Section()
-		self.Call = Section()
-		self.Plugins = Section()
-		#self.Plugins_XSE = Section()
-		self.Registers = Section()
-		self.Modules = Section()
-		self.SystemSpec = SectionSystemSpec()
+		self.Heading = _SectionHeading()
+		self.Stack_Call = _Section()
+		self.Call = _Section()
+		self.Plugins = _Section()
+		#self.Plugins_XSE = _Section()
+		self.Registers = _Section()
+		self.Modules = _Section()
+		self.SystemSpec = _SectionSystemSpec()
 
 		# Prepare additional tasks
 		if sLOG_FILE is not None:
 			bLOG = True
-			from . import FileUtils as _FileUtils
-			log = _FileUtils.log(sLOG_File)
+			from AspireTUI.Classes.Log import log as _Log
+			log = _Log(sLOG_File)
 			log.Settings.bVerbose = bVerbose
 		else:
 			bLOG = False

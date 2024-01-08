@@ -67,7 +67,7 @@ _severity_translated[5] = _MSG.cl_log_severity5
 #
 #	
 #
-class Settings:
+class _Settings:
 	def __init__(self):
 		"""
 		Settings of the LOG file
@@ -81,7 +81,7 @@ class Settings:
 		self.bVerbose = False
 		self.LogLevel_ShowUser = 3
 		self.LogLevel_SaveLog = 4
-		self.Log_Format = "%H.%M.%S.%s"
+		self.Log_Format = "%H.%M.%S.%f"
 		self.bTranslated = False
 		
 		# Prepare get/set functions
@@ -172,17 +172,17 @@ class log:
 		"""		
 		# Actual initialize class
 		self.Filename = filename
-		self.Settings = Settings()
+		self.Settings = _Settings()
 
 		# Prepare internal quick use:
 		global SEVERITY
-		self._internal_severity_eng = SEVERITY
-		self._internal_severity_translated = _severity_translated
+		 = SEVERITY
+		 = _severity_translated
 		len_sev_max = 0
 		if self.Settings.bTranslated:
-			self._internal_severity_use = _severity_translated
+			self._internal_severity_use = self._internal_severity_translated
 		else:
-			self._internal_severity_use = SEVERITY
+			self._internal_severity_use = self._internal_severity_eng
 		
 		for lvl in LEVEL.items:
 			# Get the right strings:
