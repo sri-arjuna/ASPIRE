@@ -256,4 +256,4 @@ def list(*args, bRoman=False, bMenu=False, sSeperator=")"):
 	Prints a list 
 	"""
 	if bMenu:
-		list_entries = [ _MSG.Word. ]
+		list_entries = [ _MSG.tui_list_back ] *args
