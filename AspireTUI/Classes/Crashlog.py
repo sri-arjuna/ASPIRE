@@ -3,8 +3,7 @@
 					Split up Crashlogs into different sections.
 	Provides:
 					from AspireTUI.Class_Crashlog import CrashLog as _CrashLog
-					
-					
+
 	========================================================
 	Created on:		2024 Jan. 04
 	Created by:		Simon Arjuna Erat
@@ -87,7 +86,13 @@ class SectionHeading:
 #	Root Section
 #
 class CrashLog:
-	def __init__(self, filename, bVerbose=True, bLOG=True, sLOG_File=f"{_stew.logtime()}.log"):
+	def __init__(self, filename, bVerbose=True, sLOG_FILE=None, IGNORE=None, ):
+		"""
+		Returns contents of a CrashLog as an object. \n
+		Set:
+			sLOG_FILE = path/file 		# To enable loging to that file.
+			INGNORE = str1, str2, str3 	# To remove lines that contain these strings
+		"""
 		self.filename = filename
 		self.Heading = SectionHeading()
 		self.Stack_Call = Section()
@@ -99,10 +104,14 @@ class CrashLog:
 		self.SystemSpec = SectionSystemSpec()
 
 		# Prepare additional tasks
-		if bLOG:
+		if sLOG_FILE is not None:
+			bLOG = True
 			from . import FileUtils as _FileUtils
 			log = _FileUtils.log(sLOG_File)
 			log.Settings.bVerbose = bVerbose
+		else:
+			bLOG = False
+			
 
 		# Get the raw data
 		tmp = self._crashlog_parse(filename)
@@ -170,7 +179,7 @@ class CrashLog:
 				if item in section:
 					worklist_raw.append(section)
 			# Check if multiple options were detcted
-			if item = pre_list[0]:
+			if item == pre_list[0]:
 				# Register
 				if len(worklist_raw) == 1:
 					self.Registers.name = worklist_raw[0]
