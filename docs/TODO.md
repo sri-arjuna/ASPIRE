@@ -8,6 +8,10 @@ Roadmap / TODO list:
 
 
 
+* fix _msg / _settings renames
+
+
+
 
 ------------------------------------------------------------------------------------------
 
@@ -57,3 +61,31 @@ To prepare a local Python project to mimic a module that you can import, you can
 By following these steps, you can create a local Python project that can be imported and used like a module. However, it's important to note that this approach is suitable for local development and testing purposes. If you want to distribute your module for others to use, you should consider packaging it properly, following the Python packaging guidelines and creating a distribution package that can be installed via `pip` or other package managers.
 
 For more information on packaging and distributing Python modules, refer to the Python Packaging User Guide: https://packaging.python.org/guides/distributing-packages-using-setuptools/
+
+
+---------------------
+
+
+RTA — heute um 12:29 Uhr
+assuming measure_performance() is defined inside a class that I instantiated as the variable engine
+
+@contextmanager
+def measure_performance(self, *args) -> None:
+    start = perf_counter()
+    try:
+        yield
+    finally:
+        runtime = f'{perf_counter() - start:.2f}'
+        if 'total' in args:
+            self.logger.info(f'Total execution time: {runtime} seconds')
+        else:
+            self.logger.info(f'Execution time for {args[0]}: {runtime} seconds')
+
+
+## ---------------------------------------------------------------------------------------
+
+
+subprocess.run(["explorer", user_home], shell=True)
+
+
+---------------------------
