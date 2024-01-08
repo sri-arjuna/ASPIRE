@@ -156,15 +156,9 @@ def num2roman(num: int):
 	"""
 	if not 0 < num:
 		raise ValueError("Input must be a positive integer")
-
-	roman_numerals = {
-		10000: 'X̅', 9000: 'IX̅', 5000: 'V̅', 4000: 'IV̅',
-		1000: 'M', 900: 'CM', 500: 'D', 400: 'CD',
-		100: 'C', 90: 'XC', 50: 'L', 40: 'XL',
-		10: 'X', 9: 'IX', 5: 'V', 4: 'IV',
-		1: 'I'
-	}
-
+	
+	from AspireTUI import Lists as _lists
+	roman_numerals = _lists.roman_num2roman
 	result = ''
 	for value, numeral in roman_numerals.items():
 		count = num // value
@@ -182,13 +176,8 @@ def roman2num(roman: str):
 	"""
 	Converts Roman numeral to integer
 	"""
-	roman_numerals = {
-		'I': 1, 'V': 5, 'X': 10, 'L': 50,
-		'C': 100, 'D': 500, 
-		'M': 1000, 'V̅': 5000, 
-		'X̅': 10000, 'L̅': 50000, 
-		'C̅': 100000
-	}
+	from AspireTUI import Lists as _lists
+	roman_numerals = _lists.roman_roman2num
 
 	result = 0
 	prev_value = 0
