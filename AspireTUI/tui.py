@@ -224,6 +224,8 @@ def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False,
 	while cur > 0:
 		print(msg,f"{stew.sec2time(cur)} / {Time}{unit}")
 		cur -= 1
+		## https://realpython.com/python-sleep/
+		## Async? or time.wait instead ??
 		_time.sleep(iIntervall)
 	
 
