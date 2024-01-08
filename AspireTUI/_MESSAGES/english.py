@@ -72,6 +72,7 @@ theme_color_invalid	= _("Cant read color code, please use plain text, not consol
 tui_press			= _("Press any key to continue.")
 tui_progress_bar	= _("Wrong style for progress, only 'bar' and 'num' are supported.")
 tui_style_invalid	= _("Invalid style argument. Expected 'print', 'header', or 'title'. // passed:")
+tui_wait_continue_in = _("Continue in:")
 ################################################################################################################
 #####                                            Class Log                                                 #####
 ################################################################################################################
