@@ -1,13 +1,21 @@
-import sys
-from os.path import abspath, dirname, join
+#import sys
+#from os.path import abspath, dirname, join
 # Add the ASPIRE directory to the system path
-aspire_dir = abspath(join(dirname(__file__), '..'))
-sys.path.append(aspire_dir)
+#aspire_dir = abspath(join(dirname(__file__), '..'))
+#sys.path.append(aspire_dir)
 
-from ..aspire_dir.AspireTUI import tui
-from ..aspire_dir.AspireTUI.ColorAndText import cat
-import ..aspire_dir.AspireTUI._theme as Theme
-from ..aspire_dir.AspireTUI import StringUtils as stew
+#from .AspireTUI import tui
+#from .AspireTUI.ColorAndText import cat
+from ..AspireTUI import StringUtils as stew
+#from .AspireTUI.Classes.Crashlog import CrashLog
+#from .AspireTUI import _theme as Theme
+
+#import importlib
+#tui = importlib.import_module('AspireTUI.tui', "..")
+#cat = importlib.import_module('AspireTUI.ColorAndText.cat', "..")
+#stew = importlib.import_module('AspireTUI.StringUtils', "..")
+#crashlog = importlib.import_module('AspireTUI.Classes.Crashlog', "..")
+#Theme = importlib.import_module('AspireTUI_theme', "..")
 
 print(stew.sec2time(75))
 tui.wait(5)

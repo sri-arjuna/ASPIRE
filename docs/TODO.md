@@ -11,7 +11,13 @@ Roadmap / TODO list:
 * fix _msg / _settings renames
 
 
+status [] -> theme
+status_length = len("$SEP !!! $SEP")
+re calc: line_length accordingly... -> _update()
 
+
+split theme - colors, style = theme, as dir/file: theme/color/blackwhite, theme/style/tron
+theme editor -> save/load files -> config aspire/projects
 
 ------------------------------------------------------------------------------------------
 
