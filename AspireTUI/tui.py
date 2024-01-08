@@ -21,15 +21,16 @@ import os as _os
 #import shutil as _shutil
 #import subprocess as _subprocess
 from typing import Union as _Union
+import time as _time
 
 #
 #	Internals
 #
 import AspireTUI._internal as _internal
-import AspireTUI._PrintUtils as put
-import AspireTUI._theme as Theme
-from AspireTUI import MESSAGE as _MSG
-#import AspireTUI.StringUtils as stew
+import AspireTUI._PrintUtils as _put
+import AspireTUI.__put as _Theme
+from AspireTUI._MESSAGES import english as _MSG
+#import AspireTUI.StringUtils as _stew
 
 from . import settings as _settings
 ################################################################################################################
@@ -40,20 +41,20 @@ def header(*args, end='\n'):
 	Prints up to 3 strings, L, L+R, LCR.
 	Theme:Default = White font and blue background.
 	"""
-	put._update(True)
+	_put._update(True)
 	style="header"
-	put.border(style=style)
-	put.text(*args, style=style, end=end)
+	_put.border(style=style)
+	_put.text(*args, style=style, end=end)
 
 def title(text="", end='\n'):
 	"""
 	Prints 1 (one) string in the center.
 	Theme:Default = Blue font and white background.
 	"""
-	put._update()
+	_put._update()
 	style="title"
-	put.border(style=style)
-	put.text(text, style=style, end=end)
+	_put.border(style=style)
+	_put.text(text, style=style, end=end)
 
 def print(*args, end='\n'):
 	"""
@@ -62,24 +63,24 @@ def print(*args, end='\n'):
 	Theme:Default = Blue font and white background for borders, default console colors for output.
 	"""
 	# Implementation for printe method
-	put._update()
+	_put._update()
 	if len(args) == 1:
 		single_arg = args[0]
 		if isinstance(single_arg, str) and '\n' in single_arg:
 			lines = single_arg.strip().split('\n')
 			for line in lines:
-				put.border()
-				put.text(line, end='\n')
+				_put.border()
+				_put.text(line, end='\n')
 		elif isinstance(single_arg, list):
 			for line in single_arg:
-				put.border()
-				put.text(line, end='\n')
+				_put.border()
+				_put.text(line, end='\n')
 		else:
-			put.border()
-			put.text(single_arg, end=end)
+			_put.border()
+			_put.text(single_arg, end=end)
 	else:
-		put.border()
-		put.text(*args, end=end)
+		_put.border()
+		_put.text(*args, end=end)
 
 def press(text=None):
 	"""
@@ -87,16 +88,16 @@ def press(text=None):
 	If no text is passed, "Please press any key to continue." is used.
 	If passed or default text fits twice on the line, it will do so, otherwise center.
 	"""
-	put._update()
+	_put._update()
 	if text is None or text == "":
 		text = _MSG.tui_press
-	put.border()
+	_put.border()
 	if _settings["inner"] >= 2 * (len(text) + 1):
 		# Fits twice
-		put.text(text, text)
+		_put.text(text, text)
 	else:
 		# Fits only once
-		put.text(text)
+		_put.text(text)
 	# Workaround to hide the default message
 	stdout = _os.dup(1)
 	_os.dup2(_os.open(_os.devnull, _os.O_WRONLY), 1)
@@ -108,16 +109,16 @@ def yesno(question: str, yesno_option="yn") -> bool:
 	Ask the user a simple yes/no question.
 	Pass an optional 2 character-string, of which 1. is positive and 2. is negative.
 	"""
-	put._update()
-	style = Theme.get()
+	_put._update()
+	style = _Theme.get()
 	answer = ""
 	question_string = f"{question} ({yesno_option}) {style.prompt_read} "
 	yes = yesno_option[:1]
 	no = yesno_option[1:]
 	
 	# Default Aspire / TUI output
-	put.border()
-	put.text(question_string, end="")
+	_put.border()
+	_put.text(question_string, end="")
 
 	# Loop for proper input:
 	while True:
@@ -127,7 +128,7 @@ def yesno(question: str, yesno_option="yn") -> bool:
 		if answer in yesno_option:
 			break
 	# Print answer
-	put._right(answer)
+	_put._right(answer)
 	# Return the according bool
 	if answer in yes and "" != answer:
 		return True
@@ -146,19 +147,19 @@ def status(ID: _Union[int, bool], *args, align_right=True, end='\n'):
 		msg_status_many_args = _MSG.args_2_status
 		raise SyntaxError(msg_status_many_args)
 
-	put._update()
-	put.border()
+	_put._update()
+	_put.border()
 
 	if len(args) == 0:
 		if align_right:
-			put.text("", put.status(ID), end=end)
+			_put.text("", _put.status(ID), end=end)
 		else:  # left
-			put.text(put.status(ID),  "", end=end)
+			_put.text(_put.status(ID),  "", end=end)
 	else:
 		if align_right:
-			put.text(*args, put.status(ID), end=end)
+			_put.text(*args, _put.status(ID), end=end)
 		else:  # left
-			put.text(put.status(ID), *args, end=end)
+			_put.text(_put.status(ID), *args, end=end)
 
 def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
 	"""
@@ -167,7 +168,7 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 	Default style is 'bar'.		\n
 	Valid styles are: bar, num	\n
 	"""
-	put._update(DEBUG=text)
+	_put._update(DEBUG=text)
 	if text:
 		width = _settings["inner"] / 2
 	else:
@@ -178,7 +179,7 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 		prog_out = f"[ {cur} / {max} ]"
 		#return True
 	elif "bar" == style:
-		prog_out = f"{put.bar(cur,max,width,reverse=reverse)}"
+		prog_out = f"{_put.bar(cur,max,width,reverse=reverse)}"
 	else:
 		msg_progress_style = _MSG.tui_progress_bar
 		raise ValueError(msg_progress_style)
@@ -187,18 +188,18 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 		text_new = ""	# There is no text anyway... idk...
 	else:
 		# Send to shorten anyway, 
-		# this should avoid the split test in put.text().
+		# this should avoid the split test in _put.text().
 		if cut_from_end:
 			text_new = _internal.shorten(text, width)
 		else:
 			text_new = _internal.shorten(text, width, True)
-	put.border()
-	put.text(text_new, prog_out, end="")
+	_put.border()
+	_put.text(text_new, prog_out, end="")
 	if cur == max:
 		print()
 	return True
 
-def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False):
+def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False, iIntervall=1):
 	"""
 	If just used as: tui.wait(1), it waits for 1 second before it continues. \n
 	To save effort, you can change unit="h" if you want to wait 1 hour instead,
@@ -208,16 +209,22 @@ def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False)
 	# Init final vars:
 	output = ""
 	# Get measurement
-	if unit == "s":
-		secs = Time
-	else:
-		secs = Time
-		print("TODO work with other time units for wait")
+	secs = Time
+	org = Time
+	if not unit == "s":
+		secs = _stew.sec2time(secs)
+		print(secs, "TODO work with other time units for wait")
 		# TODO: sec2time , min2sec, hour2sec
 	
 	# Prepare strings:
-	if msg is not None:
-		str_left = msg
+	if msg is None:
+		msg = _MSG.tui_wait_continue_in
+	
+	cur = secs
+	while cur > 0:
+		print(msg,f"{stew.sec2time(cur)} / {Time}{unit}")
+		cur -= 1
+		_time.sleep(iIntervall)
 	
 
 def msgbox(*args, bOutside=False):
@@ -225,7 +232,7 @@ def msgbox(*args, bOutside=False):
 	
 	"""
 	# Print "border"
-	put._update()
+	_put._update()
 	if bOutside:
 		header()
 	else:
@@ -242,7 +249,9 @@ def msgbox(*args, bOutside=False):
 	else:
 		title()
 
-def list(*args, ):
+def list(*args, bRoman=False, bMenu=False, sSeperator=")"):
 	"""
-	
+	Prints a list 
 	"""
+	if bMenu:
+		list_entries = [ _MSG.Word. ]
