@@ -64,7 +64,7 @@ from enum import Enum as _Enum
 #	Internals
 #
 from . import settings as _settings
-from .ColorAndText import cat
+from .ColorAndText import cat as _cat
 ################################################################################################################
 #####                                            Theme Structure                                           #####
 ################################################################################################################
@@ -266,9 +266,9 @@ def get():
 		if attribute.startswith('_'):  # Skip internal attributes
 			continue
 		if 'color_fg' in attribute:
-			theme_use[attribute] = getattr(cat.front, value)
+			theme_use[attribute] = getattr(_cat.front, value)
 		elif 'color_bg' in attribute:
-			theme_use[attribute] = getattr(cat.back, value)
+			theme_use[attribute] = getattr(_cat.back, value)
 		else:
 			theme_use[attribute] = value
 	
