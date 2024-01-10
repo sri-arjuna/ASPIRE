@@ -21,7 +21,7 @@
 #	Essential imports
 #
 import AspireTUI.MESSAGE as _MSG
-from . import IS_WINDOWS
+from . import IS_WINDOWS as _IS_WINDOWS
 #import os as _os
 #import sys as _sys
 #import re as _re
@@ -137,7 +137,7 @@ def shorten(txt: str, char_count: int, cut_from_middle: bool = False) -> str:
 ################################################################################################################
 def get_input_charcount(count:int) -> str:
 	# Use the subprocess module to invoke the shell and read a single character
-	if IS_WINDOWS:
+	if _IS_WINDOWS:
 		chars = []
 		while len(chars) < count:
 			char = _msvcrt.getch()
