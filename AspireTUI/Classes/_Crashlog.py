@@ -23,9 +23,9 @@ import re as _re
 #
 #	Internals
 # 
-from . import IS_WINDOWS as _IS_WINDOWS
-from . import tui as _tui
-from . import StringUtils as _stew
+from AspireTUI import IS_WINDOWS as _IS_WINDOWS
+from AspireTUI import tui as _tui
+from AspireTUI import StringUtils as _stew
 
 #################################################################################################################
 #####                                           Crashlog Class Container                                    #####
@@ -70,16 +70,26 @@ class _SectionUnhandled:
 		self.Extra = ""
 		self.lines = []
 
+class _SectionCrashLogger_App:
+	"""
+	Strings refering to the used CrashLogger / App that should be in heading
+	"""
+	def __init__(self):
+		self.Name = None
+		self.Version = None
+
 class _SectionHeading:
 	"""
 	Data that should be in headings.
 	"""
 	def __init__(self):
-		self.Chrashlogger_Name = ""
-		self.Chrashlogger_Version = ""
-		self.App_Name = ""
-		self.App_Version = ""
-		self.Unhandled = SectionUnhandled()
+		#self.CrashLogger_Name = ""
+		#self.CrashLogger_Version = ""
+		#self.App_Name = ""
+		#self.App_Version = ""
+		self.CrashLogger = 	_SectionCrashLogger_App()
+		self.App = 			_SectionCrashLogger_App()
+		self.Unhandled = 	_SectionUnhandled()
 		self.lines = []
 
 #
@@ -98,7 +108,7 @@ class CrashLog:
 		self.Stack_Call = _Section()
 		self.Call = _Section()
 		self.Plugins = _Section()
-		#self.Plugins_XSE = _Section()
+		#self.Plugins_XSE = _Section()	# too game specific?
 		self.Registers = _Section()
 		self.Modules = _Section()
 		self.SystemSpec = _SectionSystemSpec()
@@ -106,7 +116,7 @@ class CrashLog:
 		# Prepare additional tasks
 		if sLOG_FILE is not None:
 			bLOG = True
-			from AspireTUI.Classes.Log import log as _Log
+			from AspireTUI.Classes import Log as _Log
 			log = _Log(sLOG_File)
 			log.Settings.bVerbose = bVerbose
 		else:
@@ -145,7 +155,7 @@ class CrashLog:
 			if _re.match(r"[A-Z]*:|\{", line):
 				if current_section:
 					sections.append(current_section)
-				current_section = Section(line.rstrip('\n'), [])
+				current_section = _Section(line.rstrip('\n'), [])
 			elif current_section:
 				current_section.lines.append(line.rstrip('\n'))
 
