@@ -16,10 +16,20 @@
 #
 #	Essential imports
 #
-#import os as _os
-#import sys as _sys
+import os as _os
+import sys as _sys
 #import re as _re
 #import string as _string
 from . import MESSAGE as _MSG
 from . import tui as _tui
 from typing import Union as _Union
+################################################################################################################
+#####                                            Basic Checks                                              #####
+################################################################################################################
+def file_exists(filename: FileDescriptorOrPath, bVerbose=False):
+	"""
+	Returns True if filename exists.
+	"""
+	if bVerbose:
+		if _os.path.exists(filename):
+			_tui.status(True, _MSG.)

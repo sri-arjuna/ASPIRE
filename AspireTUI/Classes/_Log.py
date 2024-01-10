@@ -2,9 +2,12 @@
 	Description:
 					Public functions to easy several tasks with Files
 	Provides:
-					from AspireTUI import ConfigUtills as cu
+					from AspireTUI.Classes import Conf
 					ret_bool, ret_str = cu.reg_value_get(file,key,var)
-					
+	Usage:
+					from AspireTUI import Classes
+					log = Classes.Log(log_file)
+					log.settings.LogLevel_ShowUser =
 	========================================================
 	Created on:		2024 Jan. 01
 	Created by:		Simon Arjuna Erat
@@ -30,7 +33,7 @@ from typing import Union as _Union
 # 	Strings for internal use
 #
 from AspireTUI.Lists import LOG_LEVEL as LEVEL
-from AspireTUI.Lists import LOG_SEVERITY as SEVERITY_TRANSLATED
+from AspireTUI.Lists import LOG_SEVERITY[] as _SEVERITY
 _str_Title = "title"
 _str_Desc = "desc"
 _str_bUseDate = "bUseDate"
@@ -40,7 +43,9 @@ _str_bVerbose = "bVerbose"
 _str_LL_ShowUser = "LL_ShowUser"
 _str_LL_SaveLog = "LL_SaveLog"
 _str_bTranslated = "bTranslated"
-# English "pre-hardcoded"
+
+# English "pre-hardcoded" - obsolete because of import ? ! -- when/if it works
+_SEVERITY[]
 SEVERITY[0] = "DEBUG"
 SEVERITY[1] = "INFO"
 SEVERITY[2] = "WARNING"
@@ -48,7 +53,7 @@ SEVERITY[3] = "ERROR"
 SEVERITY[4] = "CRITICAL"
 SEVERITY[5] = "FATAL"
 
-# Prepare for class creation, obsolete because of import ? !
+# Prepare for class creation, this is required
 SEVERITY_TRANSLATED[0] = _MSG.cl_log_severity0
 SEVERITY_TRANSLATED[1] = _MSG.cl_log_severity1
 SEVERITY_TRANSLATED[2] = _MSG.cl_log_severity2

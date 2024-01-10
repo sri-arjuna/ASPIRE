@@ -20,33 +20,80 @@ Based on my TUI & SWARM for the BASH shell © 2011
 #################################################################################################################
 #####                                           Class: Conf                                                 #####
 #################################################################################################################
+# Structure data in subsection
+		def _SubSettings(self, filename=filename, encoding=encoding, bVerbose=bVerbose, bDual=bDual, LOGFILE=LOGFILE):
+			self.filename = filename
+			self.encoding = encoding
+			self.bVerbose = bVerbose
+		 	self.bDual = bDual
+			self.LOGFILE = LOGFILE
+# Main Section
 class Conf:
-	def __init__(self, filename: str, encoding="UTF-8", bVerbose=False, LOGFILE=None, LOG_CONFIG=None):
+	def __init__(self, filename: str, encoding="UTF-8", bVerbose=False,  bDual=False, LOGFILE=None, LOG_CONFIG=None):
+		"""
+			Handling configuration files with ease!
+			Opimized for IDE supporting dynamic dot notations.
+			
+			Upon creation you can toggle some behaviour of the class.
+			bVerbose:	Will show user & developer and 'os' actions.
+			LOGFILE:	Writes and shows according to default settings
+			LOG_CONFIG:	
+
+			While accessing an instanced class like this:
+			conf.settings.filename				# Returns filename
+			conf.settings.filename = "NewName"	# Provides the filename used with this config (rename)
+			conf.reload(bVerbose=True)			# Overwriting class creation setting and
+			 									# 	reloading conf.filename, ignoring changes, informing user
+			conf.reload(bSave=True)				# Save changes now, wait 3 seconds, then re-reads conf.filename
+			conf.save()							# Saves current configuration as conf.filename
+			conf.save("new.cfg")				# Exports current config to "new.cfg"
+			conf.ig.							# Will expand the content of the current configuration
+
+			At any given section or item you can (depending on context):
+			conf.ig.add_section("New Section Name")
+			conf.ig.NewSectionName.add_key("b")
+			
+		"""
+		# Prepare settings
+		self.settings = _SubSettings(cls, filename, encoding=encoding, bVerbose=bVerbose, bDual=bDual, LOGFILE=LOGFILE))
+		# Imports and Variables
 		import configparser as _configparser
 		from AspireTUI import tui as _tui
-		from AspireTUI._MESSAGES import english as _msg
+		from AspireTUI._MESSAGES import current as _msg
 		from AspireTUI import Classes as _Classes
 		from AspireTUI import UtilsFile as _uf
-		
+		import AspireTUI.Lists as _Lists
 		self._tui = _tui
 		self._msg = _msg
-		self.filename = filename
-		self.encoding = encoding
-		if LOGFILE:
-			if _uf.
+		_known_extensions = {"ini", "cfg", "conf"}
+
+		if LOG_CONFIG:
+			ret, log = _Classes.Log( LOG_CONFIG , bVerbose=bVerbose, bDual=True)
+			
+			if tui.status(ret, f"{self._msg.file}"):
+				# TODO
+				pass
+				
+			if LOGFILE:
+			if _uf.file_exists(bVerbose)
 			self._logfile = _Classes.Log(LOGFILE)
 			if LOG_CONFIG:
 				self._logfile.config.load(LOG_CONFIG)
 		else:
 			# Is empty
 			self._logfile = LOGFILE
-		self._bVerbose = bVerbose
+		self.bVerbose = bVerbose
 		self._config = _configparser.ConfigParser()
 		
-		
-	def _read(self)):
-		if self._bVerbose:
-			self._tui.status(4, self._msg.cl_conf_ui_reading)
+	def _if_Verbose(msg: str):
+		"""
+			
+		"""
+		pass
+	
+	def _read(cls)):
+		if cls.settings.bVerbose:
+			cls._tui.status(4, cls._msg.cl_conf_ui_reading, cls.settings.filename)
 		if self._logfile is not None:
 
 		self._config.read(self.filename, encoding=self.encoding,)

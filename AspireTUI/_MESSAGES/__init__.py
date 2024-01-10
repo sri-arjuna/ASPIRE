@@ -20,6 +20,6 @@ Based on my TUI & SWARM for the BASH shell © 2011
 # TODO: once more are available, check:
 #	system language
 # 	aspire / project settings.
-from . import english
-current = english
+from . import english as _english
+current = _english
 

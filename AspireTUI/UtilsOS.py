@@ -22,7 +22,7 @@
 #import re as _re
 #import string as _string
 from pathlib import Path as _Path
-from . import IS_WINDOWS
+from . import IS_WINDOWS as _IS_WINDOWS
 #################################################################################################################
 #####                                           Get Directories                                             #####
 #################################################################################################################
@@ -51,7 +51,7 @@ def get_dir_OS(bVerbose=True, bMinimal=False):
 		task_list = []
 	# Start the job
 	for task in task_list:
-		if IS_WINDOWS:
+		if _IS_WINDOWS:
 			pass
 		else:
 			# Its a *nix based system

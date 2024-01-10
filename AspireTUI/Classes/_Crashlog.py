@@ -2,7 +2,7 @@
 	Description:
 					Split up Crashlogs into different sections.
 	Provides:
-					from AspireTUI.Class_Crashlog import CrashLog as _CrashLog
+					from AspireTUI.Classes import CrashLog
 
 	========================================================
 	Created on:		2024 Jan. 04
