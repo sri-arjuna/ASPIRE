@@ -20,16 +20,17 @@ Based on my TUI & SWARM for the BASH shell © 2011
 #################################################################################################################
 #####                                           Class: Conf                                                 #####
 #################################################################################################################
-# Structure data in subsection
-		def _SubSettings(self, filename=filename, encoding=encoding, bVerbose=bVerbose, bDual=bDual, LOGFILE=LOGFILE):
-			self.filename = filename
-			self.encoding = encoding
-			self.bVerbose = bVerbose
-		 	self.bDual = bDual
-			self.LOGFILE = LOGFILE
+
 # Main Section
 class Conf:
-	def __init__(self, filename: str, encoding="UTF-8", bVerbose=False,  bDual=False, LOGFILE=None, LOG_CONFIG=None):
+	def __init__(self, 
+			filename: str, 
+			filename_config=None, 
+			encoding="UTF-8", 
+			bVerbose=False,  
+			bDual=False, 
+			LOGFILE=None
+			):
 		"""
 			Handling configuration files with ease!
 			Opimized for IDE supporting dynamic dot notations.
@@ -51,11 +52,25 @@ class Conf:
 
 			At any given section or item you can (depending on context):
 			conf.ig.add_section("New Section Name")
-			conf.ig.NewSectionName.add_key("b")
+			conf.ig.New_Section_Name.add_key("bSomeBool")
+			conf.ig.New_Section_Name.bSomeBool = False
 			
 		"""
+		# Structure data in subsection
+		def _SubSettings(self):	# , filename=filename, encoding=encoding, bVerbose=bVerbose, bDual=bDual, LOGFILE=LOGFILE
+			self.filename = filename
+			self.encoding = encoding
+			self.bVerbose = bVerbose
+			self.bDual = bDual
+			self.LOGFILE = LOGFILE
 		# Prepare settings
-		self.settings = _SubSettings(cls, filename, encoding=encoding, bVerbose=bVerbose, bDual=bDual, LOGFILE=LOGFILE))
+		self.settings = _SubSettings()
+		#self.settings.filename = filename
+		#self.settings.encoding = encoding
+		#self.settings.bVerbose = bVerbose
+		#self.settings.bDual = bDual
+		#self.settings.LOGFILE = LOGFILE
+		#self.settings.
 		# Imports and Variables
 		import configparser as _configparser
 		from AspireTUI import tui as _tui
@@ -70,33 +85,39 @@ class Conf:
 		if LOG_CONFIG:
 			ret, log = _Classes.Log( LOG_CONFIG , bVerbose=bVerbose, bDual=True)
 			
-			if tui.status(ret, f"{self._msg.file}"):
+			if _tui.status(ret, f"{self._msg.word_filesystem_file}"):
 				# TODO
 				pass
 				
 			if LOGFILE:
-			if _uf.file_exists(bVerbose)
-			self._logfile = _Classes.Log(LOGFILE)
-			if LOG_CONFIG:
-				self._logfile.config.load(LOG_CONFIG)
+				if _uf.file_exists(LOGFILE, bVerbose=bVerbose):
+					if LOGFILE.__getattribute__("Name"):
+						self._logfile = _Classes.Log(LOGFILE)
+				if LOG_CONFIG:
+					self._logfile.config.load(LOG_CONFIG)
 		else:
 			# Is empty
 			self._logfile = LOGFILE
 		self.bVerbose = bVerbose
 		self._config = _configparser.ConfigParser()
 		
-	def _if_Verbose(msg: str):
+	def _if_Verbose(self, msg: str):
 		"""
 			
 		"""
-		pass
+		if cls.settings.bVerbose:
+			cls._tui.status(True, "Is Verbose")
+		elif cls.settings.LOGFILE:
+			cls._tui.status(True, "Is a logfile")
+			self._logfile.status()
+		else:
+			cls._tui.status(False)
 	
-	def _read(cls)):
+	def _read(cls):
 		if cls.settings.bVerbose:
 			cls._tui.status(4, cls._msg.cl_conf_ui_reading, cls.settings.filename)
-		if self._logfile is not None:
-
-		self._config.read(self.filename, encoding=self.encoding,)
+		if cls._logfile is not None:
+			self._config.read(self.filename, encoding=self.encoding,)
 	
 	def _save(self):
 		with open(self.filename, 'w', encoding=self.encoding) as _configfile:
@@ -150,22 +171,22 @@ class Conf:
 	def __getattr__(self, section):
 		if section not in self._config:
 			self._add_section(section)
-		return Section(self, section)
+		return _Section(self, section)
 
-	class Section:
-	def __init__(self, conf, section):
-		self.conf = conf
-		self.section = section
+	class _Section:
+		def __init__(self, conf, section):
+			self.conf = conf
+			self.section = section
 
-	def __getattr__(self, key):
-		if key not in self.conf._get_section(self.section):
-			self.conf._add_key(self.section, key, "")
-		return Key(self, key)
+		def __getattr__(self, key):
+			if key not in self.conf._get_section(self.section):
+				self.conf._add_key(self.section, key, "")
+			return _Key(self, key)
 
-	class Key:
-	def __init__(self, section, key):
-		self.section = section
-		self.key = key
+	class _Key:
+		def __init__(self, section, key):
+			self.section = section
+			self.key = key
 
 	@property
 	def value(self):
@@ -181,3 +202,4 @@ class Conf:
 
 	def remove(self):
 		self.section.conf._remove_key(self.section.section, self.key)
+	
