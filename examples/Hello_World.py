@@ -39,7 +39,7 @@ from AspireTUI.Classes import Conf
 
 # Aspire Internal
 # Same as above, but with _<name> alias
-from AspireTUI import settings
+from AspireTUI import _settings
 from AspireTUI import _PrintUtils as _put
 from AspireTUI import _theme as _Theme
 _theme_list = _Theme.list()
@@ -55,6 +55,6 @@ tui.print()
 tui.print("Lets load the AspireTUI config")
 tui.wait(5,"Wait for it...")
 aConf = Conf("AspireTUI.conf")
-
+aConf.setting()
 
 tui.press()

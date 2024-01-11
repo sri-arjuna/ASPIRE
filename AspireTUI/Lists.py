@@ -12,23 +12,56 @@
 
 	Based on my TUI & SWARM for the BASH shell © 2011
 """
+################################################################################################################
+#####                                            Imports                                                   #####
+################################################################################################################
+#
+#	Prepare data structures
+#
+from enum import Enum as _Enum
 #################################################################################################################
-#####                                           Class: LOG                                                  #####
+#####                                           Class: LOG & Status                                         #####
 #################################################################################################################
-LOG_LEVEL = {
-	"DEBUG":	0,
-	"INFO": 	1,
-	"WARNING":	2,
-	"ERROR":	3,
-	"CRITICAL":	4,
-	"FATAL":	5
-}
+class LOG_LEVEL(_Enum):
+	DEBUG = 0,
+	INFO = 1,
+	WARNING = 2,
+	ERROR = 3,
+	CRITICAL = 4,
+	FATAL = 5
+
+LOG_SEVERITY = []
 LOG_SEVERITY[0] = "DEBUG"
 LOG_SEVERITY[1] = "INFO"
 LOG_SEVERITY[2] = "WARNING"
 LOG_SEVERITY[3] = "ERROR"
 LOG_SEVERITY[4] = "CRITICAL"
 LOG_SEVERITY[5] = "FATAL"
+#
+#	Status
+#
+class STATUS_ENUM(_Enum):
+	# Singles:
+	Done = 0 ,
+	Fail = 1 ,
+
+	# Pseudo Bools
+	On = Done + 10 ,
+	Off = Fail + 10 ,
+
+	# Log Level
+	DEBUG = 1000 + LOG_LEVEL.DEBUG ,
+	INFO = 1000 + LOG_LEVEL.INFO ,
+	WARNING = 1000 + LOG_LEVEL.WARNING ,
+	ERROR = 1000 + LOG_LEVEL.ERROR ,
+	CRITICAL =  1000 + LOG_LEVEL.CRITICAL,
+ 	FATAL =  1000 + LOG_LEVEL.FATAL
+
+
+
+
+STATUS_WORDS[]
+
 #################################################################################################################
 #####                                           Lib: StringUtils                                            #####
 #################################################################################################################
