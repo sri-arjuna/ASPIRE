@@ -52,12 +52,13 @@ else:
 _settings_console = {
 	"full": 		120,
 	"inner": 		112,
-	"lang":			"en",
+	"lang":			"english",
 	"theme":		"Default",
 	"due":			0,
 }
 _settings_self = {
 	"isDEBUG":		True,
+	"conf_file":	"AspireTUI.ini",
 	"log_file":		"AspireTUI.log",
 	"log_conf":		"AspireTUI-log.ini"
 }
@@ -68,12 +69,14 @@ def _log(doLog: bool, ):
 	"""
 	Handles internal logging / verbose'ity according to _settings
 	"""
-	if _settings["log_self"] == True:
+	if _settings_self["log_self"] == True:
 		# Let 
 		# Prepare work
 		from .Classes import Conf as _Conf
 		# Check if log-conf exists
-		_check_log_conf =_settings["log_conf"]
-		_check_log = _settings["log_file"]
+		_check_log_conf =_settings_self["log_conf"]
+		_check_log = _settings_self["log_file"]
+		_check_conf = _settings_self["conf_file"]
 
-		_conf = _Conf()
+		_conf = _Conf(_check_conf, LOGFILE=_check_log_conf)
+		#_conf.settings.
