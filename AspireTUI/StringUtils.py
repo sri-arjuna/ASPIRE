@@ -40,7 +40,18 @@ from typing import Union as _Union
 #	Internal imports
 #
 from . import MESSAGE as _MSG
-
+def _ClassDate():
+	date = date()
+	time = time()
+	now = now()
+	logtime = logtime()
+def _ClassChange():
+	esc2hex = esc2hex()
+	conf2dict = conf2dict()
+	sec2time = sec2time()
+def Menu():
+	datetime = _ClassDate()
+	change = _ClassChange()
 #################################################################################################################
 #####                                           String Utils (stew)                                         #####
 #################################################################################################################
@@ -150,7 +161,7 @@ def sec2time(sec:_Union[int, float], format=None) -> str:
 	# Return passed seconds as time according to format
 	return _datetime.datetime.utcfromtimestamp(sec).strftime(format)
 
-def num2roman(num: int) -> chr:
+def num2roman(num: int) -> str:
 	"""
 	Converts an integer to Roman numeral
 	"""
