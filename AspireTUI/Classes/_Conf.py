@@ -105,18 +105,18 @@ class Conf:
 		"""
 			
 		"""
-		if cls.settings.bVerbose:
-			cls._tui.status(True, "Is Verbose")
-		elif cls.settings.LOGFILE:
-			cls._tui.status(True, "Is a logfile")
+		if self.settings.bVerbose:
+			self._tui.status(True, "Is Verbose")
+		elif self.settings.LOGFILE:
+			self._tui.status(True, "Is a logfile")
 			self._logfile.status()
 		else:
-			cls._tui.status(False)
+			self._tui.status(False)
 	
-	def _read(cls):
-		if cls.settings.bVerbose:
-			cls._tui.status(4, cls._msg.cl_conf_ui_reading, cls.settings.filename)
-		if cls._logfile is not None:
+	def _read(self):
+		if self.settings.bVerbose:
+			self._tui.status(4, self._msg.cl_conf_ui_reading, self.settings.filename)
+		if self._logfile is not None:
 			self._config.read(self.filename, encoding=self.encoding,)
 	
 	def _save(self):
@@ -164,15 +164,6 @@ class Conf:
 	def save(self):
 		self._save()
 
-	@property
-	def sections(self):
-		return list(self._config.sections())
-
-	def __getattr__(self, section):
-		if section not in self._config:
-			self._add_section(section)
-		return _Section(self, section)
-
 	class _Section:
 		def __init__(self, conf, section):
 			self.conf = conf
@@ -182,6 +173,17 @@ class Conf:
 			if key not in self.conf._get_section(self.section):
 				self.conf._add_key(self.section, key, "")
 			return _Key(self, key)
+	
+	@property
+	def _sections(self):
+		return list(self._config.sections())
+
+	def __getattr__(self, section):
+		if section not in self._config:
+			self._add_section(section)
+		return _Section(self, section)
+
+	
 
 	class _Key:
 		def __init__(self, section, key):
