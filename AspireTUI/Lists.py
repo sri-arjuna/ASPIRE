@@ -1,17 +1,37 @@
 """
-Description:
-		Contains various lists and dicts
-Usage:
-		from AspireTUI import Lists as _Lists
+	Description:
+			Contains various dicts, lists and enums
+	Usage:
+			from AspireTUI import Lists as _Lists
 
-========================================================
-Created on:		2024 Jan. 08
-Created by:		Simon Arjuna Erat
-License:		MIT
-URL:			https://www.github.com/sri-arjuna/ASPIRE
+	========================================================
+	Created on:		2024 Jan. 08
+	Created by:		Simon Arjuna Erat
+	License:		MIT
+	URL:			https://www.github.com/sri-arjuna/ASPIRE
 
-Based on my TUI & SWARM for the BASH shell © 2011
+	Based on my TUI & SWARM for the BASH shell © 2011
 """
+#################################################################################################################
+#####                                           Class: LOG                                                  #####
+#################################################################################################################
+LOG_LEVEL = {
+	"DEBUG":	0,
+	"INFO": 	1,
+	"WARNING":	2,
+	"ERROR":	3,
+	"CRITICAL":	4,
+	"FATAL":	5
+}
+LOG_SEVERITY[0] = "DEBUG"
+LOG_SEVERITY[1] = "INFO"
+LOG_SEVERITY[2] = "WARNING"
+LOG_SEVERITY[3] = "ERROR"
+LOG_SEVERITY[4] = "CRITICAL"
+LOG_SEVERITY[5] = "FATAL"
+#################################################################################################################
+#####                                           Lib: StringUtils                                            #####
+#################################################################################################################
 roman_roman2num = {
 		'I': 1, 'V': 5, 'X': 10, 'L': 50,
 		'C': 100, 'D': 500, 
