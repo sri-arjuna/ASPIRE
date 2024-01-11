@@ -55,5 +55,6 @@ def get_dir_OS(bVerbose=True, bMinimal=False):
 			pass
 		else:
 			# Its a *nix based system
-			asdf
+			# TODO
+			pass
 	pass
