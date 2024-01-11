@@ -31,12 +31,12 @@ from enum import Enum as _Enum
 #
 #	Internals
 # 
-from AspireTUI import settings, FD_BORDER #, IS_WINDOWS
-import AspireTUI._internal as _internal
+from AspireTUI import _settings_console as _settings, FD_BORDER as _FD_BORDER #, IS_WINDOWS
+import AspireTUI.__core._internal as _internal
 #import AspireTUI.StringUtils as stew
-from AspireTUI.ColorAndText import cat as _cat
-import AspireTUI._theme as Theme
-from AspireTUI import MESSAGE as _MSG
+from AspireTUI.__core.ColorAndText import cat as _cat
+import AspireTUI.__core._theme as _Theme
+from AspireTUI import _MSG
 ################################################################################################################
 #####                                            Internal Functions                                        #####
 ################################################################################################################
@@ -57,26 +57,26 @@ def _width_full() -> int:
 	
 def _width_inner() -> int:
 	# Return width_full minus borders
-	style = Theme.get()
-	return settings["full"] - len(style.border_left) - len(style.border_right) - 2
+	style = _Theme.get()
+	return _settings["full"] - len(style.border_left) - len(style.border_right) - 2
 
 def _update(forced=False, DEBUG=None):
 	"""
 	Internal use!		\n
-	Updates settings["full"] and settings["inner"] every 5th tui.* call.		\n
+	Updates _settings["full"] and _settings["inner"] every 5th tui.* call.		\n
 	tui.header uses forced=True to ensure the best possible alignment for a new segment.		\n
 	"""
 	limiter = 10
 	if forced:
-		settings["due"] = limiter + 1
-	if settings["due"] >= limiter:
-		settings["full"] = _width_full()
-		settings["inner"] = _width_inner()
-		settings["due"] = 0
+		_settings["due"] = limiter + 1
+	if _settings["due"] >= limiter:
+		_settings["full"] = _width_full()
+		_settings["inner"] = _width_inner()
+		_settings["due"] = 0
 	else:
-		settings["due"] += 1
+		_settings["due"] += 1
 	if DEBUG:
-		print(f"DEBUG-Update: full:{settings['full']} // inner:{settings['inner']} // width: {_width_inner()} // DEBUG: {len(DEBUG)} // txt: {DEBUG}")
+		print(f"DEBUG-Update: full:{_settings['full']} // inner:{_settings['inner']} // width: {_width_inner()} // DEBUG: {len(DEBUG)} // txt: {DEBUG}")
 	
 ################################################################################################################
 #####                                            Status                                                    #####
@@ -136,18 +136,18 @@ def remove_console_codes(text) -> str:
 	return _re.sub(r'\033\[[0-9;]+m', '', text)
 
 def _calc_pos_left() -> int:
-	style = Theme.get()
+	style = _Theme.get()
 	# Calculate the indentation based on the length of the text
 	return abs(2 + len(style.border_right))
 
 def _calc_pos_center(text) -> int:
 	# Calculate the indentation based on the length of the text
-	return abs(settings["full"] // 2 - (len(remove_console_codes(text)) // 2) )
+	return abs(_settings["full"] // 2 - (len(remove_console_codes(text)) // 2) )
 
 def _calc_pos_right(text) -> int:
 	# Calculate the indentation based on the length of the text
-	style = Theme.get()
-	return abs(settings["full"] - len(remove_console_codes(text)) - len(style.border_right))
+	style = _Theme.get()
+	return abs(_settings["full"] - len(remove_console_codes(text)) - len(style.border_right))
 
 def _cursor2pos(pos: int, as_str=False):
 	"""
@@ -158,7 +158,7 @@ def _cursor2pos(pos: int, as_str=False):
 	# Move the cursor to column 0
 	_sys.stdout.write('\r')
 	# Get width of terminal window
-	width = settings["full"]
+	width = _settings["full"]
 	# Get current pos:
 #	sys.stdout.write("\033[6n")
 #	sys.stdout.flush()
@@ -194,7 +194,7 @@ def _left(text, style='print', end='\n'):
 	Internal use.			\n
 	Returns text-string aligned to the left with specified indention and end character.			\n
 	"""
-	cur_theme = Theme.get()
+	cur_theme = _Theme.get()
 	pos = _calc_pos_left()
 	if "" == text:
 		return ""
@@ -210,7 +210,7 @@ def _right(text, style='print', end='\n'):
 	Internal use.			\n
 	Returns text-string aligned to the right with specified indention and end character.			\n
 	"""
-	cur_theme = Theme.get()
+	cur_theme = _Theme.get()
 	if "" == text:
 		return ""
 	output = ""
@@ -231,7 +231,7 @@ def _center(text, style='print', end='\n'):
 	Internal use.			\n
 	Returnss text-string centered with specified indention and end character.			\n
 	"""
-	cur_theme = Theme.get()
+	cur_theme = _Theme.get()
 	pre = ""
 	if text != "":
 		if "title" == style:
@@ -266,8 +266,8 @@ def border(style='print'):
 	Prints border or the full line according to passed style.			\n
 	Accepts: header, title, print, status			\n
 	"""
-	cur_theme = Theme.get()
-	width = settings["full"]
+	cur_theme = _Theme.get()
+	width = _settings["full"]
 	if style == 'header':
 		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_left}"
 		right_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_right}{_cat.reset}"
@@ -295,7 +295,7 @@ def border(style='print'):
 	center = (width - 2 * len(cur_theme.border_left)) // 2 * 2  * fill
 
 	# Print Border
-	print(f"{_cursor2pos(0, True)}{left_border}{center}{right_border}", flush=True, file=FD_BORDER, end="")
+	print(f"{_cursor2pos(0, True)}{left_border}{center}{right_border}", flush=True, file=_FD_BORDER, end="")
 
 def text(*args, **kwargs):
 	"""
@@ -305,7 +305,7 @@ def text(*args, **kwargs):
 	"""
 	style = kwargs.get("style", "print")
 	end = kwargs.get("end", "\n")
-	LineLength = settings["inner"]
+	LineLength = _settings["inner"]
 	arg_count = len(args)
 	# Reset handle-vars
 	L, C, R = "", "" , ""
@@ -488,7 +488,7 @@ def text(*args, **kwargs):
 		print(f"{_cursor2pos(0, True)}{L}{C}{R}", end=end)
 		return True
 
-def bar(cur: int, max: int, width: int = settings["inner"], reverse: bool = False):
+def bar(cur: int, max: int, width: int = _settings["inner"], reverse: bool = False):
 	"""
 	Internal use. \n
 	Returns a string to resemble a progressbar according to the used theme. \
@@ -496,7 +496,7 @@ def bar(cur: int, max: int, width: int = settings["inner"], reverse: bool = Fals
 	"""	
 	# Get filling characters:
 	_update()
-	style = Theme.get()
+	style = _Theme.get()
 	e = style.bar_empty
 	h = style.bar_half
 	f = style.bar_full

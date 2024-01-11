@@ -74,16 +74,16 @@ class Conf:
 		# Imports and Variables
 		import configparser as _configparser
 		from AspireTUI import tui as _tui
-		from AspireTUI._MESSAGES import current as _msg
+		from AspireTUI import _MSG
 		from AspireTUI import Classes as _Classes
-		from AspireTUI import UtilsFile as _uf
+		from AspireTUI import path as _uf
 		import AspireTUI.Lists as _Lists
 		self._tui = _tui
-		self._msg = _msg
+		self._msg = _MSG
 		_known_extensions = {"ini", "cfg", "conf"}
 
-		if LOG_CONFIG:
-			ret, log = _Classes.Log( LOG_CONFIG , bVerbose=bVerbose, bDual=True)
+		if LOGFILE:
+			ret, log = _Classes.Log( LOGFILE , bVerbose=bVerbose, bDual=True)
 			
 			if _tui.status(ret, f"{self._msg.word_filesystem_file}"):
 				# TODO
@@ -94,7 +94,7 @@ class Conf:
 					if LOGFILE.__getattribute__("Name"):
 						self._logfile = _Classes.Log(LOGFILE)
 				if LOG_CONFIG:
-					self._logfile.config.load(LOG_CONFIG)
+					self._logfile.settings.load(LOG_CONFIG)
 		else:
 			# Is empty
 			self._logfile = LOGFILE

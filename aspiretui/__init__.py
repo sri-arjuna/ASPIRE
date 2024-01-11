@@ -14,6 +14,11 @@ Based on my TUI & SWARM for the BASH shell © 2011
 #
 import os as _os
 import sys as _sys
+#
+#	Simplify language access
+#
+from AspireTUI.__core._MESSAGES import current as _MSG 			# This is not used here, but eases the import
+
 ################################################################################################################
 #####                                            One time constants                                        #####
 ################################################################################################################
@@ -44,13 +49,15 @@ else:
 #
 #	Set default settings:
 #
-_settings = {
+_settings_console = {
 	"full": 		120,
 	"inner": 		112,
 	"lang":			"en",
 	"theme":		"Default",
 	"due":			0,
-	"log_self":		True,
+}
+_settings_self = {
+	"isDEBUG":		True,
 	"log_file":		"AspireTUI.log",
 	"log_conf":		"AspireTUI-log.ini"
 }

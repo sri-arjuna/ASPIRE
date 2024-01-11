@@ -57,13 +57,13 @@
 #
 #	Prepare data structures
 #
-from collections import namedtuple as _namedtuple
+#from collections import namedtuple as _namedtuple
 from dataclasses import dataclass as _dataclass
 from enum import Enum as _Enum
 #
 #	Internals
 #
-from . import settings as _settings
+from AspireTUI import _settings_console as _settings
 from .ColorAndText import cat as _cat
 ################################################################################################################
 #####                                            Theme Structure                                           #####

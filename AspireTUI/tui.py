@@ -26,13 +26,13 @@ import time as _time
 #
 #	Internals
 #
-import AspireTUI._internal as _internal
-import AspireTUI._PrintUtils as _put
-import AspireTUI.__put as _Theme
-from AspireTUI._MESSAGES import english as _MSG
-#import AspireTUI.StringUtils as _stew
+from AspireTUI import _settings_console as _settings
+from AspireTUI import _MSG
+from AspireTUI.__core import _internal
+from AspireTUI.__core import _PrintUtils as _put
+from AspireTUI.__core import _theme as _Theme
+import AspireTUI.strings as _stew
 
-from . import settings as _settings
 ################################################################################################################
 #####                                           Public Functions                                           #####
 ################################################################################################################

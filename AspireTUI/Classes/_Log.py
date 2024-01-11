@@ -23,7 +23,7 @@
 #import sys as _sys
 #import re as _re
 #import string as _string
-from AspireTUI._MESSAGES import current as _MSG
+from AspireTUI import _MSG
 from AspireTUI import tui as _tui
 from typing import Union as _Union
 #################################################################################################################

@@ -21,7 +21,6 @@
 import re as _re
 #import string as _string
 from datetime import datetime as _datetime
-#from AspireTUI import MESSAGE as _MSG
 # 
 #	Cross Platform & Advanced usage
 #
@@ -33,13 +32,15 @@ from datetime import datetime as _datetime
 #
 #	Prepare data structures
 #
-from collections import namedtuple as _namedtuple
-from dataclasses import dataclass as _dataclass
+#from collections import namedtuple as _namedtuple
+#from dataclasses import dataclass as _dataclass
 from typing import Union as _Union
 #
 #	Internal imports
 #
-from . import MESSAGE as _MSG
+from . import _MSG
+from AspireTUI.__core.ColorAndText import cat
+
 def _ClassDate():
 	date = date()
 	time = time()
@@ -120,8 +121,8 @@ def esc2hex(strESC:str) -> str:
 	Returns an empty string if it didnt find something to close. \n
 	Example: colorA = esc2hex(cat.fg.white)
 	"""
-	from AspireTUI.ColorAndText import cat as _cat
-	if strESC == _cat.reset:
+	#from AspireTUI.strings import cat
+	if strESC == cat.reset:
 		# Handle special case for cat.reset
 		return close_html_tags(strESC)
 	elif _re.match(r'<color=[^>]+>', strESC):
