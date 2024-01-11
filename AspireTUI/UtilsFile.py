@@ -29,7 +29,7 @@ from typing import Union as _Union
 #####                                            Basic Checks                                              #####
 ################################################################################################################
 # FileDescriptorOrPath
-def exists(filename: FileDescriptorOrPath, bVerbose=False, bDual=False):
+def exists(filename: str, bVerbose=False, bDual=False):
 	"""
 	Returns True if filename exists, or both, bool and message.
 	
