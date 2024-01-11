@@ -24,14 +24,68 @@ from pathlib import Path as _Path
 translation_directory = _Path("locales")
 translation = _gettext.translation("AspireTUI", translation_directory, fallback=True)
 translation.install()
-
 ################################################################################################################
-#####                                            Database                                                  #####
+#####                                            Words                                                     #####
 ################################################################################################################
+#
+#
+#
 word_error 			= _("Error")
 word_fatal			= _("Fatal")
 word_name			= _("Name")
 word_working		= _("Working")
+word_found 			= _("Found")
+#
+#	FileSystem
+#
+word_filesystem_dir = _("Directory")
+word_filesystem_file =_("File")
+word_filesystem_link =_("Link")
+word_filesystem_mount =_("Mount")
+
+
+################################################################################################################
+#####                                            Status                                                    #####
+################################################################################################################
+from AspireTUI._PrintUtils import _StatusEnum as StatusEnum
+
+################################################################################################################
+#####                                            FileSystem                                                #####
+################################################################################################################
+
+
+
+################################################################################################################
+#####                                            Errors                                                    #####
+################################################################################################################
+err_PERM_word		= _("Permission")
+err_PERM_word_short = _("PERM")
+err_PERM_sentence	= _("No permission in/for:")
+err_ERROR_word		= _("Error")
+err_ERROR_word_short = _("ERR")
+err_ERROR_sentence	= _("An error occoured.")
+err_WARN_word		= _("Warning")
+err_WARN_word_short = _("WARN")
+err_WARN_sentence	= _("")
+err_CRIT_word		= _("Critical")
+err_CRIT_word_short = _("CRIT")
+err_CRIT_sentence	= _("")
+err_FATAL_word		= _("Fatal")
+err_FATAL_word_short = _("FAT")
+err_FATAL_sentence	= _("")
+
+err__word		= _("")
+err__word_short = _("")
+err__sentence	= _("")
+
+err__word		= _("")
+err__word_short = _("")
+err__sentence	= _("")
+
+################################################################################################################
+#####                                            Database                                                  #####
+################################################################################################################
+
 
 
 
@@ -95,6 +149,16 @@ cl_log_err_must_float		= _("Provided argument must be: float")
 cl_log_err_must_int			= _("Provided argument must be: int")
 cl_log_err_must_str			= _("Provided argument must be: str")
 
+################################################################################################################
+#####                                            Class Conf                                                #####
+################################################################################################################
+cl_conf_ui_saving			= _("Saving")
+cl_conf_ui_saved			= _("Saved")
+cl_conf_ui_reading			= _("Reading")
+cl_conf_ui_read				= _("Read")
+cl_conf_				= _("")
+cl_conf_				= _("")
+cl_conf_				= _("")
 
-
+cl_conf_				= _("")
 #tui_press			= _("")
