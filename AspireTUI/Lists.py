@@ -55,12 +55,9 @@ class STATUS_ENUM(_Enum):
 	WARNING = 1000 + LOG_LEVEL.WARNING ,
 	ERROR = 1000 + LOG_LEVEL.ERROR ,
 	CRITICAL =  1000 + LOG_LEVEL.CRITICAL,
- 	FATAL =  1000 + LOG_LEVEL.FATAL
+	FATAL =  1000 + LOG_LEVEL.FATAL
 
-
-
-
-STATUS_WORDS[]
+#STATUS_WORDS = []
 
 #################################################################################################################
 #####                                           Lib: StringUtils                                            #####
