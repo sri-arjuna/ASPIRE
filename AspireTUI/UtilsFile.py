@@ -41,23 +41,18 @@ def exists(filename: FileDescriptorOrPath, bVerbose=False, bDual=False):
 		ret_bool, ret_msg = _Files.file_exists(filename, bDual=True)
 
 	"""
-	ret_bool, ret_msg  = False, None
-	is_file	= False
+	ret_bool = None
 	ret_bool = _os.path.exists(filename)
+	fn = _os.path.basename(filename)
+	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_file}: {fn}"
 
-
-	# Prepare output
-	if is(filename, filesystem.reference.)
-		is_file = True
 	if ret_bool:
 		ret_msg = _MSG.file_exists
 	else:
 		ret_msg = _MSG.file_not_found
-	
 	# Display things, if desired
 	if bVerbose:
-		_tui.status(ret_bool, ret_msg, _os.fspath(filename)[0])
-	
+		_tui.status(ret_bool, ret_msg)
 	# Return 
 	if bDual:
 		return ret_bool, ret_msg
@@ -70,7 +65,8 @@ def isfile(filename: str, bVerbose=False, bDual=False):
 	"""
 	# Init vars
 	ret_bool = False
-	ret_msg = f"{_MSG.word_found}: {_MSG.word_filesystem_file}"
+	fn = _os.path.basename(filename)
+	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_file}: {fn}"
 	# Start checking
 	if exists(filename, bVerbose=bVerbose):
 		if _os.path.isfile(filename):
@@ -78,6 +74,14 @@ def isfile(filename: str, bVerbose=False, bDual=False):
 			ret_bool = True
 	else:
 		raise TypeError(filename)
+	# Display things, if desired
+	if bVerbose:
+		_tui.status(ret_bool, ret_msg, fn)
+	# Return 
+	if bDual:
+		return ret_bool, ret_msg
+	else:
+		return ret_bool
 
 def isdir(filename: str, bVerbose=False, bDual=False):
 	"""
@@ -85,7 +89,8 @@ def isdir(filename: str, bVerbose=False, bDual=False):
 	"""
 	# Init vars
 	ret_bool = False
-	ret_msg = f"{_MSG.word_found}: {_MSG.word_filesystem_dir}"
+	fn = _os.path.basename(filename)
+	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_dir}: {fn}"
 	# Start checking
 	if exists(filename, bVerbose=bVerbose):
 		if _os.path.isdir(filename):
@@ -93,7 +98,6 @@ def isdir(filename: str, bVerbose=False, bDual=False):
 			ret_bool = True
 	else:
 		raise TypeError(filename)
-	
 	# is Verbose?
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg)
@@ -109,7 +113,8 @@ def islink(filename: str, bVerbose=False, bDual=False):
 	"""
 	# Init vars
 	ret_bool = False
-	ret_msg = f"{_MSG.word_found}: {_MSG.word_filesystem_link}"
+	fn = _os.path.basename(filename)
+	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_link}: {fn}"
 	# Start checking
 	if exists(filename, bVerbose=bVerbose):
 		if _os.path.islink(filename):
@@ -117,7 +122,6 @@ def islink(filename: str, bVerbose=False, bDual=False):
 			ret_bool = True
 	else:
 		raise TypeError(filename)
-	
 	# is Verbose?
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg)
@@ -133,7 +137,8 @@ def ismount(filename: str, bVerbose=False, bDual=False):
 	"""
 	# Init vars
 	ret_bool = False
-	ret_msg = f"{_MSG.word_found}: {_MSG.word_filesystem_mount}"
+	fn = _os.path.basename(filename)
+	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_mount}: {fn}"
 	# Start checking
 	if exists(filename, bVerbose=bVerbose):
 		if _os.path.ismount(filename):
@@ -141,7 +146,6 @@ def ismount(filename: str, bVerbose=False, bDual=False):
 			ret_bool = True
 	else:
 		raise TypeError(filename)
-	
 	# is Verbose?
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg)
