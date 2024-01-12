@@ -19,6 +19,8 @@
 #	Prepare data structures
 #
 from enum import Enum as _Enum
+from dataclasses import dataclass as _dataclass
+from AspireTUI.__core.ColorAndText import cat as _cat
 #################################################################################################################
 #####                                           Class: LOG & Status                                         #####
 #################################################################################################################
@@ -40,23 +42,60 @@ LOG_SEVERITY[5] = "FATAL"
 #
 #	Status
 #
-class STATUS_ENUM(_Enum):
-	# Singles:
-	Done = 0 ,
-	Fail = 1 ,
-
-	# Pseudo Bools
-	On = Done + 10 ,
-	Off = Fail + 10 ,
-
+class StatusEnum(_Enum):
+	# Default: bool
+	class Fail(_Enum):
+		id = False
+		string = f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}"
+	class Done(_Enum):
+		id = True
+		string = f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}"
 	# Log Level
-	DEBUG = 1000 + LOG_LEVEL.DEBUG ,
-	INFO = 1000 + LOG_LEVEL.INFO ,
-	WARNING = 1000 + LOG_LEVEL.WARNING ,
-	ERROR = 1000 + LOG_LEVEL.ERROR ,
-	CRITICAL =  1000 + LOG_LEVEL.CRITICAL,
-	FATAL =  1000 + LOG_LEVEL.FATAL
-
+	class DEBUG(_Enum):
+		id = 1000 + LOG_LEVEL.DEBUG
+		string = f" 🐞 "
+	class INFO(_Enum):
+		id = 1000 + LOG_LEVEL.INFO 
+		string = f"ℹ️ℹ️ℹ️"
+	class Warning(_Enum):
+		id = 1000 + LOG_LEVEL.WARNING
+		string = f" ⚠️ "
+	class ERROR(_Enum):
+		id = 1000 + LOG_LEVEL.ERROR
+		string = f" ❌ "
+	class CRITICAL(_Enum):
+		id = 1000 + LOG_LEVEL.CRITICAL
+		string = f" 🔴 "
+	class FATAL(_Enum):
+		id = 1000 + LOG_LEVEL.FATAL
+		string = f" ☠️ "
+	# Default: Pseudo-Bool
+	class Off(_Enum):
+		id = int(False) + 10
+		string = f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}"
+	class On(_Enum):
+		id = int(True) + 10
+		string = f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}"
+	# Job related
+	class Todo(_Enum):
+		id = 2
+		string = f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}"
+	class Work(_Enum):
+		id = 3
+		string = f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}"
+	# Menu
+	class Skip(_Enum):
+		id = 4
+		string = f""
+	class Next(_Enum):
+		id = 5
+		string = f""
+	class Prev(_Enum):
+		id = 6
+		string = f""
+	class Info(_Enum):
+		id = 111
+		string = f""
 #STATUS_WORDS = []
 
 #################################################################################################################

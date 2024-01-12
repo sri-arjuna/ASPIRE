@@ -90,6 +90,9 @@ def _update(forced=False, DEBUG=None):
 	U+2716	✖	Heavy multipli_cation X
 	U+2717	✗	Ballot X
 	U+2718	✘	Heavy ballot X
+
+	idk about these:
+	# 🐞 ℹ️  ⚠️  ❌  🔴  ☠️
 """
 class _StatusEnum(_Enum):
 	Good = f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}"
