@@ -114,12 +114,32 @@ class Conf:
 			self._tui.status(False)
 	
 	def _read(self):
-		if self.settings.bVerbose:
-			self._tui.status(4, self._msg.cl_conf_ui_reading, self.settings.filename)
-		if self._logfile is not None:
-			self._config.read(self.filename, encoding=self.encoding,)
-	
-	def _save(self):
+		# Prepare message
+		tmp_msg = f"{self._msg.cl_conf_ui_reading}: {self.settings.filename}"
+		# Prefer LOG over verbose
+		if self.settings.LOGFILE:
+			self._logfile.INFO(tmp_msg)
+		elif self.settings.bVerbose:
+			# Fallback to 
+			self._tui.status(_Lists.StatusEnum.Work.id, tmp_msg)
+		# Do it
+		if self._config.read(self.filename, encoding=self.encoding):
+			ret = True
+		else:
+			ret = False
+		# Job is done, report...?
+		# Prefer LOG over verbose... again!
+		tmp_msg = f"{self._msg.cl_conf_ui_read}: {self.settings.filename}"
+		if self.settings.LOGFILE:
+			if ret:
+				self._logfile.INFO(tmp_msg)
+			else:
+				self._logfile.WARNING(tmp_msg)
+		elif self.settings.bVerbose:
+			# Fallback to 
+			self._tui.status(ret, tmp_msg)
+		
+	def _save(self, filename:str):
 		with open(self.filename, 'w', encoding=self.encoding) as _configfile:
 			self._config.write(_configfile)
 
@@ -182,8 +202,6 @@ class Conf:
 		if section not in self._config:
 			self._add_section(section)
 		return _Section(self, section)
-
-	
 
 	class _Key:
 		def __init__(self, section, key):
