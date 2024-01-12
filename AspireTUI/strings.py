@@ -217,3 +217,28 @@ def morse2char(input_data):
 		input_data = input_data.splitlines()
 	morse_dict_reverse = {value: key for key, value in _MORSE_CODE_DICT.items()}
 	return '\n'.join([''.join([morse_dict_reverse[code] if code in morse_dict_reverse else code for code in line.split()]) for line in input_data])
+
+#
+#	"String" related bools
+#
+def isList(this, bDual=False):
+	"""
+	Simple bool. \n
+
+	"""
+	# Init
+	bRet = False
+	sList = None
+	# Check
+	if isinstance(this, list):
+		bRet = True
+		try:
+			sList = list(this)
+		except TypeError(list, this):
+			sList = _MSG.cl_log_err_must_list
+			bRet = False
+	# Return
+	if bDual:
+		return bRet, sList
+	else:
+		return bRet

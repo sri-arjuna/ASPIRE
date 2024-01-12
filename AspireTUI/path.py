@@ -20,7 +20,7 @@ import os as _os
 #import sys as _sys
 #import re as _re
 #import string as _string
-from . import _MSG
+from AspireTUI import _MSG
 #from . import Classes as _Classes
 #from . import strings as _stew
 from AspireTUI import tui as _tui
@@ -154,3 +154,16 @@ def ismount(filename: str, bVerbose=False, bDual=False):
 		return ret_bool, ret_msg
 	else:
 		return ret_bool
+
+def is_file_in_use(filename: str):
+	"""
+	Returns True if file is in use.
+	"""
+	try:
+		with open(filename, 'r') as file:
+			pass
+		# File is not in use
+		return False
+	except PermissionError:	# OSError in Python 3.3 and later
+		# File is in use
+		return True
