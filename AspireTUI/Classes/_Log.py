@@ -167,12 +167,13 @@ class Log:
 
 		If you have a LOG_CONFIG, you do not need to provide a LOGFILE. \n
 		
-		from AspireTUI.FileUtils import log  	\n
-		myLog = log( str_filename ) 			\n
+		from AspireTUI.Classes import Log  	\n
+		myLog = Log( str_filename ) 			\n
 		myLog.Settings.Title = "Title in new logfile"			\n
 		myLog.Settings.LogLevel_ShowUser = myLog.LEVEL.WARNING	\n
+		myLog.save()			# Saves a config file of the log settings. \n
 		\n
-		myConf.DEBUG(f"Only shown if myConf.Settings.LogLevel_ShowUser is: myConf.LEVEL.DEBUG")	\n
+		myLog.DEBUG(f"Only shown if myLog.Settings.LogLevel_ShowUser is: myLog.LEVEL.DEBUG")	\n
 		\n
 		SEVERITY[0] = "DEBUG" 		\n
 		SEVERITY[1] = "INFO" 		\n
