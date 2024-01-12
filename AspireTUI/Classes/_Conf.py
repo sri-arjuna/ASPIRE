@@ -93,8 +93,6 @@ class Conf:
 				if _uf.file_exists(LOGFILE, bVerbose=bVerbose):
 					if LOGFILE.__getattribute__("Name"):
 						self._logfile = _Classes.Log(LOGFILE)
-				if LOG_CONFIG:
-					self._logfile.settings.load(LOG_CONFIG)
 		else:
 			# Is empty
 			self._logfile = LOGFILE

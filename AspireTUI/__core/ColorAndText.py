@@ -89,5 +89,5 @@ cat = _CaT(
 	line = _Line(
 		up='\033[1A',
 		down='\033[1B',
-	)        
+	)
 )

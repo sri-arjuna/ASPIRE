@@ -38,10 +38,16 @@ import AspireTUI.strings as _stew
 ################################################################################################################
 def header(*args, end='\n'):
 	"""
+	Expects:
+		Up to 3 strings.
+	Usage:
+		tui.header("left", "right")
+		tui.header("left", "center", "right")
+		tui.header("", "", "right")
 	Prints up to 3 strings, L, L+R, LCR.
 	Theme:Default = White font and blue background.
 	"""
-	_put._update(True)
+	_put._update(forced=True)
 	style="header"
 	_put.border(style=style)
 	_put.text(*args, style=style, end=end)
@@ -71,7 +77,7 @@ def print(*args, end='\n'):
 			for line in lines:
 				_put.border()
 				_put.text(line, end='\n')
-		elif isinstance(single_arg, list):
+		elif _stew.isList(single_arg):
 			for line in single_arg:
 				_put.border()
 				_put.text(line, end='\n')
@@ -168,7 +174,7 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 	Default style is 'bar'.		\n
 	Valid styles are: bar, num	\n
 	"""
-	_put._update(DEBUG=text)
+	_put._update()	# DEBUG=text
 	if text:
 		width = _settings["inner"] / 2
 	else:
