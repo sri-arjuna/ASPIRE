@@ -77,9 +77,10 @@ class Conf:
 		from AspireTUI import _MSG
 		from AspireTUI import Classes as _Classes
 		from AspireTUI import path as _uf
-		import AspireTUI.Lists as _Lists
+		import AspireTUI.lists as _Lists
 		self._tui = _tui
 		self._msg = _MSG
+		self._lists = _Lists
 		_known_extensions = {"ini", "cfg", "conf"}
 
 		if LOGFILE:
@@ -119,7 +120,7 @@ class Conf:
 			self._logfile.INFO(tmp_msg)
 		elif self.settings.bVerbose:
 			# Fallback to 
-			self._tui.status(_Lists.StatusEnum.Work.id, tmp_msg)
+			self._tui.status(self._lists.StatusEnum.Work.id, tmp_msg)
 		# Do it
 		if self._config.read(self.filename, encoding=self.encoding):
 			ret = True
@@ -142,7 +143,7 @@ class Conf:
 			self._config.write(_configfile)
 
 	def _reload(self):
-		_read()
+		self._read(self)
 
 	def _add_section(self, section):
 		self._config.add_section(section)
@@ -182,6 +183,22 @@ class Conf:
 	def save(self):
 		self._save()
 
+	class _Key:
+		def __init__(self, section, key):
+			self.section = section
+			self.key = key
+		@property
+		def value(self):
+			return self.section.conf._get_key(self.section.section, self.key)
+		@value.setter
+		def value(self, new_value):
+			self.section.conf._set_key(self.section.section, self.key, new_value)
+		def rename(self, new_name):
+			self.section.conf._rename_key(self.section.section, self.key, new_name)
+			return self.section.conf.__getattr__(self.section.section).__getattr__(new_name)
+		def remove(self):
+			self.section.conf._remove_key(self.section.section, self.key)
+			
 	class _Section:
 		def __init__(self, conf, section):
 			self.conf = conf
@@ -190,34 +207,16 @@ class Conf:
 		def __getattr__(self, key):
 			if key not in self.conf._get_section(self.section):
 				self.conf._add_key(self.section, key, "")
-			return _Key(self, key)
+			return self.conf._Key(self, key)
 	
-	@property
-	def _sections(self):
-		return list(self._config.sections())
+		@property
+		def _sections(self):
+			return list(self._config.sections())
 
-	def __getattr__(self, section):
-		if section not in self._config:
-			self._add_section(section)
-		return _Section(self, section)
+		def __getattr__(self, section):
+			if section not in self._config:
+				self._add_section(section)
+			return self.conf._Section(self, section)
 
-	class _Key:
-		def __init__(self, section, key):
-			self.section = section
-			self.key = key
 
-	@property
-	def value(self):
-		return self.section.conf._get_key(self.section.section, self.key)
-
-	@value.setter
-	def value(self, new_value):
-		self.section.conf._set_key(self.section.section, self.key, new_value)
-
-	def rename(self, new_name):
-		self.section.conf._rename_key(self.section.section, self.key, new_name)
-		return self.section.conf.__getattr__(self.section.section).__getattr__(new_name)
-
-	def remove(self):
-		self.section.conf._remove_key(self.section.section, self.key)
 	

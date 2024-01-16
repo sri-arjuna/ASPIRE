@@ -64,7 +64,7 @@ from enum import Enum as _Enum
 #	Internals
 #
 from AspireTUI import _settings_console as _settings
-from .ColorAndText import cat as _cat
+from AspireTUI.strings import cat as _cat
 ################################################################################################################
 #####                                            Theme Structure                                           #####
 ################################################################################################################

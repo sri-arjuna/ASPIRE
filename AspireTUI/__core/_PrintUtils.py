@@ -5,7 +5,7 @@
 					put.border(style=header|title)			\n
 					put.text(*args, style=header|title)
 
-	========================================================
+	======================================================== \n
 	Created on:		2023 Nov. 09
 	Created by:		Simon Arjuna Erat
 	License:		MIT
@@ -28,6 +28,8 @@ import shutil as _shutil
 from typing import Union as _Union
 from enum import Enum as _Enum
 #from enum import EnumMeta as _EnumMeta
+#from dataclasses import dataclass as _dataclass
+from collections import namedtuple as _namedtuple
 #
 #	Internals
 # 
@@ -35,6 +37,7 @@ from AspireTUI import _settings_console as _settings, FD_BORDER as _FD_BORDER #,
 import AspireTUI.__core._internal as _internal
 #import AspireTUI.StringUtils as stew
 from AspireTUI.__core.ColorAndText import cat as _cat
+from AspireTUI.os import isGUI as _isGUI
 import AspireTUI.__core._theme as _Theme
 from AspireTUI import _MSG
 ################################################################################################################
@@ -94,7 +97,7 @@ def _update(forced=False, DEBUG=None):
 	idk about these:
 	# 🐞 ℹ️  ⚠️  ❌  🔴  ☠️
 """
-class _StatusEnum(_Enum):
+class _StatusEnumORG(_Enum):
 	Good = f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}"
 	Bad = f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}"
 	Todo = f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}"
@@ -106,28 +109,274 @@ class _StatusEnum(_Enum):
 	Off = f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}"
 	Info = f"{_cat.front.yellow}{_cat.text.bold}!!!{_cat.reset}"
 
-_dict_status = {
-	'0': _StatusEnum.Bad,
-	'1': _StatusEnum.Good,
-	False: _StatusEnum.Bad,
-	True: _StatusEnum.Good,
-	'10': _StatusEnum.Off,
-	'11': _StatusEnum.On,
-	'2': _StatusEnum.Todo,
-	'3': _StatusEnum.Work,
-	'4': _StatusEnum.Skip,
-	'5': _StatusEnum.Next,
-	'6': _StatusEnum.Prev,
-	'111': _StatusEnum.Info,
-}
+#from AspireTUI.lists import StatusEnum as _StatusEnum
+#_dict_status = {
+#	'0': _StatusEnum.Fail.id,
+#	'1': _StatusEnum.Done.id,
+#	False: _StatusEnum.Fail.id,
+#	True: _StatusEnum.Done.id,
+#	'10': _StatusEnum.Off.id,
+#	'11': _StatusEnum.On.id,
+#	'2': _StatusEnum.Todo.id,
+#	'3': _StatusEnum.Work.id,
+#	'4': _StatusEnum.Skip.id,
+#	'5': _StatusEnum.Next.id,
+#	'6': _StatusEnum.Prev.id,
+#	'111': _StatusEnum.Info.id,
+#}
 
-def status(ID: _Union[int, bool, _Enum]):
-	if not isinstance(ID, (int, bool)):
-		raise TypeError(_MSG.args_status_first)
-	try:
-		return f"[ {_dict_status[ID].value} ]"
-	except KeyError:
-		raise ValueError(_MSG.args_status_first, f"{ID}")
+from AspireTUI.lists import LOG_LEVEL
+class StatusEnumV2(_Enum):
+	"""
+	Internal StatusID reference v3  	\n
+	For public access, so we can easy words as reference. 	\n
+	All capital are Log Levels.		\n
+	1000 + LogLevel.LevelName.value		\n
+	\n
+	Similar:		\n
+	On/Off = int(bool) + 10		\n
+	"""
+	# Default: bool
+	class Fail(_Enum):
+		id = False
+		uni = f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}"
+		tty = f"{_cat.front.red}{_cat.text.bold}FAIL{_cat.reset}"
+	class Done(_Enum):
+		id = True
+		uni = f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}"
+		tty = f"{_cat.front.green}{_cat.text.bold}DONE{_cat.reset}"
+	# Log Level
+	class DEBUG(_Enum):
+		id = 1000 + LOG_LEVEL.DEBUG.value
+		uni = f" 🐞 "
+		tty = f"DBUG"
+	class INFO(_Enum):
+		id = 1000 + LOG_LEVEL.INFO.value
+		uni = f"ℹ️ℹ️ℹ️"
+		tty = f"INFO"
+	class Warning(_Enum):
+		id = 1000 + LOG_LEVEL.WARNING.value
+		uni = f" ⚠️ "
+		tty = f"WARN"
+	class ERROR(_Enum):
+		id = 1000 + LOG_LEVEL.ERROR.value
+		uni = f" ❌ "
+		tty = f"EROR"
+	class CRITICAL(_Enum):
+		id = 1000 + LOG_LEVEL.CRITICAL.value
+		uni = f" 🔴 "
+		tty = f"CRIT"
+	class FATAL(_Enum):
+		id = 1000 + LOG_LEVEL.FATAL.value
+		uni = f" ☠️ "
+		tty = f"FATL"
+	# Default: Pseudo-Bool
+	class Off(_Enum):
+		id = int(False) + 10
+		uni = f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}"
+		tty = f"{_cat.front.red}{_cat.text.bold}Off {_cat.reset}"
+	class On(_Enum):
+		id = int(True) + 10
+		uni = f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}"
+		tty = f"{_cat.front.green}{_cat.text.bold} On {_cat.reset}"
+	# Job related
+	class Todo(_Enum):
+		id = 2
+		uni = f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}"
+		tty = f"{_cat.front.cyan}{_cat.text.bold}TODO{_cat.reset}"
+	class Work(_Enum):
+		id = 3
+		uni = f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}"
+		tty = f"{_cat.front.yellow}{_cat.text.bold}WORK{_cat.reset}"
+	# Menu
+	class Skip(_Enum):
+		id = 4
+		uni = f" » "
+		tty = f"Skip"
+	class Next(_Enum):
+		id = 5
+		uni = f" > "
+		tty = f"Next"
+	class Prev(_Enum):
+		id = 6
+		uni = f" < "
+		tty = f"Prev"
+	class Info(_Enum):
+		id = 111
+		uni = f"ℹ️ℹ️ℹ️"
+		tty = f"Info"
+
+class STATUS(_Enum):
+	"""
+	Simple Wordlist to represent / handle different "return codes". \n
+	Use STATUS_STRINGS dataclass to retrieve the actual strings.\n
+	To present text/reports to users, please use: tui.status(STATUS.work, message)
+	"""
+	Done = True
+	Fail = False
+	On = int(True) + 10
+	Off = int(False) + 10
+	DEBUG = 1000 + LOG_LEVEL.DEBUG.value
+	INFO = 1000 + LOG_LEVEL.INFO.value
+	WARNING = 1000 + LOG_LEVEL.WARNING.value
+	ERROR = 1000 + LOG_LEVEL.ERROR.value
+	CRITICAL = 1000 + LOG_LEVEL.CRITICAL.value
+	FATAL = 1000 + LOG_LEVEL.FATAL.value
+	Todo = 2
+	Work = 3
+	Skip = 4
+	Next = 5
+	Prev = 6
+	Info = 111
+
+"""
+class _Entry(_namedtuple):
+	id: int
+	uni: str
+	tty: str
+"""
+_Entry = _namedtuple('_Entry', ['id', 'uni', 'tty'])
+
+class STATUS_STRINGS:
+	"""
+	Provides strings/icons according to UI. \n
+	GUI = uni/code, Console = tty \n
+	To transform return codes to text/reports, please use: tui.status
+	"""
+	# Init
+	Done = _Entry(
+		True,
+		f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}",
+		f"{_cat.front.red}{_cat.text.bold}{_MSG.status_done}{_cat.reset}"
+	)
+	Fail = _Entry(
+		False,
+		f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}",
+		f"{_cat.front.red}{_cat.text.bold}FAIL{_cat.reset}"
+	)
+	DEBUG = _Entry(
+		1000 + LOG_LEVEL.DEBUG.value,
+		" 🐞 ",
+		"DBUG"
+	)
+	INFO = _Entry(
+		1000 + LOG_LEVEL.INFO.value,
+		"ℹ️ℹ️ℹ️",
+		"INFO"
+	)
+	Warning = _Entry(
+		1000 + LOG_LEVEL.WARNING.value,
+		" ⚠️ ",
+		"WARN"
+	)
+	ERROR = _Entry(
+		1000 + LOG_LEVEL.ERROR.value,
+		" ❌ ",
+		"EROR"
+	)
+	CRITICAL = _Entry(
+		1000 + LOG_LEVEL.CRITICAL.value,
+		" 🔴 ",
+		"CRIT"
+	)
+	FATAL = _Entry(
+		1000 + LOG_LEVEL.FATAL.value,
+		" ☠️ ",
+		"FATL"
+	)
+	Off = _Entry(
+		int(False) + 10,
+		f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}",
+		f"{_cat.front.red}{_cat.text.bold}Off {_cat.reset}"
+	)
+	On = _Entry(
+		int(True) + 10,
+		f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}",
+		f"{_cat.front.green}{_cat.text.bold} On {_cat.reset}"
+	)
+	Todo = _Entry(
+		2,
+		f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}",
+		f"{_cat.front.cyan}{_cat.text.bold}TODO{_cat.reset}"
+	)
+	Work = _Entry(
+		3,
+		f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}",
+		f"{_cat.front.yellow}{_cat.text.bold}WORK{_cat.reset}"
+	)
+	Skip = _Entry(
+		4,
+		" » ",
+		"Skip"
+	)
+	Next = _Entry(
+		5,
+		" > ",
+		"Next"
+	)
+	Prev = _Entry(
+		6,
+		" < ",
+		"Prev"
+	)
+	Info = _Entry(
+		111,
+		"ℹ️ℹ️ℹ️",
+		"Info"
+	)
+
+
+def status(ID: _Union[int, bool, _Enum], seperators="[]"):
+	#sepL, sepR = None, None
+	sepL = seperators[:1]
+	sepR = seperators[1:]
+	val_member = None
+	val_out = None
+	#if not isinstance(ID, (int, bool, _Enum)):
+	#	raise TypeError(_MSG.args_status_first)
+	#try:
+	#	return f"[ {_dict_status[ID].value} ]"
+	#except KeyError:
+	#	raise ValueError(_MSG.args_status_first, ID)
+	# Real nmew
+	# Check input
+	if isinstance(ID, bool):
+		val_ret = int(ID)
+	elif isinstance(ID, int):
+		val_ret = int(ID)
+	elif isinstance(ID, _Enum):
+		print("TODO status id is enum")
+		val_ret = int(ID)
+	else:
+		# Basic error handling
+		raise TypeError(_MSG.args_status_first, ID)
+	# Compare it
+	#for member in _StatusEnum:		# v1
+	#	if member.id == val_ret:
+	#		val_member = member
+	#		break
+	#for member_name, member in _StatusEnum.__members__.items():		# v2
+	#	if member.value.id == val_ret:
+	#		val_member = member
+	#		break
+	for entry in STATUS_STRINGS.__annotations__.values():
+		if getattr(entry, 'id', None) == val_ret:
+			val_member = entry
+			break
+	# How to return/display?
+	if val_member:
+		if _isGUI:
+			# These have length 3 = icons, so 1 extra space
+			val_out = f"{sepL} {val_member.uni}  {sepR}"
+		else:
+			# These have length 4 = text
+			val_out =f"{sepL} {val_member.tty} {sepR}"
+	# Finaly return aproriate status string
+	return val_out
+
+
+
+
 
 #################################################################################################################
 #####                                           Print Utils (_put)                                          #####

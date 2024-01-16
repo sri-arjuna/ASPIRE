@@ -3,7 +3,7 @@ Created on:		2023 Nov. 09
 Created by:		Simon Arjuna Erat
 License:		MIT
 URL:			https://www.github.com/sri-arjuna/ASPIRE
-PyPi:			
+PyPi:			https://pypi.org/project/AspireTUI/
 Based on my TUI & SWARM for the BASH shell © 2011
 """
 ################################################################################################################
@@ -65,7 +65,7 @@ _settings_self = {
 ################################################################################################################
 #####                                            Initialize & Update                                       #####
 ################################################################################################################
-def _log(doLog: bool, ):
+def _fLog(doLog: bool, ):
 	"""
 	Handles internal logging / verbose'ity according to _settings
 	"""
@@ -79,4 +79,17 @@ def _log(doLog: bool, ):
 		_check_conf = _settings_self["conf_file"]
 
 		_conf = _Conf(_check_conf, LOGFILE=_check_log_conf)
-		#_conf.settings.
+		#_conf.settings.LOGFILE
+
+#from AspireTUI.__core import _log
+from AspireTUI.strings import now as _now
+from AspireTUI.Classes import _Log
+from AspireTUI import _settings_self
+log = _Log.Log( _settings_self["log_conf"] )
+log.settings.Title = f"Created with: AspireTUI (TODO VER), {_now()}"
+# For debugging purposes this extreme
+if True == _settings_self["isDEBUG"]:
+	log.settings.LogLevel_ShowUser = 0
+	log.settings.LogLevel_SaveLog = 0
+log.DEBUG(f"Logging Enabled: {_os.path.abspath(_os.path.curdir)} // {log.settings.filename}")
+log.INFO(f"Yay! Another log entry! -- %r -- %s", "Just here", "for testing!")

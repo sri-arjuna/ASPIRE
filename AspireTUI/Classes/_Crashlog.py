@@ -95,7 +95,7 @@ class _SectionHeading:
 #	Root Section
 #
 class CrashLog:
-	def __init__(self, filename, bVerbose=True, sLOG_FILE=None, IGNORE=None, ):
+	def __init__(self, filename, bVerbose=True, sLOG_FILE=None, IGNORE=None, KNOWN_LOGGERS=None, KNOWN_APPS=None):
 		"""
 		Returns contents of a CrashLog as an object. \n
 		Set:
@@ -113,10 +113,10 @@ class CrashLog:
 		self.SystemSpec = _SectionSystemSpec()
 
 		# Prepare additional tasks
-		if sLOG_FILE is not None:
+		if sLOG_FILE:
 			bLOG = True
 			from AspireTUI.Classes import Log as _Log
-			log = _Log(sLOG_File)
+			log = _Log(sLOG_FILE)
 			log.Settings.bVerbose = bVerbose
 		else:
 			bLOG = False

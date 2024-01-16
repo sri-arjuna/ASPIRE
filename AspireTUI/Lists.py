@@ -19,83 +19,32 @@
 #	Prepare data structures
 #
 from enum import Enum as _Enum
-from dataclasses import dataclass as _dataclass
-from AspireTUI.__core.ColorAndText import cat as _cat
+#from dataclasses import dataclass as _dataclass
+#from AspireTUI.__core.ColorAndText import cat
 #################################################################################################################
 #####                                           Class: LOG & Status                                         #####
 #################################################################################################################
+#from AspireTUI.__core._PrintUtils import STATUS
 class LOG_LEVEL(_Enum):
-	DEBUG = 0,
-	INFO = 1,
-	WARNING = 2,
-	ERROR = 3,
-	CRITICAL = 4,
+	DEBUG = 0
+	INFO = 1
+	WARNING = 2
+	ERROR = 3
+	CRITICAL = 4
 	FATAL = 5
 
-LOG_SEVERITY = []
-LOG_SEVERITY[0] = "DEBUG"
-LOG_SEVERITY[1] = "INFO"
-LOG_SEVERITY[2] = "WARNING"
-LOG_SEVERITY[3] = "ERROR"
-LOG_SEVERITY[4] = "CRITICAL"
-LOG_SEVERITY[5] = "FATAL"
+LOG_SEVERITY = [ 
+	"DEBUG" , 
+	"INFO", 
+	"WARNING", 
+	"ERROR", 
+	"CRITICAL", 
+	"FATAL" 
+]
 #
 #	Status
 #
-class StatusEnum(_Enum):
-	# Default: bool
-	class Fail(_Enum):
-		id = False
-		string = f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}"
-	class Done(_Enum):
-		id = True
-		string = f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}"
-	# Log Level
-	class DEBUG(_Enum):
-		id = 1000 + LOG_LEVEL.DEBUG
-		string = f" 🐞 "
-	class INFO(_Enum):
-		id = 1000 + LOG_LEVEL.INFO 
-		string = f"ℹ️ℹ️ℹ️"
-	class Warning(_Enum):
-		id = 1000 + LOG_LEVEL.WARNING
-		string = f" ⚠️ "
-	class ERROR(_Enum):
-		id = 1000 + LOG_LEVEL.ERROR
-		string = f" ❌ "
-	class CRITICAL(_Enum):
-		id = 1000 + LOG_LEVEL.CRITICAL
-		string = f" 🔴 "
-	class FATAL(_Enum):
-		id = 1000 + LOG_LEVEL.FATAL
-		string = f" ☠️ "
-	# Default: Pseudo-Bool
-	class Off(_Enum):
-		id = int(False) + 10
-		string = f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}"
-	class On(_Enum):
-		id = int(True) + 10
-		string = f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}"
-	# Job related
-	class Todo(_Enum):
-		id = 2
-		string = f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}"
-	class Work(_Enum):
-		id = 3
-		string = f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}"
-	# Menu
-	class Skip(_Enum):
-		id = 4
-		string = f""
-	class Next(_Enum):
-		id = 5
-		string = f""
-	class Prev(_Enum):
-		id = 6
-		string = f""
-	class Info(_Enum):
-		id = 111
-		string = f""
+
 #STATUS_WORDS = []
 
 #################################################################################################################

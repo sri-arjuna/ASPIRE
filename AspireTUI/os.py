@@ -17,11 +17,11 @@
 #
 #	Essential imports
 #
-#import os as _os
+import os as _os
 #import sys as _sys
 #import re as _re
 #import string as _string
-from pathlib import Path as _Path
+#from pathlib import Path as _Path
 from AspireTUI import IS_WINDOWS as _IS_WINDOWS
 #################################################################################################################
 #####                                           Get Directories                                             #####
@@ -58,3 +58,14 @@ def get_dir_OS(bVerbose=True, bMinimal=False):
 			# TODO
 			pass
 	pass
+
+def isGUI():
+	"""
+	Check if the script is running in a GUI environment.
+	"""
+	if _IS_WINDOWS:
+		# Check if running in Windows console
+		return _os.getenv("TERM_PROGRAM") is not None
+	else:
+		# Check if running in a non-Windows environment
+		return _os.getenv("TERM") is None

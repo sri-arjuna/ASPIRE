@@ -47,7 +47,18 @@ word_filesystem_mount =_("Mount")
 ################################################################################################################
 #####                                            Status                                                    #####
 ################################################################################################################
-from AspireTUI._PrintUtils import _StatusEnum as StatusEnum
+#from AspireTUI.lists import StatusEnum # as StatusEnum
+status_done			= _("DONE")
+status_fail			= _("FAIL")
+status_todo			= _("TODO")
+status_work			= _("WORK")
+status_skip			= _("SKIP")
+status_next			= _("NEXT")
+status_prev			= _("PREV")
+status_info			= _("INFO")
+status_on			= _(" ON ")
+status_off			= _("Off ")
+status_			= _("")
 
 ################################################################################################################
 #####                                            FileSystem                                                #####
@@ -62,7 +73,7 @@ err_PERM_word		= _("Permission")
 err_PERM_word_short = _("PERM")
 err_PERM_sentence	= _("No permission in/for:")
 err_ERROR_word		= _("Error")
-err_ERROR_word_short = _("ERR")
+err_ERROR_word_short = _("ERR ")
 err_ERROR_sentence	= _("An error occoured.")
 err_WARN_word		= _("Warning")
 err_WARN_word_short = _("WARN")
@@ -71,7 +82,7 @@ err_CRIT_word		= _("Critical")
 err_CRIT_word_short = _("CRIT")
 err_CRIT_sentence	= _("")
 err_FATAL_word		= _("Fatal")
-err_FATAL_word_short = _("FAT")
+err_FATAL_word_short = _("FATL")
 err_FATAL_sentence	= _("")
 
 err__word		= _("")
@@ -142,10 +153,25 @@ cl_log_severity2	= _("WARNING")
 cl_log_severity3	= _("ERROR")
 cl_log_severity4	= _("CRITICAL")
 cl_log_severity5	= _("FATAL")
+#
+#	Severity
+#
+_SEVERITY_TRANSLATED = [
+	cl_log_severity0,
+	cl_log_severity1,
+	cl_log_severity2,
+	cl_log_severity3,
+	cl_log_severity4,
+	cl_log_severity5
+]
+#
+# 	More Strings
+#
 cl_log_fatal_no_file 			= _("No file provided, can not create class!")
 cl_log_warn_file_without_path	= _("Logfile does not contain any path information.\nThis could lead to unexpected behaviour")
 cl_log_err_must_bool		= _("Provided argument must be: bool")
 cl_log_err_must_float		= _("Provided argument must be: float")
+cl_log_err_must_list		= _("Provided argument must be: list")
 cl_log_err_must_int			= _("Provided argument must be: int")
 cl_log_err_must_str			= _("Provided argument must be: str")
 

@@ -38,9 +38,9 @@ from typing import Union as _Union
 #
 #	Internal imports
 #
-from . import _MSG
+from AspireTUI.__core._MESSAGES import current as _MSG
 from AspireTUI.__core.ColorAndText import cat
-
+"""
 def _ClassDate():
 	date = date()
 	time = time()
@@ -53,6 +53,7 @@ def _ClassChange():
 def Menu():
 	datetime = _ClassDate()
 	change = _ClassChange()
+"""
 #################################################################################################################
 #####                                           String Utils (stew)                                         #####
 #################################################################################################################
@@ -203,7 +204,7 @@ def char2morse(input_data):
 	"""
 	Converts characters or a multiline string to Morse code.
 	"""
-	from AspireTUI.Lists import morse_code as _MORSE_CODE_DICT
+	from AspireTUI.lists import morse_code as _MORSE_CODE_DICT
 	if isinstance(input_data, str):
 		input_data = input_data.upper().splitlines()
 	return '\n'.join([' '.join([_MORSE_CODE_DICT[char] if char in _MORSE_CODE_DICT else char for char in line]) for line in input_data])
@@ -212,7 +213,7 @@ def morse2char(input_data):
 	"""
 	Converts Morse code to characters.
 	"""
-	from AspireTUI.Lists import morse_code as _MORSE_CODE_DICT
+	from AspireTUI.lists import morse_code as _MORSE_CODE_DICT
 	if isinstance(input_data, str):
 		input_data = input_data.splitlines()
 	morse_dict_reverse = {value: key for key, value in _MORSE_CODE_DICT.items()}

@@ -22,7 +22,11 @@ import os as _os
 #import subprocess as _subprocess
 from typing import Union as _Union
 import time as _time
-
+from collections import namedtuple as _namedtuple
+#
+#	Prepare data structures
+#
+from enum import Enum as _Enum
 #
 #	Internals
 #
@@ -141,7 +145,7 @@ def yesno(question: str, yesno_option="yn") -> bool:
 	elif answer in no and "" != answer:
 		return False
 
-def status(ID: _Union[int, bool], *args, align_right=True, end='\n'):
+def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n', bDual=False):
 	"""
 	Requires ID to be int or bool, and 1 additional string as message for the status.					\n
 	By default (orientation=right), text is printed left, center, and the actual status on the right.	\n
@@ -149,23 +153,43 @@ def status(ID: _Union[int, bool], *args, align_right=True, end='\n'):
 	Change orientation=left to have status on the left, main text on the right. If an optional text is passed,
 	main text will be in the center and the optional text on the right.
 	"""
+	# init
+	ret_status = None
+	ret_value = None
+	# Check arg count
 	if len(args) > 2:
-		msg_status_many_args = _MSG.args_2_status
-		raise SyntaxError(msg_status_many_args)
-
+		raise SyntaxError(_MSG.args_2_status)
+	# Check arg type
+	if isinstance(ID, _Union[bool, int]):
+		# It is bool or int, easy
+		ret_value = int(ID)
+	elif isinstance(ID, _namedtuple):
+		# It is an enum
+		print("TODO put status instance enum")
+		ret_value = ID.id
+	else:
+		raise TypeError(_MSG.args_status_first)
+	# Checks passed, basic output
 	_put._update()
 	_put.border()
-
+	# How to present main output?
 	if len(args) == 0:
+		# Nothing else passed,
+		# so we have to make sure its all on the right
 		if align_right:
-			_put.text("", _put.status(ID), end=end)
+			_put.text("", _put.status(ret_value), end=end)
 		else:  # left
-			_put.text(_put.status(ID),  "", end=end)
+			_put.text(_put.status(ret_value),  "", end=end)
 	else:
 		if align_right:
-			_put.text(*args, _put.status(ID), end=end)
+			_put.text(*args, _put.status(ret_value), end=end)
 		else:  # left
-			_put.text(_put.status(ID), *args, end=end)
+			_put.text(_put.status(ret_value), *args, end=end)
+	# Do the dual output?
+	if bDual:
+		msg = args[0]
+		message = msg % args
+		return ret_value, message
 
 def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
 	"""
@@ -228,7 +252,7 @@ def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False,
 	
 	cur = secs
 	while cur > 0:
-		print(msg,f"{stew.sec2time(cur)} / {Time}{unit}")
+		print(msg,f"{_stew.sec2time(cur)} / {Time}{unit}")
 		cur -= 1
 		## https://realpython.com/python-sleep/
 		## Async? or time.wait instead ??
