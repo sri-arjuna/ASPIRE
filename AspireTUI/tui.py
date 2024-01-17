@@ -30,12 +30,13 @@ from enum import Enum as _Enum
 #
 #	Internals
 #
-from AspireTUI import _settings_console as _settings
-from AspireTUI import _MSG
-from AspireTUI.__core import _internal
-from AspireTUI.__core import _PrintUtils as _put
-from AspireTUI.__core import _theme as _Theme
-import AspireTUI.strings as _stew
+from . import _settings_console as _settings
+from . import _MSG
+from . import strings as _stew
+from .__core import _internal
+from .__core import _PrintUtils as _put
+from .__core import _theme as _Theme
+
 #from AspireTUI import log
 
 ################################################################################################################
@@ -55,7 +56,10 @@ def header(*args, end='\n'):
 	_put._update(forced=True)
 	style="header"
 	_put.border(style=style)
-	_put.text(*args, style=style, end=end)
+	if 1 >= len(args):
+		_put.text(*args, style=style, end=end)
+	else:
+		print(end=end)
 
 def title(text="", end='\n'):
 	"""
@@ -263,7 +267,7 @@ def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False,
 
 def msgbox(*args, bOutside=False):
 	"""
-	
+	Attempts to mimick a message box -> planned WIP
 	"""
 	# Print "border"
 	_put._update()
@@ -282,6 +286,12 @@ def msgbox(*args, bOutside=False):
 		header()
 	else:
 		title()
+
+def clear():
+	"""
+	Clears the console screen and moves text cursors to top left corner.
+	"""
+	print(_stew.cat.clear)
 
 def list(*args, bRoman=False, bMenu=False, sSeperator=")"):
 	"""

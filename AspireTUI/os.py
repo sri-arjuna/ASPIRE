@@ -22,7 +22,7 @@ import os as _os
 #import re as _re
 #import string as _string
 #from pathlib import Path as _Path
-from AspireTUI import IS_WINDOWS as _IS_WINDOWS
+from . import IS_WINDOWS as _IS_WINDOWS
 #################################################################################################################
 #####                                           Get Directories                                             #####
 #################################################################################################################

@@ -23,9 +23,9 @@ import re as _re
 #
 #	Internals
 # 
-from AspireTUI import IS_WINDOWS as _IS_WINDOWS
-from AspireTUI import tui as _tui
-from AspireTUI import strings as _stew
+from .. import IS_WINDOWS as _IS_WINDOWS
+from .. import tui as _tui
+from .. import strings as _stew
 #################################################################################################################
 #####                                           Crashlog Class Container                                    #####
 #################################################################################################################

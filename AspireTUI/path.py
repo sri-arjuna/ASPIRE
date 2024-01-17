@@ -20,10 +20,10 @@ import os as _os
 #import sys as _sys
 #import re as _re
 #import string as _string
-from AspireTUI import _MSG
+from . import _MSG
 #from . import Classes as _Classes
 #from . import strings as _stew
-from AspireTUI import tui as _tui
+from . import tui as _tui
 #from typing import Union as _Union
 ################################################################################################################
 #####                                            Basic Checks                                              #####

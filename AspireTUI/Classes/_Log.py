@@ -23,8 +23,8 @@
 #import sys as _sys
 #import re as _re
 #import string as _string
-from AspireTUI import _MSG
-from AspireTUI import tui as _tui
+from .. import _MSG
+from .. import tui as _tui
 from typing import Union as _Union
 #################################################################################################################
 #####                                           Class: LOG                                                  #####
@@ -34,8 +34,8 @@ from typing import Union as _Union
 #
 SEVERITY =[]
 _SEVERITY_TRANSLATED = []
-from AspireTUI.lists import LOG_LEVEL as LEVEL
-from AspireTUI.lists import LOG_SEVERITY as SEVERITY
+from ..lists import LOG_LEVEL as LEVEL
+from ..lists import LOG_SEVERITY as SEVERITY
 
 _str_Title = "title"
 _str_Desc = "desc"

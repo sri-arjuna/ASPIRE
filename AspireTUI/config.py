@@ -20,7 +20,7 @@
 #import sys as _sys
 #import re as _re
 #import string as _string
-from AspireTUI import _MSG
+from . import _MSG
 # 
 #	Cross Platform & Advanced usage
 #

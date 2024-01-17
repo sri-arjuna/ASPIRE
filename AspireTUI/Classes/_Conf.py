@@ -97,10 +97,10 @@ class Conf:
 		#self.settings.
 		# Imports and Variables
 		import configparser as _configparser
-		from AspireTUI import tui as _tui
-		from AspireTUI import _MSG
-		from AspireTUI import Classes as _Classes
-		from AspireTUI import path as _uf
+		from .. import tui as _tui
+		from .. import _MSG
+		from .. import Classes as _Classes
+		from .. import path as _uf
 		import AspireTUI.lists as _Lists
 		self._tui = _tui
 		self._msg = _MSG

@@ -34,11 +34,11 @@ from collections import namedtuple as _namedtuple
 #	Internals
 # 
 from AspireTUI import _settings_console as _settings, FD_BORDER as _FD_BORDER #, IS_WINDOWS
-import AspireTUI.__core._internal as _internal
+from AspireTUI.__core import _internal
 #import AspireTUI.StringUtils as stew
 from AspireTUI.__core.ColorAndText import cat as _cat
 from AspireTUI.os import isGUI as _isGUI
-import AspireTUI.__core._theme as _Theme
+from AspireTUI.__core import _theme as _Theme
 from AspireTUI import _MSG
 ################################################################################################################
 #####                                            Internal Functions                                        #####
@@ -727,6 +727,7 @@ def text(*args, **kwargs):
 			L = _left(args[0], style=style, end="")
 			R = _right(args[1], style=style, end="")
 		elif arg_count <= 1:
+			#if "" is not args[0]:
 			if "title" == style:
 				C = _center(args[0], style=style, end="")
 			else:

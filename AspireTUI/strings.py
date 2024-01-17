@@ -38,8 +38,8 @@ from typing import Union as _Union
 #
 #	Internal imports
 #
-from AspireTUI.__core._MESSAGES import current as _MSG
-from AspireTUI.__core.ColorAndText import cat
+from .__core._MESSAGES import current as _MSG
+from .__core.ColorAndText import cat
 """
 def _ClassDate():
 	date = date()

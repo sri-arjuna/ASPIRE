@@ -17,8 +17,8 @@ import sys as _sys
 #
 #	Simplify language access
 #
-from AspireTUI.__core._MESSAGES import current as _MSG 			# This is not used here, but eases the import
-
+from .__core._MESSAGES import current as _MSG 			# This is not used here, but eases the import
+from .__core._PrintUtils import _update
 ################################################################################################################
 #####                                            One time constants                                        #####
 ################################################################################################################
@@ -62,13 +62,15 @@ _settings_self = {
 	"log_file":		"AspireTUI.log",
 	"log_conf":		"AspireTUI-log.ini"
 }
+_update()
 ################################################################################################################
 #####                                            Initialize & Update                                       #####
 ################################################################################################################
+"""
 def _fLog(doLog: bool, ):
-	"""
-	Handles internal logging / verbose'ity according to _settings
-	"""
+	""
+	# Handles internal logging / verbose'ity according to _settings
+	""
 	if _settings_self["log_self"] == True:
 		# Let 
 		# Prepare work
@@ -82,9 +84,9 @@ def _fLog(doLog: bool, ):
 		#_conf.settings.LOGFILE
 
 #from AspireTUI.__core import _log
-from AspireTUI.strings import now as _now
-from AspireTUI.Classes import _Log
-from AspireTUI import _settings_self
+from .strings import now as _now
+from .Classes import _Log
+from . import _settings_self
 log = _Log.Log( _settings_self["log_conf"] )
 log.settings.Title = f"Created with: AspireTUI (TODO VER), {_now()}"
 # For debugging purposes this extreme
@@ -93,3 +95,5 @@ if True == _settings_self["isDEBUG"]:
 	log.settings.LogLevel_SaveLog = 0
 log.DEBUG(f"Logging Enabled: {_os.path.abspath(_os.path.curdir)} // {log.settings.filename}")
 log.INFO(f"Yay! Another log entry! -- %r -- %s", "Just here", "for testing!")
+
+"""
