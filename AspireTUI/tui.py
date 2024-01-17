@@ -36,6 +36,7 @@ from AspireTUI.__core import _internal
 from AspireTUI.__core import _PrintUtils as _put
 from AspireTUI.__core import _theme as _Theme
 import AspireTUI.strings as _stew
+from AspireTUI import log
 
 ################################################################################################################
 #####                                           Public Functions                                           #####
@@ -169,6 +170,7 @@ def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n'
 		ret_value = ID.id
 	else:
 		raise TypeError(_MSG.args_status_first)
+	log.DEBUG(f"ret_val: {ret_value}")
 	# Checks passed, basic output
 	_put._update()
 	_put.border()
