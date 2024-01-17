@@ -17,6 +17,30 @@ URL:			https://www.github.com/sri-arjuna/ASPIRE
 
 Based on my TUI & SWARM for the BASH shell © 2011
 """
+## TODO: to be shared in .Classes
+class _SectionSettings:
+	def __init__(self, encoding="UTF-8", bVerbose=False ):
+		"""
+		Provides basic settings for LOG and CONF classes 	\n
+		Values need to be set from its parent class.
+		"""
+		class _subLog:
+			# Contains values related to logs
+			self.file = ""
+			self.conf = ""
+			self.level_show_user = 3
+			self.level_save_log = 4
+		class _subConf:
+			# Contains values related to conf - config
+			self.filename = ""
+			self.sections = "[]"
+			self.value_sep = " = "
+		# Namne of the actual conf or log file
+		self.filename = ""
+		self.encoding = encoding
+		self.bVerbose = bVerbose
+
+
 #################################################################################################################
 #####                                           Class: Conf                                                 #####
 #################################################################################################################
@@ -61,7 +85,7 @@ class Conf:
 			self.filename = filename
 			self.encoding = encoding
 			self.bVerbose = bVerbose
-			self.bDual = bDual
+			#self.bDual = bDual
 			self.LOGFILE = LOGFILE
 		# Prepare settings
 		self.settings = _SubSettings()
@@ -217,6 +241,3 @@ class Conf:
 			if section not in self._config:
 				self._add_section(section)
 			return self.conf._Section(self, section)
-
-
-	
