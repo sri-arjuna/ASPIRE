@@ -566,175 +566,177 @@ def text(*args, **kwargs):
 		need_split = True
 	if length_total == 0:
 		# No text to parse
-		return
-
-	# Before we do anything, let's go back so we can properly print:
-	if need_split:
-		if 1 == arg_count:
-			if "title" == style:
-				w = LineLength * 0.5
-				linesC = _internal.split_string_preserve_words(args[0], w)
-				print(_center(linesC[0], style=style))
-				border(style=style)
-				text(linesC[1], style=style)
-			else:
-				# Print and header
-				w = LineLength * 0.8
-				linesL = _internal.split_string_preserve_words(args[0], w)
-				text(linesL[0], style=style)
-				# 2nd line
-				tmp = linesL[1]
-				while len(tmp) > 0:
-					tmp2, tmp3 = _internal.split_string_preserve_words(tmp, w)
+		SKIP_ALL = True
+	else:
+		SKIP_ALL = False
+		# Before we do anything, let's go back so we can properly print:
+		if need_split:
+			if 1 == arg_count:
+				if "title" == style:
+					w = LineLength * 0.5
+					linesC = _internal.split_string_preserve_words(args[0], w)
+					print(_center(linesC[0], style=style))
 					border(style=style)
-					print(_right(tmp2, style=style))
-					tmp = tmp3
-			return True
-		elif 2 == arg_count:
-			if len(args[0]) < LineLength:
-				# L fits on one line
-				linesL = _left(args[0], style=style, end="")
-				# R maybe too?
-				if len(args[1]) < LineLength:
-					# Yes, so easy mode
-					linesR = _right(args[1], style=style, end="")
-					# Output
-					print(linesL)
-					border(style=style)
-					text("", linesR, style=style)
+					text(linesC[1], style=style)
 				else:
-					# Nope, needs 2 lines
-					# More complex handling
-					w = LineLength * 0.45
-					linesR = _internal.split_string_preserve_words(args[1], w)
-					# First line
-					print(_left(linesL, style=style), _right(linesR[0], style=style))
-					# Loop through remaining linesR
-					tmp = linesR[1]
+					# Print and header
+					w = LineLength * 0.8
+					linesL = _internal.split_string_preserve_words(args[0], w)
+					text(linesL[0], style=style)
+					# 2nd line
+					tmp = linesL[1]
 					while len(tmp) > 0:
 						tmp2, tmp3 = _internal.split_string_preserve_words(tmp, w)
 						border(style=style)
 						print(_right(tmp2, style=style))
 						tmp = tmp3
 				return True
-			else:
-				# L does not fit on one line.
-				w = LineLength * 0.45
-				linesL = _internal.split_string_preserve_words(args[0], w)
-				linesR = _internal.split_string_preserve_words(args[1], w)
-				print(_left(linesL[0], style=style), _right(linesR[0], style=style))
-				# Loop for all remaining output:
-				while True:
-					# Check which output is required
-					if len(linesL) > 1 and len(linesR) > 1:
-						L = linesL[1]
-						R = linesR[1]
-						linesL = _internal.split_string_preserve_words(L, w)
-						linesR = _internal.split_string_preserve_words(R, w)
+			elif 2 == arg_count:
+				if len(args[0]) < LineLength:
+					# L fits on one line
+					linesL = _left(args[0], style=style, end="")
+					# R maybe too?
+					if len(args[1]) < LineLength:
+						# Yes, so easy mode
+						linesR = _right(args[1], style=style, end="")
+						# Output
+						print(linesL)
 						border(style=style)
-						text(linesL[0], linesR[0], style=style)
-						if not linesL[1] and not linesR[1]:
-							# Both lines are empty, exit the loop
-							break
-					elif len(linesL) > 1:
-						# Only linesR is exhausted, print remaining linesL
-						border(style=style)
-						text(linesL[0], style=style)            
-					elif len(linesR) > 1:
-						# Only linesL is exhausted, print remaining linesR
-						border(style=style)
-						text("", linesR[0], style=style)
+						text("", linesR, style=style)
 					else:
-						# Exit the loop as both lists are exhausted
-						break
-				return True
-		elif 3 == arg_count:
-			# Exception rule: center argument matches line length
-			if len(args[1]) <= LineLength:
-				# Split left and right arguments
-				w = LineLength * 0.3
-				linesL = _internal.split_string_preserve_words(args[0], w)
-				linesR = _internal.split_string_preserve_words(args[2], w)
-				
-				# Print lines
-				text(linesL[0], linesR[0], style=style)
-				border(style=style)
-				print(_center(args[1], style=style))
-				border(style=style)
-				text(linesL[1], linesR[1], style=style)
-			else:
-				# Center does not fit into LineLength, handle like 2 'even' arguments
-				w = LineLength * 0.3
-				L, linesL = _internal.split_string_preserve_words(args[0], w)
-				C, linesC = _internal.split_string_preserve_words(args[1], w)
-				R, linesR = _internal.split_string_preserve_words(args[2], w)
-				
-				# Print line
-				text(L, C, R, style=style)
+						# Nope, needs 2 lines
+						# More complex handling
+						w = LineLength * 0.45
+						linesR = _internal.split_string_preserve_words(args[1], w)
+						# First line
+						print(_left(linesL, style=style), _right(linesR[0], style=style))
+						# Loop through remaining linesR
+						tmp = linesR[1]
+						while len(tmp) > 0:
+							tmp2, tmp3 = _internal.split_string_preserve_words(tmp, w)
+							border(style=style)
+							print(_right(tmp2, style=style))
+							tmp = tmp3
+					return True
+				else:
+					# L does not fit on one line.
+					w = LineLength * 0.45
+					linesL = _internal.split_string_preserve_words(args[0], w)
+					linesR = _internal.split_string_preserve_words(args[1], w)
+					print(_left(linesL[0], style=style), _right(linesR[0], style=style))
+					# Loop for all remaining output:
+					while True:
+						# Check which output is required
+						if len(linesL) > 1 and len(linesR) > 1:
+							L = linesL[1]
+							R = linesR[1]
+							linesL = _internal.split_string_preserve_words(L, w)
+							linesR = _internal.split_string_preserve_words(R, w)
+							border(style=style)
+							text(linesL[0], linesR[0], style=style)
+							if not linesL[1] and not linesR[1]:
+								# Both lines are empty, exit the loop
+								break
+						elif len(linesL) > 1:
+							# Only linesR is exhausted, print remaining linesL
+							border(style=style)
+							text(linesL[0], style=style)            
+						elif len(linesR) > 1:
+							# Only linesL is exhausted, print remaining linesR
+							border(style=style)
+							text("", linesR[0], style=style)
+						else:
+							# Exit the loop as both lists are exhausted
+							break
+					return True
+			elif 3 == arg_count:
+				# Exception rule: center argument matches line length
+				if len(args[1]) <= LineLength:
+					# Split left and right arguments
+					w = LineLength * 0.3
+					linesL = _internal.split_string_preserve_words(args[0], w)
+					linesR = _internal.split_string_preserve_words(args[2], w)
+					
+					# Print lines
+					text(linesL[0], linesR[0], style=style)
+					border(style=style)
+					print(_center(args[1], style=style))
+					border(style=style)
+					text(linesL[1], linesR[1], style=style)
+				else:
+					# Center does not fit into LineLength, handle like 2 'even' arguments
+					w = LineLength * 0.3
+					L, linesL = _internal.split_string_preserve_words(args[0], w)
+					C, linesC = _internal.split_string_preserve_words(args[1], w)
+					R, linesR = _internal.split_string_preserve_words(args[2], w)
+					
+					# Print line
+					text(L, C, R, style=style)
 
-				# Loop through remaining
-				while True:
-					# Exit loop?
-				#	if "" == f"{tmpL}{tmpC}{linesR}":
-				#		break
-					# Reset loop vars
-					L, C, R = "", "", ""
-					# Get content
-					tmpL, linesL = _internal.split_string_preserve_words(linesL, w)
-					tmpC, linesC = _internal.split_string_preserve_words(linesC, w)
-					tmpR, linesR = _internal.split_string_preserve_words(linesR, w)
-					
-					if tmpL:
-						L = _left(tmpL, style=style)
-					if tmpC:
-						C = _center(tmpC, style=style)
-					if tmpR:
-						R = _right(tmpR, style=style)
-					
-					# Print current line
-					border(style=style)
-					print(L, C, R)
-					
-					if not linesL and not linesC and not linesR:
-						break
-				# Print remaining content
-				if linesL or linesC or linesR:
-					L, C, R = "", "", ""
-					if linesL:
-						L = _left(linesL, style=style)
-					if linesC:
-						C = _center(linesC, style=style)
-					if linesR:
-						R = _right(linesR, style=style)
-					border(style=style)
-					print(L, C, R)
-		else:
-			print(_MSG.args_too_may)
-			#print(_("Too many arguments"))
-			return 1
-	else:
-		# Expected default behavior:
-		if arg_count == 3:
-			L = _left(args[0], style=style, end="")
-			C = _center(args[1], style=style, end="")
-			R = _right(args[2], style=style, end="")
-		elif arg_count == 2:
-			L = _left(args[0], style=style, end="")
-			R = _right(args[1], style=style, end="")
-		elif arg_count == 1:
-			#if "" is not args[0]:
-			if "title" == style:
-				C = _center(args[0], style=style, end="")
+					# Loop through remaining
+					while True:
+						# Exit loop?
+					#	if "" == f"{tmpL}{tmpC}{linesR}":
+					#		break
+						# Reset loop vars
+						L, C, R = "", "", ""
+						# Get content
+						tmpL, linesL = _internal.split_string_preserve_words(linesL, w)
+						tmpC, linesC = _internal.split_string_preserve_words(linesC, w)
+						tmpR, linesR = _internal.split_string_preserve_words(linesR, w)
+						
+						if tmpL:
+							L = _left(tmpL, style=style)
+						if tmpC:
+							C = _center(tmpC, style=style)
+						if tmpR:
+							R = _right(tmpR, style=style)
+						
+						# Print current line
+						border(style=style)
+						print(L, C, R)
+						
+						if not linesL and not linesC and not linesR:
+							break
+					# Print remaining content
+					if linesL or linesC or linesR:
+						L, C, R = "", "", ""
+						if linesL:
+							L = _left(linesL, style=style)
+						if linesC:
+							C = _center(linesC, style=style)
+						if linesR:
+							R = _right(linesR, style=style)
+						border(style=style)
+						print(L, C, R)
 			else:
-				L = _left(args[0], style=style, end="")
-			pass
+				print(_MSG.args_too_may)
+				#print(_("Too many arguments"))
+				return 1
 		else:
-			# This is supposed to NOT use MSG
-			print("Holy guacamole, you should never see this, please report!")
-			print("--> from put.text")
-			return False
-		print(f"{_cursor2pos(0, True)}{L}{C}{R}", end=end)
-		return True
+			# Expected default behavior:
+			if arg_count == 3:
+				L = _left(args[0], style=style, end="")
+				C = _center(args[1], style=style, end="")
+				R = _right(args[2], style=style, end="")
+			elif arg_count == 2:
+				L = _left(args[0], style=style, end="")
+				R = _right(args[1], style=style, end="")
+			elif arg_count == 1:
+				#if "" is not args[0]:
+				if "title" == style:
+					C = _center(args[0], style=style, end="")
+				else:
+					L = _left(args[0], style=style, end="")
+				pass
+			else:
+				# This is supposed to NOT use MSG
+				print("Holy guacamole, you should never see this, please report!")
+				print("--> from put.text")
+				return False
+	# This should be shown on empty title/print as well...
+	print(f"{_cursor2pos(0, True)}{L}{C}{R}", end=end)
+	return True
 
 def bar(cur: int, max: int, width: int = _settings["inner"], reverse: bool = False):
 	"""

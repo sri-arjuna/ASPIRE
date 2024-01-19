@@ -61,16 +61,7 @@ def header(*args, end='\n'):
 	elif 3 < _count:
 		raise IndexError(_MSG.args_max3, *args)
 	elif 1 <= _count:
-		if False:
-			#Debug
-			a1, a2, a3 = None, None, None
-			a1 = str(args[0])
-			a2 = str(args[1])
-			a3 = str(args[2])
-			_put.text(a1, a2, a3, style=style, end=end)
-		else:
-			_put.text(*args, style=style, end=end)
-
+		_put.text(*args, style=style, end=end)
 
 def title(*args, end='\n'):
 	"""
