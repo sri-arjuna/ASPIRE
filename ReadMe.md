@@ -16,7 +16,8 @@ It aims to make the console output more appealing to end users and provide devel
 Target Audience
 ---------------
 For developers aiming to enhance the user experience with the console.
-![HelloWorld](./docs/help/Basic_HelloWorld/HelloWorld.jpg)
+
+![HelloWorld](./docs/help/1.HelloWorld/HelloWorld.jpg)
 
 Detail
 ------
@@ -25,7 +26,7 @@ ASPIRE simplifies common tasks by providing various functions that wrap around f
 One of ASPIRE's key focuses is to enhance the console experience by offering themable designs. You, as the author, can choose from a variety of ASCII-based themes that include colors, symbols, bold and underline fonts, and more. Users also have the option to select a different theme or even create their own (if you allow so).
 
 ASPIRE is designed with simplified usability in mind for both end users and developers. \
-These functions aim to streamline interactions and improve the overall experience.
+These functions aim to streamline interactions and improve the overall experience, coding and usage wise.
 
 To name a few of these convenient functions:\
 All descriptions are based on the default theme.
@@ -49,16 +50,17 @@ Usage
 The code for the previous preview would look as simple as this, which is how you can use it as library in your projects:
 
 ```py
-from aspire import Aspire as tui
+from AspireTUI import tui
 
 tui.header("Aspire by (sea/sri-arjuna)", "Date + Time")
 tui.title("Hello World")
-tui.printe("Left string", "Center string", "Right string")
+tui.print("Left string", "Center string", "Right string")
 tui.press()
 ```
 
 This is how "Hello World" (using ``header``, ``title`` and ``print``) can look like:
-![preview](./docs/HelloWorld.jpg)
+
+![preview](./docs/help/1.HelloWorld/HelloWorld.jpg)
 
 - There are some test projects in [[examples](./examples)]
 - You can find more detailed help in [[docs/help](./docs/help)]
