@@ -25,7 +25,7 @@ import re as _re
 # 
 from .. import IS_WINDOWS as _IS_WINDOWS
 from .. import tui as _tui
-from .. import strings as _stew
+from .. import Strings as _stew
 #################################################################################################################
 #####                                           Crashlog Class Container                                    #####
 #################################################################################################################

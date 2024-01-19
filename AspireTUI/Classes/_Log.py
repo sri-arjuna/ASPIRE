@@ -226,7 +226,7 @@ class Log:
 		"""
 		# Init
 		this = cls.settings.filename
-		from AspireTUI.path import exists as _exist
+		from AspireTUI.Path import exists as _exist
 		ret_bool = False
 		ret_msg = f"{_MSG.cl_conf_ui_reading}: {this}"
 		# Check
