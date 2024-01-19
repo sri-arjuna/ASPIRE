@@ -55,15 +55,3 @@ _settings_console = {
 	"theme":		"Default",
 	"due":			12,
 }
-_settings_self = {
-	"isDEBUG":		True,
-	"conf_file":	"AspireTUI.ini",
-	"log_file":		"AspireTUI.log",
-	"log_conf":		"AspireTUI-log.ini"
-}
-################################################################################################################
-#####                                            Initialize & Update                                       #####
-################################################################################################################
-"""
-some text
-"""
