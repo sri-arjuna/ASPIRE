@@ -246,8 +246,8 @@ class STATUS_STRINGS:
 	# Init
 	Done = _Entry(
 		True,
-		f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}",
-		f"{_cat.front.red}{_cat.text.bold}{_MSG.status_done}{_cat.reset}"
+		f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}",
+		f"{_cat.front.green}{_cat.text.bold}{_MSG.status_done}{_cat.reset}"
 	)
 	Fail = _Entry(
 		False,
@@ -325,43 +325,29 @@ class STATUS_STRINGS:
 		"Info"
 	)
 
-
 def status(ID: _Union[int, bool, _namedtuple], seperators="[]"):
+	"""
+	This translates int, bool or _namedtuple (_Entry :: STATUS_STRINGS)	into a "show-able" string. \n
+	It determines if we're in a GUI or TTY, and uses the according entry.
+	"""
 	#sepL, sepR = None, None
 	sepL = seperators[:1]
 	sepR = seperators[1:]
 	val_member = None
 	val_out = None
-	#if not isinstance(ID, (int, bool, _Enum)):
-	#	raise TypeError(_MSG.args_status_first)
-	#try:
-	#	return f"[ {_dict_status[ID].value} ]"
-	#except KeyError:
-	#	raise ValueError(_MSG.args_status_first, ID)
-	# Real nmew
 	# Check input
 	if isinstance(ID, bool):
 		val_ret = int(ID)
 	elif isinstance(ID, int):
 		val_ret = int(ID)
-	elif isinstance(ID, _namedtuple):
+	elif isinstance(ID, _Entry):
 		#print("TODO status id is enum")
 		val_ret = int(ID)
 	else:
 		# Basic error handling
 		raise TypeError(_MSG.args_status_first, ID)
-	# Compare it
-	#for member in _StatusEnum:		# v1
-	#	if member.id == val_ret:
-	#		val_member = member
-	#		break
-	#for member_name, member in _StatusEnum.__members__.items():		# v2
-	#	if member.value.id == val_ret:
-	#		val_member = member
-	#		break
-	#for entry in STATUS_STRINGS.__annotations__.values():
+	# Parse entries for the correct "id" entry
 	for entry in vars(STATUS_STRINGS).values():
-		#if getattr(entry, 'id', None) == val_ret:
 		if isinstance(entry, _Entry) and getattr(entry, 'id', None) == val_ret:
 			val_member = entry
 			break

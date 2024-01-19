@@ -190,10 +190,10 @@ def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n'
 	if isinstance(ID, _Union[bool, int]):
 		# It is bool or int, easy
 		ret_value = int(ID)
-	elif isinstance(ID, _namedtuple):
+	elif isinstance(ID, _put._Entry):
 		# It is an enum
-		print("TODO put status instance enum")
-		ret_value = int(ID.id)
+		#print(f"# TODO: put status instance, ID = {ID} // ID.id = {ID} -- this might not work properly")
+		ret_value = ID.id
 	else:
 		raise TypeError(_MSG.args_status_first)
 	#print(f"DEBUG ret_val: {ret_value}")
