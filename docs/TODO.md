@@ -26,6 +26,12 @@ theme editor -> save/load files -> config aspire/projects
 >  <br>
 
 
+os.iswindows
+os.isgui
+os.isVerOS(10 || 5.6.1)
+os.isVerPy(3.10)
+
+
 # Make ASPIRE as module:
 
 ----

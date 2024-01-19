@@ -20,8 +20,8 @@
 #
 #	Essential imports
 #
-from .. import _MSG
-from .. import IS_WINDOWS as _IS_WINDOWS
+from . import _MSG
+from . import IS_WINDOWS as _IS_WINDOWS
 #import os as _os
 #import sys as _sys
 #import re as _re

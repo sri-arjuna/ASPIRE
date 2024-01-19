@@ -31,13 +31,12 @@ from enum import Enum as _Enum
 #	Internals
 #
 from . import _settings_console as _settings
-from . import _MSG
-from . import strings as _stew
-from .__core import _internal
-from .__core import _PrintUtils as _put
-from .__core import _theme as _Theme
+from ._MESSAGES import current as _MSG
+from . import Strings as _stew
+from . import _internal
+from . import _PrintUtils as _put
+from . import _theme as _Theme
 
-#from AspireTUI import log
 
 ################################################################################################################
 #####                                           Public Functions                                           #####
@@ -53,23 +52,43 @@ def header(*args, end='\n'):
 	Prints up to 3 strings, L, L+R, LCR.
 	Theme:Default = White font and blue background.
 	"""
-	_put._update(forced=True)
 	style="header"
+	_put._update(forced=True)
 	_put.border(style=style)
-	if 1 >= len(args):
-		_put.text(*args, style=style, end=end)
-	else:
-		print(end=end)
+	_count = len(args)
+	if 0 == _count:
+		_put.text("",style=style, end=end)
+	elif 3 < _count:
+		raise IndexError(_MSG.args_max3, *args)
+	elif 1 <= _count:
+		if False:
+			#Debug
+			a1, a2, a3 = None, None, None
+			a1 = str(args[0])
+			a2 = str(args[1])
+			a3 = str(args[2])
+			_put.text(a1, a2, a3, style=style, end=end)
+		else:
+			_put.text(*args, style=style, end=end)
 
-def title(text="", end='\n'):
+
+def title(*args, end='\n'):
 	"""
 	Prints 1 (one) string in the center.
 	Theme:Default = Blue font and white background.
 	"""
 	_put._update()
 	style="title"
+	_count = len(args)
 	_put.border(style=style)
-	_put.text(text, style=style, end=end)
+	if 1 == _count:
+		# As expected
+		_put.text(args[0], style=style, end=end)
+	if 3 < _count:
+		raise IndexError(_MSG.args_title, _count, args)
+	elif _count == 0 or args is None or args[0] == "":
+		# Probably empty
+		_put.text("", style=style, end=end)
 
 def print(*args, end='\n'):
 	"""
@@ -93,6 +112,9 @@ def print(*args, end='\n'):
 		else:
 			_put.border()
 			_put.text(single_arg, end=end)
+	elif len(args) == 0:
+		_put.border()
+		_put.text("", end=end)
 	else:
 		_put.border()
 		_put.text(*args, end=end)
@@ -171,10 +193,10 @@ def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n'
 	elif isinstance(ID, _namedtuple):
 		# It is an enum
 		print("TODO put status instance enum")
-		ret_value = ID.id
+		ret_value = int(ID.id)
 	else:
 		raise TypeError(_MSG.args_status_first)
-	print(f"DEBUG ret_val: {ret_value}")
+	#print(f"DEBUG ret_val: {ret_value}")
 	# Checks passed, basic output
 	_put._update()
 	_put.border()
@@ -297,5 +319,58 @@ def list(*args, bRoman=False, bMenu=False, sSeperator=")"):
 	"""
 	Prints a list 
 	"""
+	# Init / get vars
+	max = _settings["inner"]
+	cur = 0
+	count = len(args)
+	COL = None
+	# Get longest item
+	for item in args:
+		_tmp_cur = len(item)
+		if cur < _tmp_cur:
+			cur = _tmp_cur
+	# decide colum count
+	if cur < max / 3:
+		COL = 3
+	elif cur < max / 2:
+		COL = 2
+	else:
+		# Lets hope each item fits on a single line...
+		COL = 1
+	# Lets "Debug" here
+	if COL is None:
+		# No args detected:
+		# TODO : Decide wether I want to abort here, or be error prone and just return nothing....
+		raise ValueError(_MSG.args_missing , args)
+	# cur is no longer used, lets reuse it
+	# Also, prepare list to be shown
 	if bMenu:
-		list_entries = [ _MSG.tui_list_back ] *args
+		# The menu entry is always on 0
+		cur = 0
+		list_entries = [ _MSG.tui_list_back , *args ]
+	else:
+		cur = 1
+		list_entries = args
+	#
+	#	List Loop
+	#
+	#for entry in list_entries:
+		# TODO
+	entries_per_row = COL
+	for i in range(0, count, entries_per_row):
+		current_entries = list_entries[i:i + entries_per_row]
+		formatted_entries = []
+		for j, entry in enumerate(current_entries, start=cur):
+			if bRoman:
+				count = _stew.num2roman(j)
+			else:
+				count = str(j)
+			formatted_entries.append(f"{count}{sSeperator} {entry}")
+		print(*formatted_entries)
+
+def pick(*args, bDual=False, bMenu=False):
+	"""
+	"""
+	list(*args)
+	return 0, "testing"
+

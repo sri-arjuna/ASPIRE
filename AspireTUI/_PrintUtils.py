@@ -33,13 +33,13 @@ from collections import namedtuple as _namedtuple
 #
 #	Internals
 # 
-from AspireTUI import _settings_console as _settings, FD_BORDER as _FD_BORDER #, IS_WINDOWS
-from AspireTUI.__core import _internal
+from . import _settings_console as _settings, FD_BORDER as _FD_BORDER #, IS_WINDOWS
+from . import _internal
 #import AspireTUI.StringUtils as stew
-from AspireTUI.__core.ColorAndText import cat as _cat
-from AspireTUI.os import isGUI as _isGUI
-from AspireTUI.__core import _theme as _Theme
-from AspireTUI import _MSG
+from .ColorAndText import cat as _cat
+from .OS import isGUI as _isGUI
+from . import _theme as _Theme
+from . import _MSG
 ################################################################################################################
 #####                                            Internal Functions                                        #####
 ################################################################################################################
@@ -125,7 +125,7 @@ class _StatusEnumORG(_Enum):
 #	'111': _StatusEnum.Info.id,
 #}
 
-from AspireTUI.lists import LOG_LEVEL
+from AspireTUI.Lists import LOG_LEVEL
 class StatusEnumV2(_Enum):
 	"""
 	Internal StatusID reference v3  	\n
@@ -326,7 +326,7 @@ class STATUS_STRINGS:
 	)
 
 
-def status(ID: _Union[int, bool, _Enum], seperators="[]"):
+def status(ID: _Union[int, bool, _namedtuple], seperators="[]"):
 	#sepL, sepR = None, None
 	sepL = seperators[:1]
 	sepR = seperators[1:]
@@ -344,8 +344,8 @@ def status(ID: _Union[int, bool, _Enum], seperators="[]"):
 		val_ret = int(ID)
 	elif isinstance(ID, int):
 		val_ret = int(ID)
-	elif isinstance(ID, _Enum):
-		print("TODO status id is enum")
+	elif isinstance(ID, _namedtuple):
+		#print("TODO status id is enum")
 		val_ret = int(ID)
 	else:
 		# Basic error handling
@@ -359,8 +359,10 @@ def status(ID: _Union[int, bool, _Enum], seperators="[]"):
 	#	if member.value.id == val_ret:
 	#		val_member = member
 	#		break
-	for entry in STATUS_STRINGS.__annotations__.values():
-		if getattr(entry, 'id', None) == val_ret:
+	#for entry in STATUS_STRINGS.__annotations__.values():
+	for entry in vars(STATUS_STRINGS).values():
+		#if getattr(entry, 'id', None) == val_ret:
+		if isinstance(entry, _Entry) and getattr(entry, 'id', None) == val_ret:
 			val_member = entry
 			break
 	# How to return/display?
@@ -383,8 +385,10 @@ def status(ID: _Union[int, bool, _Enum], seperators="[]"):
 #################################################################################################################
 def remove_console_codes(text) -> str:
 	# Remove console/color codes from text
-	if text is None:
+	if text is None or text == "":
 		return ""
+	if not isinstance(text, str):
+		raise ValueError(text, str)
 	return _re.sub(r'\033\[[0-9;]+m', '', text)
 
 def _calc_pos_left() -> int:
@@ -568,10 +572,15 @@ def text(*args, **kwargs):
 	for a in args:
 		if a == "":
 			length_total += 0
+		elif a is None:
+			length_total += 0
 		else:
 			length_total += len(str(remove_console_codes(a)))
 	if length_total > LineLength:
 		need_split = True
+	if length_total == 0:
+		# No text to parse
+		return
 
 	# Before we do anything, let's go back so we can properly print:
 	if need_split:
@@ -726,7 +735,7 @@ def text(*args, **kwargs):
 		elif arg_count == 2:
 			L = _left(args[0], style=style, end="")
 			R = _right(args[1], style=style, end="")
-		elif arg_count <= 1:
+		elif arg_count == 1:
 			#if "" is not args[0]:
 			if "title" == style:
 				C = _center(args[0], style=style, end="")

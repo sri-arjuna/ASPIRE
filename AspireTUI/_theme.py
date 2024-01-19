@@ -63,8 +63,8 @@ from enum import Enum as _Enum
 #
 #	Internals
 #
-from .. import _settings_console as _settings
-from ..strings import cat as _cat
+from . import _settings_console as _settings
+from .ColorAndText import cat as _cat
 ################################################################################################################
 #####                                            Theme Structure                                           #####
 ################################################################################################################

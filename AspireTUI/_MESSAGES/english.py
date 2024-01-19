@@ -108,7 +108,7 @@ args_2_status		= _("Too many arguments, max 2 strings allowed after ID (int/bool
 args_status_first	= _("The first argument to 'status' must be INT or BOOL.")
 args_max3 			= _("Too many arguments, max 3 allowed!")
 args_missing 		= _("Missing arguments!")
-
+args_title			= _("Title accepts only 1 string argument!")
 
 ################################################################################################################
 #####                                            Files and Folders                                         #####

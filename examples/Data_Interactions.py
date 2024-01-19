@@ -10,7 +10,7 @@ sys.path.append(aspire_dir)
 # Usualy, this would be only:
 #	from aspire import Aspire as tui
 from AspireTUI import tui
-from AspireTUI.lists import STATUS
+from AspireTUI._PrintUtils import STATUS
 #from aspire.aspire_data_status import dict_status
 
 
@@ -42,5 +42,5 @@ tui.status(10 + yesno, "Int result: On/Off = 10+Bool")
 
 tui.print()
 tui.title("Call by Enum")
-for es in StatusEnum:
+for es in STATUS:
     tui.status(es, f"tui.status({es}, 'Message to user')")
