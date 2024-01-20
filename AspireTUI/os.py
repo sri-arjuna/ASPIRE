@@ -18,12 +18,17 @@
 #	Essential imports
 #
 import os as _os
-#import sys as _sys
+import sys as _sys
 #import re as _re
 #import string as _string
 #from pathlib import Path as _Path
 import platform as _platform
 from . import IS_WINDOWS
+from . import _MSG
+#
+#	Constants / Vars
+#
+OS_INFO = _platform.uname()
 #################################################################################################################
 #####                                           Get Directories                                             #####
 #################################################################################################################
@@ -81,7 +86,9 @@ def isVerOS(minimal=None, bDual=False):
 	For Linux, version must be a one digit float like: 6.1, 5.9, 5.5
 	"""
 	# Init vars
+	global OS_INFO
 	doLinux = True
+	ret = False
 	if minimal is None:
 		if IS_WINDOWS:
 			minimal = 10
@@ -107,6 +114,40 @@ def isVerOS(minimal=None, bDual=False):
 				ret = False
 	# Return to user
 	if bDual:
-		return ret, _os.uname()
+		msg = [
+			OS_INFO.system ,
+			OS_INFO.release ,
+			OS_INFO.version,
+			OS_INFO.machine ,
+			OS_INFO.processor ,
+		]
+		return ret, msg
+	else:
+		return ret
+
+def isVerPy(minimal: float = 3.9, bDual=False):
+	"""
+	Checks if the Python version is at least "minimal". \n
+	If no "minimal" is provided, at least 3.9 is expected.
+	"""
+	# init
+	ret = False
+	msg = _MSG.os_not_found_python
+	# Check for proper format:
+	if not isinstance(minimal, float):
+	#if 1 < str(minimal).count("."):
+		# Is not just Major.Minor
+		raise ValueError(_MSG.cl_log_err_must_float, minimal)
+	# Prepare for version check
+	maj, min = 0, 0
+	maj = int(str(minimal).split(".")[0])
+	min = int(str(minimal).split(".")[1])
+	if _sys.version_info[:2] >= (maj, min):
+		# All good
+		ret = True
+		msg = _sys.version_info[:2]
+	# Return to user
+	if bDual:
+		return ret, msg
 	else:
 		return ret
