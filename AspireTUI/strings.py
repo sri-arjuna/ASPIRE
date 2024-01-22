@@ -221,6 +221,29 @@ def morse2char(input_data) -> str:
 	morse_dict_reverse = {value: key for key, value in _MORSE_CODE_DICT.items()}
 	return '\n'.join([''.join([morse_dict_reverse[code] if code in morse_dict_reverse else code for code in line.split()]) for line in input_data])
 
+def num2alpha(number: int) -> str:
+	"""
+	Convert an integer to alphabetical representation.
+	Example:
+	1 -> 'a', 2 -> 'b', ..., 26 -> 'z', 27 -> 'aa', 28 -> 'ab', ..., 52 -> 'zz', and so on.
+	"""
+	result = ""
+	while number > 0:
+		number, remainder = divmod(number - 1, 26)
+		result = chr(65 + remainder) + result
+	return result.lower()
+
+def alpha2num(AlphaNum: str) -> int:
+	"""
+	Convert alphabetical representation to an integer.
+	Example:
+	'a' -> 1, 'b' -> 2, ..., 'z' -> 26, 'aa' -> 27, 'ab' -> 28, ..., 'zz' -> 52, and so on.
+	"""
+	result = 0
+	for char in AlphaNum.lower():
+		result = result * 26 + ord(char) - 96
+	return result
+
 #
 #	"String" related bools
 #
