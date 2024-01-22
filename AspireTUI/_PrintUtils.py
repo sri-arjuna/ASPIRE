@@ -252,7 +252,7 @@ class STATUS_STRINGS:
 	Fail = _Entry(
 		False,
 		f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}",
-		f"{_cat.front.red}{_cat.text.bold}FAIL{_cat.reset}"
+		f"{_cat.front.red}{_cat.text.bold}{_MSG.status_fail}{_cat.reset}"
 	)
 	DEBUG = _Entry(
 		1000 + LOG_LEVEL.DEBUG.value,
@@ -342,13 +342,16 @@ def status(ID: _Union[int, bool, _namedtuple], seperators="[]"):
 		val_ret = int(ID)
 	elif isinstance(ID, _Entry):
 		#print("TODO status id is enum")
-		val_ret = int(ID)
+		val_ret = int(ID.id)
+	elif isinstance(ID, STATUS):
+		#print("TODO status id is enum")
+		val_ret = int(ID.value)
 	else:
 		# Basic error handling
 		raise TypeError(_MSG.args_status_first, ID)
 	# Parse entries for the correct "id" entry
 	for entry in vars(STATUS_STRINGS).values():
-		if isinstance(entry, _Entry) and getattr(entry, 'id', None) == val_ret:
+		if isinstance(entry, _Entry) and getattr(entry, 'id', None) == val_ret: # or bool(val_ret) == getattr(entry, 'id', None):
 			val_member = entry
 			break
 	# How to return/display?
@@ -361,9 +364,6 @@ def status(ID: _Union[int, bool, _namedtuple], seperators="[]"):
 			val_out =f"{sepL} {val_member.tty} {sepR}"
 	# Finaly return aproriate status string
 	return val_out
-
-
-
 
 
 #################################################################################################################
