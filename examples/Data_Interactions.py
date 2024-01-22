@@ -33,6 +33,7 @@ tui.title("Does also work with base bool / and + INT ")
 tui.status(yesno, "Bool result")
 tui.status(10 + yesno, "Int result: On/Off = 10+Bool")
 
+sys.exit()
 #tui.print()
 #tui.title("Call by dict")
 #for key in dict_status:
