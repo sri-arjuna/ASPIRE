@@ -367,6 +367,11 @@ def list(*args, bRoman=False, bAlpha=False, bMenu=False, sSeperator=")"):
 
 def pick(*args, text=_MSG.tui_pick_please_pick, bDual=False, bMenu=False, bVerbose=False):
 	"""
+	Prints passed 'args' as list and lets user select among its entries. \n
+	index = pick(*LIST) \n
+	index, str_this = pick(*LIST, bDual=True, bMenu=True) \n
+	if str_this == "Back": \n
+	    pass \n
 	"""
 	# init
 	_theme = _Theme.get()
