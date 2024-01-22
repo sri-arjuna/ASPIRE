@@ -30,6 +30,7 @@ from enum import Enum as _Enum
 #
 #	Internals
 #
+print_org = print	# Save original print
 from . import _settings_console as _settings
 from ._MESSAGES import current as _MSG
 from . import Strings as _stew
@@ -346,7 +347,7 @@ def list(*args, bRoman=False, bMenu=False, sSeperator=")"):
 	if COL is None:
 		# No args detected:
 		# TODO : Decide wether I want to abort here, or be error prone and just return nothing....
-		raise ValueError(_MSG.args_missing , args)
+		raise ValueError(_MSG.args_missing , *args)
 	# cur is no longer used, lets reuse it
 	# Also, prepare list to be shown
 	if bMenu:
@@ -360,7 +361,7 @@ def list(*args, bRoman=False, bMenu=False, sSeperator=")"):
 	#	List Loop
 	#
 	#for entry in list_entries:
-		# TODO
+	# TODO
 	entries_per_row = COL
 	for i in range(0, count, entries_per_row):
 		current_entries = list_entries[i:i + entries_per_row]
@@ -373,9 +374,46 @@ def list(*args, bRoman=False, bMenu=False, sSeperator=")"):
 			formatted_entries.append(f"{count}{sSeperator} {entry}")
 		print(*formatted_entries)
 
-def pick(*args, bDual=False, bMenu=False):
+def pick(*args, text=None, bDual=False, bMenu=False):
 	"""
 	"""
-	list(*args)
-	return 0, "testing"
+	# init
+	_theme = _Theme.get()
+	# This many options
+	_count = len(args)
+	# Length of option count
+	_len = len(str(_count))
+	# Show options
+	list(*args, bMenu=bMenu)
+	# Show text ?
+	if text:
+		text = f"{text} {_theme.prompt_select} "
+		_put.border()
+		_put.text(text, end="")
+		_put._cursor2pos(len(text) + 5)
+	# Read user input
+	index_input = None
+	#print_org("DEBUG - 1: ", len(args), *args, flush=True)
+	while True:
+		
+		index_input = _internal.get_input_charcount(_len)
+		print_org("DEBUG - 2: ", len(args), index_input, flush=True)
+		if int(index_input) <= len(args) and int(index_input) >= 0:
+			# TODO: for the moment
+			
+			break
+
+	selected_index = int(index_input)
+
+	# Adjust the selected index if bMenu is True
+	if bMenu and selected_index == 0:
+		selected_index = 0
+	elif bMenu:
+		selected_index -= 1
+
+	# Return the result based on bDual
+	if bDual:
+		return selected_index, args[selected_index]
+	else:
+		return selected_index
 
