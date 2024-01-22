@@ -135,7 +135,7 @@ def shorten(txt: str, char_count: int, cut_from_middle: bool = False) -> str:
 ################################################################################################################
 #####                                           Charcount                                                  #####
 ################################################################################################################
-def get_input_charcount(count:int) -> str:
+def get_input_charcount_ORG(count:int) -> str:
 	# Use the subprocess module to invoke the shell and read a single character
 	if _IS_WINDOWS:
 		chars = []
@@ -151,6 +151,40 @@ def get_input_charcount(count:int) -> str:
 		return ''.join(chars)
 	else:
 		# Expecting a linux based system
+		result = _subprocess.run(["read", "-n", count], capture_output=True, text=True, shell=True)
+		chars = result.stdout.strip()
+		return chars
+
+def get_input_charcount(count: int, bAllowArrow: bool = False) -> str:
+	"""
+	Get input characters from the user, with an option to recognize arrow keys.
+
+	Parameters:
+	- count (int): Number of characters to read.
+	- bAllowArrow (bool): If True, recognize arrow keys; otherwise, only recognize printable characters.
+
+	Returns:
+	- str: Input characters.
+	"""
+	from AspireTUI.ColorAndText import cat as _cat
+	# Use the subprocess module to invoke the shell and read a single character
+	if _IS_WINDOWS:
+		chars = []
+		while len(chars) < count:
+			char = _msvcrt.getch()
+			# Check if char is printable
+			if char in _string.printable.encode():
+				char_str = char.decode()
+				# Check for arrow keys if bAllowArrow is True
+				if bAllowArrow and char_str in _cat.arrow:
+					return f"Arrow:{_cat.arrow[char_str]}"
+				chars.append(char_str)
+				# Check for Enter key press
+				if char_str == '\r' and len(chars) >= 1:
+					break
+		return ''.join(chars)
+	else:
+		# Expecting a Linux-based system
 		result = _subprocess.run(["read", "-n", count], capture_output=True, text=True, shell=True)
 		chars = result.stdout.strip()
 		return chars
