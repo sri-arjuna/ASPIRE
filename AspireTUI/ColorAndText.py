@@ -23,13 +23,14 @@ from collections import namedtuple as _namedtuple
 #
 #	Structure containers
 #
-_CaT = _namedtuple('CaT', ['front', 'back', 'text', 'line' , 'codes', 'reset', 'clear'])
+_CaT = _namedtuple('CaT', ['arrow', 'front', 'back', 'text', 'line' , 'codes', 'reset', 'clear'])
 _ColorList = _namedtuple('Color', ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light_gray',
 								'dark_gray', 'light_red', 'light_green', 'light_yellow', 'light_blue', 
 								'light_magenta', 'light_cyan', 'white'])
 _Text = _namedtuple('Text', ['bold', 'italic', 'underline'])
 _Line = _namedtuple('Line', ['up', 'down'])
 _Codes = _namedtuple('Codes', ['beep', 'blink', 'invert'])
+_Arrows = _namedtuple('Arrow', ['up', 'down', 'left', 'right'])
 #
 #	Entry point for dot notation
 #
@@ -41,6 +42,13 @@ cat = _CaT(
 		beep='\a',
 		blink='\033[5m',
 		invert='\033[7m',
+	),
+	# Arrow keys, for later
+	arrow = _Arrows(
+		up='\x1b[A',
+		down='\x1b[B',
+		left='\x1b[D',
+		right='\x1b[C',
 	),
 	# Group color access
 	front = _ColorList(
@@ -62,22 +70,22 @@ cat = _CaT(
 		white='\033[97m',
 	),
 	back = _ColorList(
-		black= '\033[40m',
-		red= '\033[41m',
-		green= '\033[42m',
-		yellow= '\033[43m',
-		blue= '\033[44m',
-		magenta= '\033[45m',
-		cyan= '\033[46m',
-		light_gray= '\033[47m',
-		dark_gray= '\033[100m',
-		light_red= '\033[101m',
-		light_green= '\033[102m',
-		light_yellow= '\033[103m',
-		light_blue= '\033[104m',
-		light_magenta= '\033[105m',
-		light_cyan= '\033[106m',
-		white= '\033[107m',
+		black='\033[40m',
+		red='\033[41m',
+		green='\033[42m',
+		yellow='\033[43m',
+		blue='\033[44m',
+		magenta='\033[45m',
+		cyan='\033[46m',
+		light_gray='\033[47m',
+		dark_gray='\033[100m',
+		light_red='\033[101m',
+		light_green='\033[102m',
+		light_yellow='\033[103m',
+		light_blue='\033[104m',
+		light_magenta='\033[105m',
+		light_cyan='\033[106m',
+		white='\033[107m',
 		),
 	# only 3 text attributes are known on console
 	text = _Text(
