@@ -372,13 +372,21 @@ def list(*args, bRoman=False, bAlpha=False, bMenu=False, sSeperator=")"):
 			formatted_entries.append(f"{entry_count}{sSeperator} {entry}")
 		print(*formatted_entries, end="\n")
 
-def pick(*args, text=_MSG.tui_pick_please_pick, bDual=False, bMenu=False, bVerbose=False):
+def pick(*args, text: str =_MSG.tui_pick_please_pick, bDual=False, bMenu=False, bVerbose=False) -> _Union[int, tuple[int, str]]:
 	"""
-	Prints passed 'args' as list and lets user select among its entries. \n
-	index = pick(*LIST) \n
-	index, str_this = pick(*LIST, bDual=True, bMenu=True) \n
-	if str_this == "Back": \n
-	    pass \n
+	Prints passed 'args' as list and allows user to pick a choice
+
+	Parameters:
+	- text: 		Text so show instead of default test
+	- bDual:		Returns 'selected_index' and 'list_item' 
+	- bMenu:		Always show "Back" (translated) to user as first option (always: 0)
+					When user selects 0 for "Back" (translated), it will return "Back" (hardcoded) as "list_item".
+	- bTranslated:	Return translated "Back" as "list_item", requires bMenu=True.
+	- bVerbose:		Use 'tui.status' for "pick-feedback".
+
+	Examples:
+	- ret_index, ret_string = pick(*LIST, bDual=True)
+	- index_picked = pick(*LIST)
 	"""
 	# init
 	_theme = _Theme.get()
@@ -422,7 +430,7 @@ def pick(*args, text=_MSG.tui_pick_please_pick, bDual=False, bMenu=False, bVerbo
 		print(text, f"{index_input} ({str_ret})")
 	# Return the result based on bDual
 	if bDual:
-		return index_input, str_ret
+		return int(index_input), str_ret
 	else:
-		return index_input
+		return int(index_input)
 
