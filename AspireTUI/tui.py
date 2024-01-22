@@ -323,16 +323,20 @@ def clear():
 
 def list(*args, bRoman=False, bAlpha=False, bMenu=False, sSeperator=")"):
 	"""
-	Prints a list 
+	Prints a list \n
+	bMenu=True 		= Shows "Back" (translated) to user as option 0. \n
+	bRoman=True 	= Use roman numbering instead of int values. \n
+	bAlpha=True 	= Use letters for numbering. \n
+	sSeperator="." 	= Use a custom numbering sperator... 1.
 	"""
 	# Init / get vars
 	max_len = _settings["inner"]
-	count = len(args)
+	count_args = len(args)
 	COL = None
 	# decide column count
-	if count < max_len / 3:
+	if count_args < max_len / 3:
 		COL = 3
-	elif count < max_len / 2:
+	elif count_args < max_len / 2:
 		COL = 2
 	else:
 		# Let's hope each item fits on a single line...
@@ -347,23 +351,24 @@ def list(*args, bRoman=False, bAlpha=False, bMenu=False, sSeperator=")"):
 		# The menu entry is always on 0
 		list_entries = [_MSG.tui_list_back, *args]
 		start_count = 0
+		count_args += 1
 	else:
 		list_entries = args
 		start_count = 1
 	#
-	#	List Loop
+	#    List Loop
 	#
 	entries_per_row = COL
-	for i in range(start_count, count, entries_per_row):
+	for i in range(start_count, count_args, entries_per_row):
 		current_entries = list_entries[i:i + entries_per_row]
 		formatted_entries = []
 		for j, entry in enumerate(current_entries, start=i):
 			if bRoman:
-				count = _stew.num2roman(j)
+				entry_count = _stew.num2roman(j)
 			else:
-				count = str(j)
-			formatted_entries.append(f"{count}{sSeperator} {entry}")
-		print(*formatted_entries)
+				entry_count = str(j)
+			formatted_entries.append(f"{entry_count}{sSeperator} {entry}")
+		print(*formatted_entries, end="\n")
 
 def pick(*args, text=_MSG.tui_pick_please_pick, bDual=False, bMenu=False, bVerbose=False):
 	"""
@@ -406,10 +411,11 @@ def pick(*args, text=_MSG.tui_pick_please_pick, bDual=False, bMenu=False, bVerbo
 		str_ret = args[selected_index]
 	# How to show?
 	if bVerbose:
+		msg = f"{_MSG.word_picked}: {index_input} ({str_ret})"
 		if str_ret == "Back":
-			status(_put.STATUS.Prev.value , f"{_MSG.word_picked}: {index_input} ({str_ret})")
+			status(_put.STATUS.Prev.value , msg)
 		else:
-			status(True, f"{_MSG.word_picked}: {index_input} ({str_ret})")
+			status(True, msg)
 	else:
 		print(text, f"{index_input} ({str_ret})")
 	# Return the result based on bDual
