@@ -321,52 +321,43 @@ def clear():
 	"""
 	print(_stew.cat.clear)
 
-def list(*args, bRoman=False, bMenu=False, sSeperator=")"):
+def list(*args, bRoman=False, bAlpha=False, bMenu=False, sSeperator=")"):
 	"""
 	Prints a list 
 	"""
 	# Init / get vars
-	max = _settings["inner"]
-	cur = 0
+	max_len = _settings["inner"]
 	count = len(args)
 	COL = None
-	# Get longest item
-	for item in args:
-		_tmp_cur = len(item)
-		if cur < _tmp_cur:
-			cur = _tmp_cur
-	# decide colum count
-	if cur < max / 3:
+	# decide column count
+	if count < max_len / 3:
 		COL = 3
-	elif cur < max / 2:
+	elif count < max_len / 2:
 		COL = 2
 	else:
-		# Lets hope each item fits on a single line...
+		# Let's hope each item fits on a single line...
 		COL = 1
-	# Lets "Debug" here
+	# Let's "Debug" here
 	if COL is None:
 		# No args detected:
-		# TODO : Decide wether I want to abort here, or be error prone and just return nothing....
-		raise ValueError(_MSG.args_missing , *args)
-	# cur is no longer used, lets reuse it
+		# TODO: Decide whether I want to abort here or be error-prone and just return nothing....
+		raise ValueError(_MSG.args_missing, *args)
 	# Also, prepare list to be shown
 	if bMenu:
 		# The menu entry is always on 0
-		cur = 0
-		list_entries = [ _MSG.tui_list_back , *args ]
+		list_entries = [_MSG.tui_list_back, *args]
+		start_count = 0
 	else:
-		cur = 1
 		list_entries = args
+		start_count = 1
 	#
 	#	List Loop
 	#
-	#for entry in list_entries:
-	# TODO
 	entries_per_row = COL
-	for i in range(0, count, entries_per_row):
+	for i in range(start_count, count, entries_per_row):
 		current_entries = list_entries[i:i + entries_per_row]
 		formatted_entries = []
-		for j, entry in enumerate(current_entries, start=cur):
+		for j, entry in enumerate(current_entries, start=i):
 			if bRoman:
 				count = _stew.num2roman(j)
 			else:
