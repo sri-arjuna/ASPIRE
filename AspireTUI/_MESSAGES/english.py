@@ -149,6 +149,7 @@ tui_press			= _("Press any key to continue.")
 tui_progress_bar	= _("Wrong style for progress, only 'bar' and 'num' are supported.")
 tui_style_invalid	= _("Invalid style argument. Expected 'print', 'header', or 'title'. // passed:")
 tui_wait_continue_in = _("Continue in:")
+tui_yesno_bDual_missing_msg = _("When bDual is enabled, you must provided both, 'msg_yes' and 'msg_no'!")
 ################################################################################################################
 #####                                            Class Log                                                 #####
 ################################################################################################################

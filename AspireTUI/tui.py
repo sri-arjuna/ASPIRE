@@ -132,36 +132,50 @@ def press(text=None):
 	_os.system("pause")
 	_os.dup2(stdout, 1)
 
-def yesno(question: str, yesno_option="yn") -> bool:
+def yesno(question: str, yesno_option="yn", bDual=False, msg_yes=None, msg_no=None) -> bool:
 	"""
-	Ask the user a simple yes/no question.
-	Pass an optional 2 character-string, of which 1. is positive and 2. is negative.
+	Ask the user a simple yes/no question. \n
+	Pass an optional 2 character-string, of which 1. is positive and 2. is negative. \n
+
+	If bDual is enabled, you MUST provide: 'msg_yes' and 'msg_no'!
 	"""
+	# Sanity check
+	if bDual:
+		if msg_yes is None or msg_no is None:
+			raise ValueError(_MSG.tui_yesno_bDual_missing_msg)
+	# Init
 	_put._update()
 	style = _Theme.get()
 	answer = ""
 	question_string = f"{question} ({yesno_option}) {style.prompt_read} "
 	yes = yesno_option[:1]
 	no = yesno_option[1:]
-	
 	# Default Aspire / TUI output
 	_put.border()
-	_put.text(question_string, end="")
-
+	str_ret =  _put.status(_put.STATUS.Work)
+	_put.text(question_string, str_ret, end="")
+	_put._cursor2pos(len(question_string) + 5)
 	# Loop for proper input:
 	while True:
 		# Make input ready to be checked
-		answer = _internal.get_input_charcount(1) 
-		#answer = input()
+		answer = _internal.get_input_charcount(1)
 		if answer in yesno_option:
 			break
-	# Print answer
-	_put._right(answer)
-	# Return the according bool
+	# Prepare for output
 	if answer in yes and "" != answer:
-		return True
+		ret = True
+		msg = msg_yes
 	elif answer in no and "" != answer:
-		return False
+		ret = False
+		msg = msg_no
+	# Print answer and return the according value/s
+	answer = _put.status(ret)
+	if bDual:
+		print(question_string, _put._right(answer), end="\n")
+		return ret, msg
+	else:
+		print(question_string, _put._right(answer))
+		return ret
 
 def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n', bDual=False):
 	"""
