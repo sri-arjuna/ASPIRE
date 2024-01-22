@@ -1,6 +1,12 @@
 """
 Description:
-		Contains classes
+		Contains classes \n
+		\n
+		If file related, they are designed to be able to "emulate a file". \n
+		This means, after reading a file (or None/"") nothing happens to the file, unless you save it. \n
+		For LOG of course, this can be changed since you might have multiple instanced that access the file. \n
+		\n
+
 Usage:
 		bVerbose = True 					# Show tui.status messages for each action to user
 		                                    #
