@@ -365,7 +365,7 @@ def list(*args, bRoman=False, bAlpha=False, bMenu=False, sSeperator=")"):
 			formatted_entries.append(f"{count}{sSeperator} {entry}")
 		print(*formatted_entries)
 
-def pick(*args, text=None, bDual=False, bMenu=False):
+def pick(*args, text=_MSG.tui_pick_please_pick, bDual=False, bMenu=False, bVerbose=False):
 	"""
 	"""
 	# init
@@ -377,34 +377,39 @@ def pick(*args, text=None, bDual=False, bMenu=False):
 	# Show options
 	list(*args, bMenu=bMenu)
 	# Show text ?
-	if text:
-		text = f"{text} {_theme.prompt_select} "
-		_put.border()
-		_put.text(text, end="")
-		_put._cursor2pos(len(text) + 5)
+	text = f"{text} {_theme.prompt_select} "
+	_put.border()
+	_put.text(text, end="")
+	_put._cursor2pos(len(text) + 5)
 	# Read user input
 	index_input = None
-	#print_org("DEBUG - 1: ", len(args), *args, flush=True)
 	while True:
-		
 		index_input = _internal.get_input_charcount(_len)
-		print_org("DEBUG - 2: ", len(args), index_input, flush=True)
 		if int(index_input) <= len(args) and int(index_input) >= 0:
 			# TODO: for the moment
-			
 			break
-
+	# Make sure it is int (to work with)
 	selected_index = int(index_input)
-
 	# Adjust the selected index if bMenu is True
 	if bMenu and selected_index == 0:
 		selected_index = 0
+		str_ret = "Back"	# This must be hardcoded for easier/consistent coding
 	elif bMenu:
 		selected_index -= 1
-
+		str_ret = args[selected_index]
+	else:
+		str_ret = args[selected_index]
+	# How to show?
+	if bVerbose:
+		if str_ret == "Back":
+			status(_put.STATUS.Prev.value , f"{_MSG.word_picked}: {index_input} ({str_ret})")
+		else:
+			status(True, f"{_MSG.word_picked}: {index_input} ({str_ret})")
+	else:
+		print(text, f"{index_input} ({str_ret})")
 	# Return the result based on bDual
 	if bDual:
-		return selected_index, args[selected_index]
+		return index_input, str_ret
 	else:
-		return selected_index
+		return index_input
 

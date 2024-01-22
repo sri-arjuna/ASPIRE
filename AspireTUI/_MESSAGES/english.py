@@ -35,6 +35,7 @@ word_fatal			= _("Fatal")
 word_name			= _("Name")
 word_working		= _("Working")
 word_found 			= _("Found")
+word_picked			= _("Picked")
 #
 #	FileSystem
 #
@@ -150,6 +151,7 @@ tui_progress_bar	= _("Wrong style for progress, only 'bar' and 'num' are support
 tui_style_invalid	= _("Invalid style argument. Expected 'print', 'header', or 'title'. // passed:")
 tui_wait_continue_in = _("Continue in:")
 tui_yesno_bDual_missing_msg = _("When bDual is enabled, you must provided both, 'msg_yes' and 'msg_no'!")
+tui_pick_please_pick	= _("Please pick")
 ################################################################################################################
 #####                                            Class Log                                                 #####
 ################################################################################################################
