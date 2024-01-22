@@ -17,14 +17,14 @@ name = "AspireTUI"  # Required
 #
 # For a discussion on single-sourcing the version, see
 # https://packaging.python.org/guides/single-sourcing-package-version/
-version = "0.2.1"  # Required
+version = "0.2.2"  # Required
 
 # https://packaging.python.org/specifications/core-metadata/#summary
 description = "A framework for a line based TUI"  # Optional
 
 # This field corresponds to the "Description" metadata field:
 # https://packaging.python.org/specifications/core-metadata/#description-optional
-#readme = "ReadMe.md" # Optional
+readme = "ReadMe.md" # Optional
 
 # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
 requires-python = ">=3.3"
