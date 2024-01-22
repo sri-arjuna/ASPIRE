@@ -207,7 +207,7 @@ def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n'
 	# Do the dual output?
 	if bDual:
 		msg = args[0]
-		message = msg % args
+		message = msg % args[1:]
 		return ret_value, message
 
 def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
