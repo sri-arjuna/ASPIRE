@@ -365,6 +365,8 @@ def list(*args, bRoman=False, bAlpha=False, bMenu=False, sSeperator=")"):
 		for j, entry in enumerate(current_entries, start=i):
 			if bRoman:
 				entry_count = _stew.num2roman(j)
+			elif bAlpha:
+				entry_count = _stew.num2alpha(j)
 			else:
 				entry_count = str(j)
 			formatted_entries.append(f"{entry_count}{sSeperator} {entry}")
