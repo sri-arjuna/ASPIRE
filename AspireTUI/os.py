@@ -65,7 +65,7 @@ def get_dir_OS(bVerbose=True, bMinimal=False):
 			pass
 	pass
 
-def isGUI():
+def _isGUI():
 	"""
 	Check if the script is running in a GUI environment.
 	"""
@@ -74,7 +74,7 @@ def isGUI():
 		return _os.getenv("TERM_PROGRAM") is not None
 	else:
 		# Check if running in a non-Windows environment
-		return _os.getenv("TERM") is None
+		return any(os.getenv(var) for var in ["XDG_CURRENT_DESKTOP", "DESKTOP_SESSION", "XAUTHORITY", "TERM"]) is not None
 
 def isVerOS(minimal=None, bDual=False):
 	"""
@@ -151,3 +151,6 @@ def isVerPy(minimal: float = 3.9, bDual=False):
 		return ret, msg
 	else:
 		return ret
+
+
+IS_GUI = _isGUI()
