@@ -45,11 +45,17 @@ def show_status():
 	Sample usage of the status function
 	"""
 	tui.title("Show Status")
-	for item in tui._put.STATUS:
-		tui.status(item.value, item.name)
+	# Users / Developers would normaly not need "this complexity" to use this "output method".
+	# Simply use: tui.status(tui.STATUS.work, message), or even simpler: tui.status(True, msg)
+	for name, item in tui.STATUS.__members__.items():
+		msg = tui._put._Entry(item._value_.id, item._value_.gui, item._value_.tty , item._value_.doc)
+		if OS.IS_GUI:
+			tui.print(name, msg.gui )
+		else:
+			tui.print(name, msg.tty)
 	tui.print()
 	tui.status(True, "You've successfully seen the status variations!")
-	tui.status(tui._put.STATUS.Todo.value, "TODO: Fix UNI coded and/or add 'gui' attribute to STATUS_STRINGS")
+	tui.status(tui.STATUS.Todo, "TODO: Fix UNI coded and/or add 'gui' attribute to STATUS_STRINGS")
 
 def menu_endless():
 	"""
@@ -108,3 +114,27 @@ def main():
 #	Start Loop
 #
 main()
+
+todo_done = ""
+
+todo_doc = "🐞ℹ️ ⚠️❌☠️    ↀ (röm 1000) ≪ ≫ ∥ Ⅱ  ⌘ ⌨ ⌚⏳ ☓ ☢ ☠ ⚠ ✇ ✅ ✔ ✓ ✕ ✗ ✘ ⛶ ❌ ❔ ❓ ❕ ❗ ⬥ ⬦ "
+todo_gui = "« » ¡ ‼"
+todo_play = "⏯ ⏮ ⏭ ⏬ ⏫ ⏪ ⏩ // ⏸ ⏺ ⏹ ⏵ ⏴ ⏶ ⏷ "
+
+print(" ")
+
+class LOG_LEVEL_SYMBOLS:
+    DEBUG = "🛠️"  # Wrench or Tool symbol
+    INFO = "📘"  # Blue Book symbol
+    WARNING = "⚡"  # Lightning Bolt symbol
+    ERROR = "🚨"  # Warning Alarm symbol
+    CRITICAL = "💣"  # Bomb symbol
+    FATAL = "☢️"  # Radioactive symbol
+
+class LOG_LEVEL_SYMBOLS:
+    DEBUG = ""  # Bug or Debugging symbol
+    INFO = "ℹ️"  # Information symbol
+    WARNING = "⚠️"  # Warning symbol
+    ERROR = "❌"  # Error symbol
+    CRITICAL = "🔴"  # Critical error symbol
+    FATAL = "☠️"  # Fatal error symbol
