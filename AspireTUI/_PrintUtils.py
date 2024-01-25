@@ -37,9 +37,10 @@ from . import _settings_console as _settings, FD_BORDER as _FD_BORDER #, IS_WIND
 from . import _internal
 #import AspireTUI.StringUtils as stew
 from .ColorAndText import cat as _cat
-from .OS import isGUI as _isGUI
+from . import OS as _OS
 from . import _theme as _Theme
 from . import _MSG
+from AspireTUI.Lists import LOG_LEVEL
 ################################################################################################################
 #####                                            Internal Functions                                        #####
 ################################################################################################################
@@ -96,148 +97,13 @@ def _update(forced=False, DEBUG=None):
 
 	idk about these:
 	# 🐞 ℹ️  ⚠️  ❌  🔴  ☠️
+
+	# « » ¡ ↀ (röm 1000) ≪ ≫ ∥ Ⅱ ‼ ⌘ ⌨
 """
-class _StatusEnumORG(_Enum):
-	Good = f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}"
-	Bad = f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}"
-	Todo = f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}"
-	Work = f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}"
-	Skip = f" » "
-	Next = f" > "
-	Prev = f" < "
-	On  = f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}"
-	Off = f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}"
-	Info = f"{_cat.front.yellow}{_cat.text.bold}!!!{_cat.reset}"
 
-#from AspireTUI.lists import StatusEnum as _StatusEnum
-#_dict_status = {
-#	'0': _StatusEnum.Fail.id,
-#	'1': _StatusEnum.Done.id,
-#	False: _StatusEnum.Fail.id,
-#	True: _StatusEnum.Done.id,
-#	'10': _StatusEnum.Off.id,
-#	'11': _StatusEnum.On.id,
-#	'2': _StatusEnum.Todo.id,
-#	'3': _StatusEnum.Work.id,
-#	'4': _StatusEnum.Skip.id,
-#	'5': _StatusEnum.Next.id,
-#	'6': _StatusEnum.Prev.id,
-#	'111': _StatusEnum.Info.id,
-#}
-
-from AspireTUI.Lists import LOG_LEVEL
-class StatusEnumV2(_Enum):
-	"""
-	Internal StatusID reference v3  	\n
-	For public access, so we can easy words as reference. 	\n
-	All capital are Log Levels.		\n
-	1000 + LogLevel.LevelName.value		\n
-	\n
-	Similar:		\n
-	On/Off = int(bool) + 10		\n
-	"""
-	# Default: bool
-	class Fail(_Enum):
-		id = False
-		uni = f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}"
-		tty = f"{_cat.front.red}{_cat.text.bold}FAIL{_cat.reset}"
-	class Done(_Enum):
-		id = True
-		uni = f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}"
-		tty = f"{_cat.front.green}{_cat.text.bold}DONE{_cat.reset}"
-	# Log Level
-	class DEBUG(_Enum):
-		id = 1000 + LOG_LEVEL.DEBUG.value
-		uni = f" 🐞 "
-		tty = f"DBUG"
-	class INFO(_Enum):
-		id = 1000 + LOG_LEVEL.INFO.value
-		uni = f"ℹ️ℹ️ℹ️"
-		tty = f"INFO"
-	class Warning(_Enum):
-		id = 1000 + LOG_LEVEL.WARNING.value
-		uni = f" ⚠️ "
-		tty = f"WARN"
-	class ERROR(_Enum):
-		id = 1000 + LOG_LEVEL.ERROR.value
-		uni = f" ❌ "
-		tty = f"EROR"
-	class CRITICAL(_Enum):
-		id = 1000 + LOG_LEVEL.CRITICAL.value
-		uni = f" 🔴 "
-		tty = f"CRIT"
-	class FATAL(_Enum):
-		id = 1000 + LOG_LEVEL.FATAL.value
-		uni = f" ☠️ "
-		tty = f"FATL"
-	# Default: Pseudo-Bool
-	class Off(_Enum):
-		id = int(False) + 10
-		uni = f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}"
-		tty = f"{_cat.front.red}{_cat.text.bold}Off {_cat.reset}"
-	class On(_Enum):
-		id = int(True) + 10
-		uni = f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}"
-		tty = f"{_cat.front.green}{_cat.text.bold} On {_cat.reset}"
-	# Job related
-	class Todo(_Enum):
-		id = 2
-		uni = f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}"
-		tty = f"{_cat.front.cyan}{_cat.text.bold}TODO{_cat.reset}"
-	class Work(_Enum):
-		id = 3
-		uni = f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}"
-		tty = f"{_cat.front.yellow}{_cat.text.bold}WORK{_cat.reset}"
-	# Menu
-	class Skip(_Enum):
-		id = 4
-		uni = f" » "
-		tty = f"Skip"
-	class Next(_Enum):
-		id = 5
-		uni = f" > "
-		tty = f"Next"
-	class Prev(_Enum):
-		id = 6
-		uni = f" < "
-		tty = f"Prev"
-	class Info(_Enum):
-		id = 111
-		uni = f"ℹ️ℹ️ℹ️"
-		tty = f"Info"
+_Entry = _namedtuple('_Entry', ['id', 'gui', 'tty', 'doc'])
 
 class STATUS(_Enum):
-	"""
-	Simple Wordlist to represent / handle different "return codes". \n
-	Use STATUS_STRINGS dataclass to retrieve the actual strings.\n
-	To present text/reports to users, please use: tui.status(STATUS.work, message)
-	"""
-	Done = True
-	Fail = False
-	On = int(True) + 10
-	Off = int(False) + 10
-	DEBUG = 1000 + LOG_LEVEL.DEBUG.value
-	INFO = 1000 + LOG_LEVEL.INFO.value
-	WARNING = 1000 + LOG_LEVEL.WARNING.value
-	ERROR = 1000 + LOG_LEVEL.ERROR.value
-	CRITICAL = 1000 + LOG_LEVEL.CRITICAL.value
-	FATAL = 1000 + LOG_LEVEL.FATAL.value
-	Todo = 2
-	Work = 3
-	Skip = 4
-	Next = 5
-	Prev = 6
-	Info = 111
-
-"""
-class _Entry(_namedtuple):
-	id: int
-	uni: str
-	tty: str
-"""
-_Entry = _namedtuple('_Entry', ['id', 'uni', 'tty'])
-
-class STATUS_STRINGS:
 	"""
 	Provides strings/icons according to UI. \n
 	GUI = uni/code, Console = tty \n
@@ -247,123 +113,167 @@ class STATUS_STRINGS:
 	Done = _Entry(
 		True,
 		f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}",
-		f"{_cat.front.green}{_cat.text.bold}{_MSG.status_done}{_cat.reset}"
+		f"{_cat.front.green}{_cat.text.bold}{_MSG.status_done}{_cat.reset}",
+		f"{_cat.front.green}{_cat.text.bold} √ {_cat.reset}",
 	)
 	Fail = _Entry(
 		False,
 		f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}",
-		f"{_cat.front.red}{_cat.text.bold}{_MSG.status_fail}{_cat.reset}"
+		f"{_cat.front.red}{_cat.text.bold}{_MSG.status_fail}{_cat.reset}",
+		f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}",
 	)
 	DEBUG = _Entry(
 		1000 + LOG_LEVEL.DEBUG.value,
 		" 🐞 ",
-		"DBUG"
+		"DBUG",
+		" 🐞 ",
 	)
 	INFO = _Entry(
 		1000 + LOG_LEVEL.INFO.value,
 		"ℹ️ℹ️ℹ️",
-		"INFO"
+		"INFO",
+		"ℹ️ℹ️ℹ️",
 	)
 	Warning = _Entry(
 		1000 + LOG_LEVEL.WARNING.value,
 		" ⚠️ ",
-		"WARN"
+		"WARN",
+		" ⚠️ ",
 	)
 	ERROR = _Entry(
 		1000 + LOG_LEVEL.ERROR.value,
 		" ❌ ",
-		"EROR"
+		"EROR",
+		" ❌ ",
 	)
 	CRITICAL = _Entry(
 		1000 + LOG_LEVEL.CRITICAL.value,
 		" 🔴 ",
-		"CRIT"
+		"CRIT",
+		" 🔴 ",
 	)
 	FATAL = _Entry(
 		1000 + LOG_LEVEL.FATAL.value,
 		" ☠️ ",
-		"FATL"
+		"FATL",
+		" ☠️ ",
 	)
 	Off = _Entry(
 		int(False) + 10,
 		f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}",
-		f"{_cat.front.red}{_cat.text.bold}Off {_cat.reset}"
+		f"{_cat.front.red}{_cat.text.bold}Off {_cat.reset}",
+		f"{_cat.front.red}{_cat.text.bold} ○ {_cat.reset}",
 	)
 	On = _Entry(
 		int(True) + 10,
 		f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}",
-		f"{_cat.front.green}{_cat.text.bold} On {_cat.reset}"
+		f"{_cat.front.green}{_cat.text.bold} On {_cat.reset}",
+		f"{_cat.front.green}{_cat.text.bold} ● {_cat.reset}",
 	)
 	Todo = _Entry(
 		2,
 		f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}",
-		f"{_cat.front.cyan}{_cat.text.bold}TODO{_cat.reset}"
+		f"{_cat.front.cyan}{_cat.text.bold}TODO{_cat.reset}",
+		f"{_cat.front.cyan}{_cat.text.bold} ≡ {_cat.reset}",
 	)
 	Work = _Entry(
 		3,
 		f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}",
-		f"{_cat.front.yellow}{_cat.text.bold}WORK{_cat.reset}"
+		f"{_cat.front.yellow}{_cat.text.bold}WORK{_cat.reset}",
+		f"{_cat.front.yellow}{_cat.text.bold} ∞ {_cat.reset}",
 	)
 	Skip = _Entry(
 		4,
 		" » ",
-		"Skip"
+		"Skip",
+		" » ",
 	)
 	Next = _Entry(
 		5,
 		" > ",
-		"Next"
+		"Next",
+		" > ",
 	)
 	Prev = _Entry(
 		6,
 		" < ",
-		"Prev"
+		"Prev",
+		" < ",
 	)
 	Info = _Entry(
 		111,
 		"ℹ️ℹ️ℹ️",
-		"Info"
+		"Info",
+		"ℹ️ℹ️ℹ️",
 	)
 
-def status(ID: _Union[int, bool, _namedtuple], seperators="[]"):
+def status(ID: _Union[int, bool, _Entry, STATUS], separators="[]"):
 	"""
 	This translates int, bool or _namedtuple (_Entry :: STATUS_STRINGS)	into a "show-able" string. \n
 	It determines if we're in a GUI or TTY, and uses the according entry.
 	"""
-	#sepL, sepR = None, None
-	sepL = seperators[:1]
-	sepR = seperators[1:]
+	#
+	# 	Init
+	#
 	val_member = None
 	val_out = None
-	# Check input
-	if isinstance(ID, bool):
-		val_ret = int(ID)
-	elif isinstance(ID, int):
-		val_ret = int(ID)
-	elif isinstance(ID, _Entry):
-		#print("TODO status id is enum")
-		val_ret = int(ID.id)
-	elif isinstance(ID, STATUS):
-		#print("TODO status id is enum")
-		val_ret = int(ID.value)
+	val_ret = False
+	# Lets verify wether we use seperators or not:
+	if separators and len(separators) > 0:
+		sepL, sepR = separators[:len(separators) // 2], separators[len(separators) // 2:]
 	else:
-		# Basic error handling
-		raise TypeError(_MSG.args_status_first, ID)
-	# Parse entries for the correct "id" entry
-	for entry in vars(STATUS_STRINGS).values():
-		if isinstance(entry, _Entry) and getattr(entry, 'id', None) == val_ret: # or bool(val_ret) == getattr(entry, 'id', None):
-			val_member = entry
-			break
-	# How to return/display?
+		sepL, sepR = "", ""
+	#
+	#	Get basic return code from passed input
+	#
+	if isinstance(ID, bool):
+		# It is the most desired basic handling: bool
+		val_ret = ID
+	elif isinstance(ID, int):
+		# Can we make it: bool?
+		try:
+			val_ret = bool(ID)
+		except ValueError:
+			# Nope, must preserve: int
+			val_ret = ID
+	elif isinstance(ID, _Entry):
+		# Its already the Enum..
+		# So lets use the recommended values
+		val_ret = ID.id
+		val_member = ID
+	else:
+		# Basic ERROR handling
+		msg = f"{_MSG.args_status_first}, {ID}, {val_ret}"
+		status(False, msg)
+		raise TypeError(msg)
+	#
+	#	Get entry - if missing
+	#
+	if not val_member:
+		for entry in STATUS:
+			if entry.value.id == val_ret:
+				val_member = entry.value
+				break
+	#
+	# 	Lets "generate" the output string
+	#	Console has 4 + 2, while GUI has 3 + 2 (or 5 + 0 ; does not apply here) before seperators.
+	#
 	if val_member:
-		if _isGUI:
+		# We could retrieve the approriate entry
+		if _OS.IS_GUI:
 			# These have length 3 = icons, so 1 extra space
-			val_out = f"{sepL} {val_member.uni}  {sepR}"
+			val_out = f"{sepL} {val_member.gui}  {sepR}"
 		else:
 			# These have length 4 = text
 			val_out =f"{sepL} {val_member.tty} {sepR}"
-	# Finaly return aproriate status string
-	return val_out
+	else:
+		# Could not find data set.
+		msg = f"{_MSG.tui_status_fatal_wrong_id} {ID}"
+		raise TypeError(msg)
+	#
+	# 	Finaly return aproriate status string
+	#
+	return f"{val_out}"
 
 
 #################################################################################################################

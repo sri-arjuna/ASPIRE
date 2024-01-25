@@ -179,35 +179,39 @@ def yesno(question: str, yesno_option="yn", bDual=False, msg_yes=None, msg_no=No
 		print(question_string, _put._right(answer))
 		return ret
 
-def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n', bDual=False):
+def status(ID: _Union[int, bool, _put._Entry, STATUS], *args, align_right=True, end='\n', bDual=False):
 	"""
-	Requires ID to be int or bool, and 1 additional string as message for the status.					\n
-	By default (orientation=right), text is printed left, center, and the actual status on the right.	\n
+	Requires ID to be int, bool, STATUS or _Entry, and 1 additional string as message for the status.
+
+	By default (orientation=right), text is printed left, center, and the actual status on the right.
 
 	Change orientation=left to have status on the left, main text on the right. If an optional text is passed,
 	main text will be in the center and the optional text on the right.
 	"""
-	# init
+	#
+	#	Init
+	#
 	ret_status = None
 	ret_value = None
 	# Check arg count
 	if len(args) > 2:
 		raise SyntaxError(_MSG.args_2_status)
 	# Check arg type
-	if isinstance(ID, _Union[bool, int]):
-		# It is bool or int, easy
-		ret_value = int(ID)
-	elif isinstance(ID, _put._Entry):
-		# It is an enum
-		#print(f"# TODO: put status instance, ID = {ID} // ID.id = {ID} -- this might not work properly")
-		ret_value = ID.id
-	elif isinstance(ID, _put.STATUS):
-		#print("TODO status id is enum")
-		val_ret = int(ID.value)
+	if isinstance(ID, _Union[bool, int, _put._Entry]):
+		# It is valid
+		ret_value = ID
+	elif isinstance(ID, STATUS):
+		ret_value = ID.value
 	else:
-		raise TypeError(_MSG.args_status_first)
-	#print(f"DEBUG ret_val: {ret_value}")
-	# Checks passed, basic output
+		# Invalid, most likely
+		try:
+			ret_value = ID._value_.id
+			print(f"# TODO: tui status instance, ID = {ID} // ID.id = {ID._value_.id} // ret_value = {ret_value} this might not work properly")
+		except TypeError:
+			raise TypeError(_MSG.args_status_first)
+	#
+	# 	Checks passed, basic output
+	#
 	_put._update()
 	_put.border()
 	# How to present main output?
@@ -217,17 +221,25 @@ def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n'
 		if align_right:
 			_put.text("", _put.status(ret_value), end=end)
 		else:  # left
-			_put.text(_put.status(ret_value),  "", end=end)
+			_put.text(_put.status(ret_value), end=end)
 	else:
 		if align_right:
 			_put.text(*args, _put.status(ret_value), end=end)
 		else:  # left
 			_put.text(_put.status(ret_value), *args, end=end)
-	# Do the dual output?
+	#
+	#	Do the dual output?
+	#
 	if bDual:
-		msg = args[0]
-		message = msg % args[1:]
+		messasge = None
+		try:
+			msg = args[0]
+			message = msg % args[1:]
+		except TypeError:
+			message = args
 		return ret_value, message
+	else:
+		return ret_value
 
 def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
 	"""

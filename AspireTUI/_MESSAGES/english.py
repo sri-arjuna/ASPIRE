@@ -152,6 +152,7 @@ tui_style_invalid	= _("Invalid style argument. Expected 'print', 'header', or 't
 tui_wait_continue_in = _("Continue in:")
 tui_yesno_bDual_missing_msg = _("When bDual is enabled, you must provided both, 'msg_yes' and 'msg_no'!")
 tui_pick_please_pick	= _("Please pick your option.")
+tui_status_fatal_wrong_id = _("Could not retrieve the according value of:")
 ################################################################################################################
 #####                                            Class Log                                                 #####
 ################################################################################################################
