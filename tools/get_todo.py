@@ -27,7 +27,7 @@ def find_todos(directory):
 	# Write TODO messages to a markdown file
 	with open("TODO-Found.md", 'w', encoding='utf-8') as output_file:
 		for file_path, messages in todo_messages.items():
-			output_file.write(f"# {file_path}\n")
+			output_file.write(f"\n# {file_path}\n")
 			for message in messages:
 				output_file.write(message + '\n')
 		print("TODO messages written to TODO-Found.md")
