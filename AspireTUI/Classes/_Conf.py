@@ -101,7 +101,7 @@ class Conf:
 		from .. import _MSG
 		from .. import Classes as _Classes
 		from .. import Path as _uf
-		import AspireTUI.lists as _Lists
+		import AspireTUI.Lists as _Lists
 		self._tui = _tui
 		self._msg = _MSG
 		self._lists = _Lists
