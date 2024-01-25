@@ -71,7 +71,8 @@ def _isGUI():
 	"""
 	if IS_WINDOWS:
 		# Check if running in Windows console
-		return _os.getenv("TERM_PROGRAM") is not None
+		#return _os.getenv("TERM_PROGRAM") is not None 	# Maybe later useful
+		return _os.name == 'nt'
 	else:
 		# Check if running in a non-Windows environment
 		return any(os.getenv(var) for var in ["XDG_CURRENT_DESKTOP", "DESKTOP_SESSION", "XAUTHORITY", "TERM"]) is not None
