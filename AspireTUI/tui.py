@@ -36,6 +36,7 @@ from ._MESSAGES import current as _MSG
 from . import Strings as _stew
 from . import _internal
 from . import _PrintUtils as _put
+from ._PrintUtils import STATUS
 from . import _theme as _Theme
 
 
@@ -200,6 +201,9 @@ def status(ID: _Union[int, bool, _namedtuple], *args, align_right=True, end='\n'
 		# It is an enum
 		#print(f"# TODO: put status instance, ID = {ID} // ID.id = {ID} -- this might not work properly")
 		ret_value = ID.id
+	elif isinstance(ID, _put.STATUS):
+		#print("TODO status id is enum")
+		val_ret = int(ID.value)
 	else:
 		raise TypeError(_MSG.args_status_first)
 	#print(f"DEBUG ret_val: {ret_value}")
