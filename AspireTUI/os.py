@@ -75,7 +75,7 @@ def _isGUI():
 		return _os.name == 'nt'
 	else:
 		# Check if running in a non-Windows environment
-		return any(os.getenv(var) for var in ["XDG_CURRENT_DESKTOP", "DESKTOP_SESSION", "XAUTHORITY", "TERM"]) is not None
+		return any(_os.getenv(var) for var in ["XDG_CURRENT_DESKTOP", "DESKTOP_SESSION", "XAUTHORITY", "TERM"]) is not None
 
 def isVerOS(minimal=None, bDual=False):
 	"""
