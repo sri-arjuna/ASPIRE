@@ -1,6 +1,6 @@
 @echo off
 echo Creating package build data...
-
+cd ..
 py -m build
 
 

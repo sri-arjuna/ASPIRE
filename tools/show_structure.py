@@ -43,7 +43,7 @@ def import_item(item, package_path):
         return module_from_spec(spec)
 
 if __name__ == "__main__":
-    package_path = "AspireTUI"  # Adjust this to the actual path of the package
+    package_path = "../AspireTUI"  # Adjust this to the actual path of the package
 
     items = parse_package(package_path)
     print(package_path)
