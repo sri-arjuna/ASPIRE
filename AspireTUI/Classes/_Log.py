@@ -34,8 +34,8 @@ from typing import Union as _Union
 #
 SEVERITY =[]
 _SEVERITY_TRANSLATED = []
-from ..lists import LOG_LEVEL as LEVEL
-from ..lists import LOG_SEVERITY as SEVERITY
+from ..Lists import LOG_LEVEL as LEVEL
+from ..Lists import LOG_SEVERITY as SEVERITY
 
 _str_Title = "title"
 _str_Desc = "desc"
@@ -81,7 +81,7 @@ class _Settings:
 		self.Log_Format = "%H.%M.%S.%f"
 		self.bTranslated = False
 		# Get acccording strings:
-		from AspireTUI.lists import LOG_LEVEL as _LEVEL
+		from ..Lists import LOG_LEVEL as _LEVEL
 		
 		# Prepare get/set functions
 		@property

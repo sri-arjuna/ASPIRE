@@ -88,7 +88,7 @@ class Conf:
 			#self.bDual = bDual
 			self.LOGFILE = LOGFILE
 		# Prepare settings
-		self.settings = _SubSettings()
+		self.settings = _SubSettings(self)
 		#self.settings.filename = filename
 		#self.settings.encoding = encoding
 		#self.settings.bVerbose = bVerbose
@@ -101,7 +101,7 @@ class Conf:
 		from .. import _MSG
 		from .. import Classes as _Classes
 		from .. import Path as _uf
-		import AspireTUI.Lists as _Lists
+		from .. import Lists as _Lists
 		self._tui = _tui
 		self._msg = _MSG
 		self._lists = _Lists
