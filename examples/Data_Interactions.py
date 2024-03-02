@@ -15,8 +15,8 @@ from AspireTUI._PrintUtils import STATUS
 
 
 tui.header("Simple Data Presentation")
-
 tui.title("Progress Bar")
+
 tui.progress("Shows a bar: 1/10", 0.1, 1)
 tui.progress("Shows a bar: 1/3", 1, 3)
 tui.progress("Shows a bar: 1/2", 1, 2)

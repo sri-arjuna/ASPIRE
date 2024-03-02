@@ -12,6 +12,7 @@ from AspireTUI import OS
 #
 #	Variables
 #
+FILE_CONF = "Demo.ini"
 mnu_status = "Show different Status"
 mnu_conf = "Test: Configurations"
 mnu_log = "Test: Log"
@@ -30,7 +31,20 @@ def test_configuration():
 	"""
 	Sample usage of the conf class
 	"""
+	#
+	#	Init
+	#
+	from AspireTUI.Classes import Conf
+	cfg = Conf(FILE_CONF, bVerbose=True)
+	#
+	#	Display
+	#
 	tui.title("Test with configuration files")
+	cfg._add_section["Self"]._add_key["prj_label"] = "prj"
+	cfg._add_section["Self"]._add_key["prj_name"] = "My Full Project Name"
+	cfg._add_section["Conf"]._add_key["bVerbose"] = False
+	cfg._add_section["Conf"]._add_key["bDual"] = False
+	cfg._add_section["Conf"]._add_key["filename"] = FILE_CONF
 	# TODO
 
 def test_log():
