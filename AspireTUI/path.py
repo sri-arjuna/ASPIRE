@@ -18,13 +18,14 @@
 #
 import os as _os
 #import sys as _sys
-#import re as _re
+import re as _re
 #import string as _string
 from . import _MSG
 #from . import Classes as _Classes
 #from . import strings as _stew
 from . import tui as _tui
-#from typing import Union as _Union
+from typing import Union as _Union
+import glob as _glob
 ################################################################################################################
 #####                                            Basic Checks                                              #####
 ################################################################################################################
@@ -167,3 +168,77 @@ def is_file_in_use(filename: str):
 	except PermissionError:	# OSError in Python 3.3 and later
 		# File is in use
 		return True
+
+def list_content(location: str=None, 
+				root: str=None, 
+				EXTENSION: _Union[list, str]=None, 
+				FILTER: _Union[list, str, _re.Pattern]=None, 
+				HIDE: _Union[list, str, _re.Pattern]=None, 
+				bDual: bool=False, 
+				bRecursive=False
+			):
+	"""
+	Returns a pre-sorted "container" to acccess: dirs, files, hidden files (leading '.' on *nix systems and/or hidden attribute on Windows systems).
+
+	Usage:
+	- content = list_content(str_path) // for dir in content.dirs // for file in content.files
+
+	
+	Arguments:
+	- location:   Expects a path(lib) object or a string, if None is passed, CWD (.) is used.
+	- root:       If provided, only relative paths to content of location will be listed. (This part is cut off)
+	- EXTENSION:  Expects string or a list of strings containing the file extension only (txt, md, py - without a dot)
+	              This has no impact on dirs.
+	- FILTER:     String or list of strings and regex'
+	- HIDE:       String or list of strings/regex to hide (move to 'hide' group)
+	- bDual:      Returns returnvalue (bool) and content.
+	- bRecursive: By default, it is only listing items of the current dir, this will work recursivly.
+	"""
+	#
+	#	Init
+	#
+	output = ""
+	ret = False
+	this_dirs, this_files, this_hide = [], [], []
+	result = None
+	#
+	#	Prepare input
+	#
+	if location:
+		if _tui._put._OS.isdir(location):
+			# TODO: Change to dir:
+			_tui._put._OS.cd(location)
+		else:
+			msg = _MSG.cl_log_err_must_path
+			
+	
+	if EXTENSION:
+		# Get first results based on all passed extensions
+		result = _glob.glob(f'**/*.{EXTENSION}', recursive=bRecursive, include_hidden=True )
+	else:
+		# Get all the dirs and files
+		result = _glob.glob(f'**/**', recursive=bRecursive, include_hidden=True)
+	#
+	#	Work with data
+	#
+	if FILTER:
+		# Filter is active, so lets remove some entries
+		for f in FILTER:
+			if isinstance(f, _re.Pattern):
+				# TODO: Do regex things
+				for item in result:
+					if f in item:
+						result.remove(item)
+			elif isinstance(f, str):
+				for item in result:
+					if f in item:
+						result.remove(item)
+
+
+	#
+	#	Final output
+	#
+	if bDual:
+		return ret, output
+	else:
+		return output

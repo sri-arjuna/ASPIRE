@@ -183,6 +183,7 @@ cl_log_err_must_float		= _("Provided argument must be: float")
 cl_log_err_must_list		= _("Provided argument must be: list")
 cl_log_err_must_int			= _("Provided argument must be: int")
 cl_log_err_must_str			= _("Provided argument must be: str")
+cl_log_err_must_path		= _("Provided argument must be: Path")
 
 ################################################################################################################
 #####                                            Class Conf                                                #####
