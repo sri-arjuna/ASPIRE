@@ -1,10 +1,23 @@
 """
 Description:
 		Class: Conf
+
 Usage:
 		from AspireTUI.Classes import Conf
-		myConf = Conf(filename, LOGFILE=log_filename, bVerbose=True)
-		myConf.SectionName.Variable
+		# Option A
+		# - Runtime-Only-Config:
+		myConf = Conf()
+
+		# Option B
+		# - Using the Conf class from multiple modules (ATTENTION: bAutoSafe and bAutoLoad will increase disk usage DRASTICLY!):
+		myConf = Conf("myApp.ini", LOG="myApp.log", bVerbose=True, bAutoSafe=True, bAutoLoad=True)
+
+		# Either way:
+		myConf.ig.Section.Key = Value
+		myConf.ig.Defaults.ImageExport = "jpg"
+		# Or show value to user:
+		tui.print("Default Image Export", myConf.ig.Defaults.ImageExport)
+
 Notes:
 		If a LOG_CONFIG= is passed and the file exists, it will be read.
 		If it does not exist, the default/passed settings will be written into LOG_CONFIG
@@ -17,28 +30,70 @@ URL:			https://www.github.com/sri-arjuna/ASPIRE
 
 Based on my TUI & SWARM for the BASH shell © 2011
 """
+from .._MESSAGES import current as _MSG
+#
+#	NEW
+#
+def typed_property(name, type_check):
+	"""
+	Create a typed property with the specified name and type check.
+
+	Args:
+		name (str): The name of the property.
+		type_check (type): The type to check against.
+
+	Returns:
+		property: The created property.
+	"""
+	def getter(self):
+		return getattr(self, name)
+
+	def setter(self, new_val):
+		if type_check == "bool":
+			msg = _MSG.cl_log_err_must_bool
+		elif type_check == "str":
+			msg = _MSG.cl_log_err_must_str
+		elif type_check == "int":
+			msg = _MSG.cl_log_err_must_int
+		elif type_check == "float":
+			msg = _MSG.cl_log_err_must_float
+		else:
+			msg = f"Invalid type_check ({type_check}) for name ({name})."
+			raise ValueError(msg)
+		# Now, is the value actualy the proper type?
+		if not isinstance(new_val, type_check):
+			#self.WARNING(msg)
+			raise ValueError(msg)
+		setattr(self, name, new_val)
+
+	return property(getter, setter)
+
+
 ## TODO: to be shared in .Classes
 class _SectionSettings:
-	def __init__(self, encoding="UTF-8", bVerbose=False ):
+	def __init__(self):
 		"""
 		Provides basic settings for LOG and CONF classes 	\n
 		Values need to be set from its parent class.
 		"""
-		class _subLog:
+		class _subLog(self):
 			# Contains values related to logs
 			self.file = ""
 			self.conf = ""
 			self.level_show_user = 3
 			self.level_save_log = 4
-		class _subConf:
+		class _subConf(self):
 			# Contains values related to conf - config
 			self.filename = ""
 			self.sections = "[]"
 			self.value_sep = " = "
+			self.encoding = "UTF-8"
 		# Namne of the actual conf or log file
-		self.filename = ""
-		self.encoding = encoding
-		self.bVerbose = bVerbose
+		self.conf = _subConf(self)
+		self.log = _subLog(self)
+		self.bVerbose = False
+		
+
 
 
 #################################################################################################################
@@ -48,12 +103,14 @@ class _SectionSettings:
 # Main Section
 class Conf:
 	def __init__(self, 
-			filename: str, 
+			filename: str=None, 
+			LOG: str=None, 
 			filename_config=None, 
 			encoding="UTF-8", 
 			bVerbose=False,  
 			bDual=False, 
-			LOGFILE=None
+			bAutoSafe=False,
+			bAutoLoad=False
 			):
 		"""
 			Handling configuration files with ease!
@@ -61,15 +118,15 @@ class Conf:
 			
 			Upon creation you can toggle some behaviour of the class.
 			bVerbose:	Will show user & developer and 'os' actions.
-			LOGFILE:	Writes and shows according to default settings
-			LOG_CONFIG:	
+			LOG:	Writes and shows according to default settings
+			LOG_CONFIG:	Conf file that contains the configuration for the logfile.
 
 			While accessing an instanced class like this:
 			conf.settings.filename				# Returns filename
 			conf.settings.filename = "NewName"	# Provides the filename used with this config (rename)
 			conf.reload(bVerbose=True)			# Overwriting class creation setting and
 			 									# 	reloading conf.filename, ignoring changes, informing user
-			conf.reload(bSave=True)				# Save changes now, wait 3 seconds, then re-reads conf.filename
+			conf.reload(bSave=True)				# Save changes now, then re-reads conf.filename
 			conf.save()							# Saves current configuration as conf.filename
 			conf.save("new.cfg")				# Exports current config to "new.cfg"
 			conf.ig.							# Will expand the content of the current configuration
@@ -80,47 +137,57 @@ class Conf:
 			conf.ig.New_Section_Name.bSomeBool = False
 			
 		"""
-		# Structure data in subsection
-		def _SubSettings(self):	# , filename=filename, encoding=encoding, bVerbose=bVerbose, bDual=bDual, LOGFILE=LOGFILE
-			self.filename = filename
-			self.encoding = encoding
-			self.bVerbose = bVerbose
-			#self.bDual = bDual
-			self.LOGFILE = LOGFILE
+		# Prepare tools
+		class _SectionTools(self):
+			self.tui = ""
+			self.msg = ""
+			self.lists = ""
+			self.parser = ""
 		# Prepare settings
-		self.settings = _SubSettings(self)
-		#self.settings.filename = filename
-		#self.settings.encoding = encoding
-		#self.settings.bVerbose = bVerbose
-		#self.settings.bDual = bDual
-		#self.settings.LOGFILE = LOGFILE
-		#self.settings.
+		self.settings = _SectionSettings(self)
 		# Imports and Variables
 		import configparser as _configparser
 		from .. import tui as _tui
 		from .. import _MSG
 		from .. import Classes as _Classes
-		from .. import Path as _uf
+		from .. import Path as _Path
 		from .. import Lists as _Lists
-		self._tui = _tui
-		self._msg = _MSG
-		self._lists = _Lists
+		self._tools = _SectionTools(self)
+		self._tools.tui = _tui
+		self._tools.msg = _MSG
+		self._tools.lists = _Lists
+		self._tools.parser = _configparser
+		self.ig = self._prepare_sections()
 		_known_extensions = {"ini", "cfg", "conf"}
 
-		if LOGFILE:
-			ret, log = _Classes.Log( LOGFILE , bVerbose=bVerbose, bDual=True)
+		def _prepare_sections(self):
+			# Helper method to dynamically create attributes for each section
+			#sections = self._config.sections()
+			sections = self._tools.parser.sections()
+			ig_attribute = type("ig", (), {section: self._create_section(section) for section in sections})
+			return ig_attribute
+		def _create_section(self, section):
+			# Helper method to dynamically create attributes for keys within a section
+			class Section:
+				def __getattr__(self, key):
+					return self._tools.parser.get(section, key)
+			return Section()
+		
+
+		if LOG:
+			ret, log = _Classes.Log( LOG , bVerbose=bVerbose, bDual=True)
 			
 			if _tui.status(ret, f"{self._msg.word_filesystem_file}"):
 				# TODO
 				pass
 				
-			if LOGFILE:
-				if _uf.file_exists(LOGFILE, bVerbose=bVerbose):
-					if LOGFILE.__getattribute__("Name"):
-						self._logfile = _Classes.Log(LOGFILE)
+			if LOG:
+				if _Path.file_exists(LOG, bVerbose=bVerbose):
+					if LOG.__getattribute__("Name"):
+						self._logfile = _Classes.Log(LOG)
 		else:
 			# Is empty
-			self._logfile = LOGFILE
+			self._logfile = LOG
 		self.bVerbose = bVerbose
 		self._config = _configparser.ConfigParser()
 		
@@ -130,7 +197,7 @@ class Conf:
 		"""
 		if self.settings.bVerbose:
 			self._tui.status(True, "Is Verbose")
-		elif self.settings.LOGFILE:
+		elif self.settings.LOG:
 			self._tui.status(True, "Is a logfile")
 			self._logfile.status()
 		else:
@@ -140,7 +207,7 @@ class Conf:
 		# Prepare message
 		tmp_msg = f"{self._msg.cl_conf_ui_reading}: {self.settings.filename}"
 		# Prefer LOG over verbose
-		if self.settings.LOGFILE:
+		if self.settings.LOG:
 			self._logfile.INFO(tmp_msg)
 		elif self.settings.bVerbose:
 			# Fallback to 
@@ -153,7 +220,7 @@ class Conf:
 		# Job is done, report...?
 		# Prefer LOG over verbose... again!
 		tmp_msg = f"{self._msg.cl_conf_ui_read}: {self.settings.filename}"
-		if self.settings.LOGFILE:
+		if self.settings.LOG:
 			if ret:
 				self._logfile.INFO(tmp_msg)
 			else:
