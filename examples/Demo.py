@@ -1,6 +1,11 @@
 """
 This is just a very basic example program so you're able to "get the drift".
 """
+import os as _os
+import sys as _sys
+aspire_dir = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), '..'))
+_sys.path.append(aspire_dir)
+
 #
 #	Imports
 #
@@ -40,11 +45,14 @@ def test_configuration():
 	#	Display
 	#
 	tui.title("Test with configuration files")
+	cfg.ig._add_section["Self"]._add_key["prj_label"] = "prj"
+	return
 	cfg._add_section["Self"]._add_key["prj_label"] = "prj"
 	cfg._add_section["Self"]._add_key["prj_name"] = "My Full Project Name"
 	cfg._add_section["Conf"]._add_key["bVerbose"] = False
 	cfg._add_section["Conf"]._add_key["bDual"] = False
 	cfg._add_section["Conf"]._add_key["filename"] = FILE_CONF
+	#cfg.ig.
 	# TODO
 
 def test_log():
@@ -64,7 +72,8 @@ def show_status():
 	for name, item in tui.STATUS.__members__.items():
 		msg = tui._put._Entry(item._value_.id, item._value_.gui, item._value_.tty , item._value_.doc)
 		if OS.IS_GUI:
-			tui.print(name, msg.gui )
+			#tui.print(name, f"tui.status(tui.STATUS.{name})", f"[  {msg.gui}  ]" )
+			tui.status(tui.STATUS.name)
 		else:
 			tui.print(name, msg.tty)
 	tui.print()
