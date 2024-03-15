@@ -154,7 +154,7 @@ def yesno(question: str, yesno_option="yn", bDual=False, msg_yes=None, msg_no=No
 	no = yesno_option[1:]
 	# Default Aspire / TUI output
 	_put.border()
-	str_ret =  _put.status(_put.STATUS.Work)
+	str_ret =  _put.status(_put.STATUS.Work.value)
 	_put.text(question_string, str_ret, end="")
 	_put._cursor2pos(len(question_string) + 5)
 	# Loop for proper input:
