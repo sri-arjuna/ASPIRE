@@ -17,6 +17,7 @@
 #	Essential imports
 #
 import os as _os
+import pathlib as _pathlib
 #import sys as _sys
 import re as _re
 #import string as _string
@@ -29,6 +30,22 @@ import glob as _glob
 ################################################################################################################
 #####                                            Basic Checks                                              #####
 ################################################################################################################
+def dir_cur():
+	"""
+	Returns the absolute current working directory
+	"""
+	return _os.path.abspath(_os.getcwd())
+
+def dir_app():
+	"""
+	Returns the absolute path of the app that is running / calling this function.
+	"""
+	if hasattr(__file__, 'read'):
+		# We're in an interactive session
+		return _os.path.abspath(_os.getcwd())
+	else:
+		return _pathlib.Path(_os.path.abspath(__file__)).parent
+
 # FileDescriptorOrPath
 def exists(filename: str, bVerbose=False, bDual=False):
 	"""
