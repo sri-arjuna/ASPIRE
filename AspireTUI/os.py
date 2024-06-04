@@ -35,7 +35,7 @@ OS_INFO = _platform.uname()
 _dir_user = {
 	"Home": "%userprofile%",
 	"Config": "%localappdata%",
-	"Docs": "%userprofile%",
+	"Docs": "%userprofile%/Documents",
 }
 _dir_os = {
 	"system": "%systemroot%",
@@ -100,7 +100,7 @@ def isVerOS(minimal=None, bDual=False):
 		doLinux = False
 	# Do the check
 		if doLinux:
-			print("# TODO: Linux needs to be verified if kernel detection works") # TODO
+			print("# DEBUG TODO: Linux needs to be verified if kernel detection works") # TODO
 			if int(_platform.release().split('.')[0]) >= str(minimal).split('.')[0]:
 				if int(_platform.release().split('.')[1]) >= str(minimal).split('.')[1]:
 					ret = True
