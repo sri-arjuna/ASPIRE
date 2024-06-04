@@ -37,156 +37,134 @@ _SEVERITY_TRANSLATED = []
 from ..Lists import LOG_LEVEL as LEVEL
 from ..Lists import LOG_SEVERITY as SEVERITY
 
-_str_Title = "title"
-_str_Desc = "desc"
-_str_bUseDate = "bUseDate"
-_str_bUseDateSections = "bUseDateSections"
-_str_bUseTime = "bUseTime"
-_str_bVerbose = "bVerbose"
-_str_LL_ShowUser = "LL_ShowUser"
-_str_LL_SaveLog = "LL_SaveLog"
-_str_bTranslated = "bTranslated"
 
-# English "pre-hardcoded" - obsolete because of import ? ! -- when/if it works
-#_SEVERITY[]
-#SEVERITY[0] = "DEBUG"
-#SEVERITY[1] = "INFO"
-#SEVERITY[2] = "WARNING"
-#SEVERITY[3] = "ERROR"
-#SEVERITY[4] = "CRITICAL"
-#SEVERITY[5] = "FATAL"
-
-# Prepare for class creation, this is required
-
-
-#_str_ = ""
-#
-#	
-#
 class _Settings:
-	def __init__(self):
-		"""
-		Settings of the LOG file
-		"""
-		# Set default values
-		self.filename = ""
-		self.description = ""
-		self.title = ""
-		self.bUseDate = False
-		self.bUseDateSections = True
-		self.bUseTime = True
-		self.bVerbose = False
-		self.LogLevel_ShowUser = 3
-		self.LogLevel_SaveLog = 4
-		self.Log_Format = "%H.%M.%S.%f"
-		self.bTranslated = False
-		# Get acccording strings:
-		from ..Lists import LOG_LEVEL as _LEVEL
-		
-		# Prepare get/set functions
-		@property
-		def description(self):
-			return self.description
-		@description.setter
-		def description(self, new_val: str):
-			msg = _MSG.cl_log_err_must_str
-			if not isinstance(new_val, str):
-				self.WARNING(msg)
-				raise ValueError(msg)
-			self.description = new_val
-		
-		@property
-		def title(self):
-			return self.title
-		@title.setter
-		def title(self, new_val: str):
-			msg = _MSG.cl_log_err_must_str
-			if not isinstance(new_val, str):
-				self.WARNING(msg)
-				raise ValueError(msg)
-			self.title = new_val
-
-		@property
-		def bUseDate(self):
-			return self.bUseDate
-		@bUseDate.setter
-		def bUseDate(self, new_val: bool):
-			msg = _MSG.cl_log_err_must_bool
-			if not isinstance(new_val, bool):
-				self.WARNING(msg)
-				raise ValueError(msg)
-			self.bUseDate = new_val
-		
-		@property
-		def bUseDateSections(self):
-			return self.bUseDateSections
-		@bUseDateSections.setter
-		def bUseDateSections(self, new_val: bool):
-			msg = _MSG.cl_log_err_must_bool
-			if not isinstance(new_val, bool):
-				self.WARNING(msg)
-				raise ValueError(msg)
-			self.bUseDateSections = new_val
-		
-		@property
-		def bUseTime(self):
-			return self.bUseTime
-		@bUseTime.setter
-		def bUseTime(self, new_val: bool):
-			msg = _MSG.cl_log_err_must_bool
-			if not isinstance(new_val, bool):
-				self.WARNING(msg)
-				raise ValueError(msg)
-			self.bUseTime = new_val
-		
-		@property
-		def bVerbose(self):
-			return self.bVerbose
-		@bVerbose.setter
-		def bVerbose(self, new_val: bool):
-			msg = _MSG.cl_log_err_must_bool
-			if not isinstance(new_val, bool):
-				self.WARNING(msg)
-				raise ValueError(msg)
-			self.bVerbose = new_val
+	# Prepare get/set functions
+	@property
+	def description(self):
+		return self.description
+	@description.setter
+	def description(self, new_val: str):
+		msg = _MSG.cl_log_err_must_str
+		if not isinstance(new_val, str):
+			self.WARNING(msg)
+			raise ValueError(msg)
+		self.description = new_val
 
 class Log:
-	def __init__(self, filename: str, bVerbose=False, bDual=False ):
+	def __init__(self, 
+		filename: str=None,
+		bVerbose: bool=False, 
+		bAutoSave: bool=True,
+		iSaveLog: int=0,
+		iShowUser: int=2,
+		name: str=None,
+		comment: str=None,
+		encoding: str="UTF-8",
+		format = "%H.%M.%S.%f"
+		):
 		
 		""""
-		Logfile Management Made Easy 			\n
+### Logfile Management Made Easy
 
-		if filename is a '.log' file, and no log.settings are changed, default settings will be used. \n
-		If filename is a conf/ini file, it will try to apply those values to the settings. \n
-		If no filename (LOG_CONFIG) could be found (on safe)
+__Basic Usage:__
 
-		Those are: \n
-		* log level - show user = 3 warning = 3+
-		* log level - save to log = 4 error = 4+
+    from AspireTUI import Classes
+    logfile = "myApp.log"
+    log = Classes.Log(logfile)
+    log.header = "Line 1 \nLine 2 \nLine 3... and so on"
+    log.INFO("Logfile initialized")
 
+Or you could do:
 
+    from AspireTUI import Classes
+    log = Classes.Log()
+    log.INFO("Do your stuff")
+    log.WARNING("Until its all done")
+    log.save("my-log-session.log")
 
-		If you have a LOG_CONFIG, you do not need to provide a LOGFILE. \n
-		
-		from AspireTUI.Classes import Log  	\n
-		myLog = Log( str_filename ) 			\n
-		myLog.settings.Title = "Title in new logfile"			\n
-		myLog.settings.LogLevel_ShowUser = myLog.LEVEL.WARNING	\n
-		myLog.save()			# Saves a config file of the log settings. \n
-		\n
-		myLog.DEBUG(f"Only shown if myLog.settings.LogLevel_ShowUser is: myLog.LEVEL.DEBUG")	\n
-		\n
-		SEVERITY[0] = "DEBUG" 		\n
-		SEVERITY[1] = "INFO" 		\n
-		SEVERITY[2] = "WARNING" 	\n
-		SEVERITY[3] = "ERROR" 		\n
-		SEVERITY[4] = "CRITICAL" 	\n
-		SEVERITY[5] = "FATAL" 		\n
-		"""		
+__Option Overview:__
+
+	filename	\tExpects ".log", but if either cfg, ini or conf it will read that file instead, expecting this and the following values.
+
+	bVerbose	\tThis will produce some AspireTUI output during creation of the log class
+
+	bAutoSave	\tThis toggles wether you write directly to the logfile or not. Default=True\n\t\tIf you want to save the messages, you will need to call:\n\t    log.
+
+	iSaveLog	\tLogLevel at which messages will be shown to user
+
+	iShowUser	\tLogLevel at which messages will be shown to user
+
+	name    	\tShort string that can help identify which module has written the message
+
+	comment 	\tStrings separated by \\n that will be printed on top of the new logfile as comments.
+
+	encoding	\tDefault is UTF-8, should not be changed, but can if required.
+
+from AspireTUI.Classes import Log  	\n
+myLog = Log( str_filename ) 			\n
+myLog.settings.Title = "Title in new logfile\nWith 2 heading comment lines"		\n
+myLog.settings.LogLevel_ShowUser = myLog.LEVEL.WARNING	\n
+myLog.save()			# Saves a config file of the log settings. \n
+\n
+myLog.DEBUG(f"Only shown if myLog.settings.LogLevel_ShowUser is: myLog.LEVEL.DEBUG")	\n
+\n
+SEVERITY[0] = "DEBUG" 		\n
+SEVERITY[1] = "INFO" 		\n
+SEVERITY[2] = "WARNING" 	\n
+SEVERITY[3] = "ERROR" 		\n
+SEVERITY[4] = "CRITICAL" 	\n
+SEVERITY[5] = "FATAL" 		\n
+		"""	
+		#
+		#	Prep Functions
+		#
+		def _SaveMessages(cls):
+			"""
+			If log.settings.bAutoSave is False, all messages go to: log.messages
+
+			Requires a log.settings.log.file or at least log.setting.name when using log.save()
+			"""
+			#global bAutoSave
+			if bAutoSave:
+				_tui.status(1, "autosafe chjeck on SaveMessages().... why?... and why twice?!")
+			
+		#
+		#	Get sub menus
+		#
 		# Actual initialize class
-		self.settings = _Settings()
-		self.settings.filename = filename
+		from . import _shared
+		self.tools = _shared.SectionTools()
+		self.settings = _shared.SectionSettings()
+		# Apply arguments
+		self.settings.name = name
+		self.settings.bAutoSave = bAutoSave
 		self.settings.bVerbose = bVerbose
+		self.settings.encoding = encoding
+				
+		# Set filename at the proper place
+		if filename.endswith(".log"):
+			self.settings.log.file = filename
+			if bVerbose:
+				_tui.status(LEVEL.INFO.value, "Filename (log):", filename)
+		elif filename.endswith(".cfg", ".conf", ".ini"):
+			self.settings.conf.file = filename
+			if bVerbose:
+				_tui.status(LEVEL.INFO.value, "Filename (ini):", filename)
+		else:
+			_tui.status(False, "Could not identify logfile:", filename)
+		
+		# LOG
+		empty_list = []
+		self.messages = empty_list
+		#self.save = _SaveMessages(self)
+		# Settings LOG
+		self.settings.log.file = filename
+		self.settings.log.format = format
+		self.settings.log.comment = comment
+		self.settings.log.level_ShowUser = iShowUser
+		self.settings.log.level_SaveLog = iSaveLog
+		
 		#self.settings.LOG_CONFIG = 
 
 		#global LEVEL
@@ -195,17 +173,18 @@ class Log:
 	#		lvl._
 			
 		
-		if self.settings.bTranslated:
-			self._SEVERITY_USE = _MSG._SEVERITY_TRANSLATED
-		else:
-			self._SEVERITY_USE = SEVERITY
+		#if self.settings.bTranslated:
+		#	self._SEVERITY_USE = _MSG._SEVERITY_TRANSLATED
+		#else:
+		#	self._SEVERITY_USE = SEVERITY
 
 		# Prepare internal quick use:
 		len_sev_max = 0
-		if self.settings.bTranslated:
-			self._internal_severity_use = self.SEVERITY_TRANSLATED
-		else:
-			self._internal_severity_use = SEVERITY
+		#if self.settings.bTranslated:
+		#	self._internal_severity_use = self.SEVERITY_TRANSLATED
+		#else:
+		#	self._internal_severity_use = SEVERITY
+		self._internal_severity_use = SEVERITY
 		
 		for lvl in LEVEL:
 			# Get the right strings:
@@ -217,6 +196,7 @@ class Log:
 		# Now save longest count to attrtibue
 		self._internal_indent_severity = len_sev_max
 		
+	
 	def _has_header(cls, bDual=False):
 		"""
 		INTERNAL:
@@ -225,16 +205,30 @@ class Log:
 		- Description 		WIP <--------
 		"""
 		# Init
-		this = cls.settings.filename
+		this = cls.settings.log.file
 		from AspireTUI.Path import exists as _exist
 		ret_bool = False
 		ret_msg = f"{_MSG.cl_conf_ui_reading}: {this}"
 		# Check
 		if _exist(this):
-			with open(this,"r", encoding="UTF-8") as fn:
-				pass
-			# File exists and header verified (TODO)
-			ret_bool = True
+			bExist = False
+			with open(this,"r", encoding=cls.settings.encoding) as fn:
+				bExist = True
+				if fn.readline(1) == "#":
+					# File exists and a header comment exists
+					ret_bool = True
+				else:
+					# File found, but has no header
+					lines = []
+					lines = cls.settings.log.comment.split("\n")
+			if bExist and not ret_bool:	
+				# File exists but has no header yet
+				#print(f"# Created by: {cls.settings.title}, on {_tui._stew.now()}")
+				with open(this, "w", encoding=cls.settings.encoding) as fn:
+					for line in lines:
+						print(f"# {line}", file=fn)
+				# File exists and header written
+				ret_bool = True
 		else:
 			# Files not found
 			ret_bool = False
@@ -243,16 +237,18 @@ class Log:
 			return ret_bool, ret_msg
 		else:
 			ret_bool
-
 	
 	def _print_log(cls, level: int, *args):
+	#def _print_log(cls, level: int, message: str, name: str=None,*args):
 		"""
 		INTERNAL:
 		Check if a file needs to be opened
 		"""
 		# Simple things
-		log_file = cls.settings.filename
 		iLen = cls._internal_indent_severity
+		iShow = cls.settings.log.level_ShowUser
+		iSave = cls.settings.log.level_SaveLog
+		log_file = cls.settings.log.file
 		
 		# Prepare message from *args
 		if len(args) == 1:
@@ -263,26 +259,26 @@ class Log:
 		# Actualy check if the header is required
 		cls._has_header()
 		
-		def __print_log_savefile(cls, level:int, message=message, fn=log_file):
+		def __print_log_savefile(cls, level:int, message=message, fn=log_file, name: str=cls.settings.name, encoding=cls.settings.encoding):
 			"""
 			This saves a copy of the settings applied to the log settings.
 			"""
-			print(cls.settings.LogLevel_SaveLog)
+			if cls.settings.bAutoSave:
+				with open(fn, 'at' , encoding=encoding) as thisLOG:
+					# Write: Date	Level	Type	Message
+					from datetime import datetime as _datetime
+					current_time = _datetime.now()
+					formatted_time = current_time.strftime("%F_%H:%M:%S.%f")
+					print(f"{formatted_time}\t\t{level}\t{name}\t\t{message}", file=thisLOG)
+			else:
+				# Append to messages
+				cls.messages.append("TODO")
 			return
-			"""
-			prefix = cls.settings
-			output = ""
-			
-			while open(fn, "a"):
-				# TODO <---------------------------------------------------------
-				pass
-			"""
-
 		# Show to user?
-		if cls.settings.LogLevel_ShowUser >= level:
+		if level >= iShow:
 			_tui.status(1000 + level, message)
-			#pass
-		if cls.settings.LogLevel_SaveLog >= level:
+		# Save to file?
+		if level >= iSave:
 			__print_log_savefile(cls, level, message)
 	# 
 	def DEBUG(self, *args):
