@@ -14,10 +14,12 @@ class Animation:
 			Plays a selectable string animation, or uses passed "custom" list.
 
 			Options:
-			- option:		Which animation to use:
-			- custom:		Pass a list of strings that should be played through.
-			- iIntervall:	This is only used when calling "myAnim.loop(How_Long_Secs: int)"
 
+			- option:		Which animation to use:
+
+			- custom:		Pass a list of strings that should be played through.
+
+			- iIntervall:	This is only used when calling "myAnim.loop(How_Long_Secs: int)"
 
 		"""
 		# Get animation:
@@ -39,7 +41,9 @@ class Animation:
 		# TODO, send anim play to background
 		while time.sleep(HowLong):
 			while time.sleep(self._intervall):
-				tui.print(text, self._show_next())
+				tui.print(text, self._show_next(),end="\r")
+		# Newline
+		print()
 
 	def play(self, text: str = ""):
 		"""
