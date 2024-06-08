@@ -16,10 +16,10 @@ import os as _os
 #
 #	Cross Platform & Advanced usage
 #
-#import platform as _platform
+import platform as _platform
 #import msvcrt as _msvcrt
 #import shutil as _shutil
-#import subprocess as _subprocess
+import subprocess as _subprocess
 from typing import Union as _Union
 import time as _time
 from collections import namedtuple as _namedtuple
@@ -450,3 +450,28 @@ def pick(*args, text: str =_MSG.tui_pick_please_pick, bDual=False, bMenu=False, 
 	else:
 		return int(index_input)
 
+def open(filename: str=None): #, doWait: bool=False):
+	"""
+	Opens passed 'filename' with default application.
+	"""
+	#doWait: \tWIP - Waits until task is closed.
+	#"""
+
+	# Determine the operating system
+	current_os = _platform.system()
+
+	if current_os == "Windows":
+		# Windows
+		_os.startfile(filename)
+	elif current_os == "Darwin":
+		# macOS
+		_subprocess.call(["open", filename])
+	else:
+		# Linux and other Unix-like systems
+		#import OS as _OS
+		DESKTOP = _platform.freedesktop_os_release
+		if DESKTOP == "Wayland":
+			status(STATUS.Todo.value, f"TODO: Handling for {DESKTOP}")
+			_subprocess.call(["xdg-open", filename])
+		else:
+			_subprocess.call(["xdg-open", filename])
