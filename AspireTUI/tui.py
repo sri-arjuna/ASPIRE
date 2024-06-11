@@ -289,12 +289,13 @@ def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False,
 	# Init final vars:
 	output = ""
 	# Get measurement
-	secs = Time
-	org = Time
-	if not unit == "s":
-		secs = _stew.sec2time(secs)
-		print(secs, "TODO work with other time units for wait")
-		# TODO: sec2time , min2sec, hour2sec
+	if unit == "s":
+		secs = Time
+	elif unit == "m":
+		secs = 60 * Time
+	elif unit == "h":
+		secs = 60 * 60 * Time
+	
 	
 	# Prepare strings:
 	if msg is None:
@@ -302,11 +303,12 @@ def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False,
 	
 	cur = secs
 	while cur > 0:
-		print(msg,f"{_stew.sec2time(cur)} / {Time}{unit}")
+		print(msg,f"{_stew.sec2time(cur)} / {Time}{unit}", end="\r")
 		cur -= 1
 		## https://realpython.com/python-sleep/
 		## Async? or time.wait instead ??
 		_time.sleep(iIntervall)
+	status(STATUS.Next.value, msg)
 	
 
 def msgbox(*args, bOutside=False):
