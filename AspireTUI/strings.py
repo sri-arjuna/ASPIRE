@@ -160,10 +160,61 @@ def sec2time(sec:_Union[int, float], format=None) -> str:
 
 	# Prefer passed format over default
 	if format is None:
+		# halfway to new python way....
+		return _datetime.utcoffset(sec).strftime(format)
+		#return _datetime.utcfromtimestamp(sec).strftime(format)
+	else:
 		format = format_fmt
+		# halfway to new python way....
+		return _datetime.fromtimestamp(sec).strftime(format)
+		#return _datetime.utcfromtimestamp(sec).strftime(format)
 
 	# Return passed seconds as time according to format
-	return _datetime.datetime.utcfromtimestamp(sec).strftime(format)
+	#return _datetime.utcfromtimestamp(sec).strftime(format)	#old
+	#return _datetime.fromtimestamp(_datetime.utcnow).strftime(format)	# new not proper
+from datetime import timedelta
+
+def sec2time(sec):
+	"""
+	Transforms given seconds to proper HH:MM:SS format.
+	"""
+	result = None
+	if isinstance(sec, int):
+		# Default, basic seconds
+		doMili = False
+	elif isinstance(sec, float):
+		# It is microseconds
+		doMili = True
+	else:
+		# Unsupported
+		raise ValueError(_MSG.word_error, _MSG.cl_log_err_must_int, _MSG.cl_log_err_must_float)
+
+	# Create a timedelta object from the seconds
+	delta = timedelta(seconds=sec)
+
+	# Extract hours, minutes, and seconds from the timedelta
+	total_seconds = int(delta.total_seconds())
+	hours, remainder = divmod(total_seconds, 3600)
+	minutes, seconds = divmod(remainder, 60)
+
+	#
+	#	Prepare dynamic output
+	#
+	if hours == 0 and minutes == 0:
+		# Its just seconds, present simple:
+		result = seconds
+	elif hours != 0:
+		# Max length, with proper format
+		result = f"{hours:02}:{minutes:02}:{seconds:02}"
+	else:
+		# Duration is within minutes range
+		result = f"{minutes:02}:{seconds:02}"
+	
+	# Was it a float and thus requires mili seconds?
+	if doMili:
+		result = f"{result}.{int(delta.microseconds / 1000):03}"
+
+	return result
 
 def num2roman(num: int) -> str:
 	"""
