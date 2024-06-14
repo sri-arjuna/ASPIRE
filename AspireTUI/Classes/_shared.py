@@ -38,6 +38,7 @@ class SectionSettings():
 			level_SaveLog = 0
 			format = "%H.%M.%S.%f"
 			comment = ""
+			bDaily = True
 
 		class _subConf:
 			# Contains values related to conf - config
@@ -53,6 +54,7 @@ class SectionSettings():
 		#self.comment = None
 		self.bAutoSave = False
 		self.bVerbose = False
+		self.bDaily = False
 		self.encoding = "UTF-8"
 
 # Prepare tools

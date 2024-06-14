@@ -56,6 +56,7 @@ class Log:
 		filename: str=None,
 		bVerbose: bool=False, 
 		bAutoSave: bool=True,
+		bDaily: bool=False,
 		iSaveLog: int=0,
 		iShowUser: int=2,
 		name: str=None,
@@ -136,25 +137,43 @@ SEVERITY[5] = "FATAL" 		\n
 		from . import _shared
 		self.tools = _shared.SectionTools()
 		self.settings = _shared.SectionSettings()
+		_conf_file = None
 		# Apply arguments
 		self.settings.name = name
 		self.settings.bAutoSave = bAutoSave
 		self.settings.bVerbose = bVerbose
+		self.settings.bDaily = bDaily
 		self.settings.encoding = encoding
 				
-		# Set filename at the proper place
-		if filename.endswith(".log"):
-			self.settings.log.file = filename
-			if bVerbose:
-				_tui.status(LEVEL.INFO.value, "Filename (log):", filename)
-		elif filename.endswith(".cfg", ".conf", ".ini"):
-			self.settings.conf.file = filename
-			if bVerbose:
-				_tui.status(LEVEL.INFO.value, "Filename (ini):", filename)
+		#
+		# 	Handle Filename
+		# 
+		if filename:
+			# Has a filename to work with
+			if filename.endswith(".log"):
+				# default handling
+				if bDaily:
+					# Adjust name accordingly
+					filename = filename.replace(".log", f"-{_tui._stew.date().replace('.','_')}.log")
+			elif filename.endswith(".ini") or filename.endswith(".conf") or filename.endswith(".cfg"):
+				# Its a config file
+				_conf_file = filename
+				self.settings.conf.file = _conf_file
+				if name:
+					# A name was passed, lets use that for the initial logfile
+					filename = f"{name}.log"
 		else:
-			_tui.status(False, "Could not identify logfile:", filename)
-		
-		# LOG
+			# No filename is passed, nothing will be written
+			# This is a fallback method for some sort of "dynamic" output
+			if bVerbose:
+				_tui.status(LEVEL.INFO.value, "TODO: Filename (ini):", filename)
+			else:
+				self.settings.bAutoSave = False
+				if bVerbose:
+					_tui.status(LEVEL.INFO.value, "Empty instance of AspireTui.Classes.Log" , "No logfile will be saved.")
+		#
+		# 	LOG
+		#
 		empty_list = []
 		self.messages = empty_list
 		#self.save = _SaveMessages(self)
@@ -165,25 +184,7 @@ SEVERITY[5] = "FATAL" 		\n
 		self.settings.log.level_ShowUser = iShowUser
 		self.settings.log.level_SaveLog = iSaveLog
 		
-		#self.settings.LOG_CONFIG = 
-
-		#global LEVEL
-		#self.LEVEL = LEVEL
-		#for lvl in self.LEVEL:
-	#		lvl._
-			
-		
-		#if self.settings.bTranslated:
-		#	self._SEVERITY_USE = _MSG._SEVERITY_TRANSLATED
-		#else:
-		#	self._SEVERITY_USE = SEVERITY
-
-		# Prepare internal quick use:
 		len_sev_max = 0
-		#if self.settings.bTranslated:
-		#	self._internal_severity_use = self.SEVERITY_TRANSLATED
-		#else:
-		#	self._internal_severity_use = SEVERITY
 		self._internal_severity_use = SEVERITY
 		
 		for lvl in LEVEL:
@@ -196,37 +197,47 @@ SEVERITY[5] = "FATAL" 		\n
 		# Now save longest count to attrtibue
 		self._internal_indent_severity = len_sev_max
 		
-	
 	def _has_header(cls, bDual=False):
 		"""
 		INTERNAL:
+
 		Check if log file has the according content at the top of the file.
-		- Title
-		- Description 		WIP <--------
+
+		If cls.settings.log.comment is None, it will return True regardless.
+
+		If cls.settings.log.comment is given it will write the heading comment.
 		"""
+		if not cls.settings.log.comment:
+			# As no header comment is provided, we can skip thi
+			return True
+
 		# Init
 		this = cls.settings.log.file
 		from AspireTUI.Path import exists as _exist
 		ret_bool = False
 		ret_msg = f"{_MSG.cl_conf_ui_reading}: {this}"
 		# Check
+		bExist = False
 		if _exist(this):
-			bExist = False
 			with open(this,"r", encoding=cls.settings.encoding) as fn:
 				bExist = True
+				fn.seek(0)
 				if fn.readline(1) == "#":
 					# File exists and a header comment exists
 					ret_bool = True
 				else:
 					# File found, but has no header
-					lines = []
-					lines = cls.settings.log.comment.split("\n")
-			if bExist and not ret_bool:	
+					# Lets just verify there is a heading comment to be printed
+					if cls.settings.log.comment:
+						lines = []
+						lines = cls.settings.log.comment.split("\n")
+			if not ret_bool:	
 				# File exists but has no header yet
 				#print(f"# Created by: {cls.settings.title}, on {_tui._stew.now()}")
 				with open(this, "w", encoding=cls.settings.encoding) as fn:
 					for line in lines:
 						print(f"# {line}", file=fn)
+				ret_msg = f"Created log: \t{this}"
 				# File exists and header written
 				ret_bool = True
 		else:
@@ -237,6 +248,8 @@ SEVERITY[5] = "FATAL" 		\n
 			return ret_bool, ret_msg
 		else:
 			ret_bool
+		print("Exists: ", bExist)
+		print("ret_bool: ", ret_bool, ret_msg)
 	
 	def _print_log(cls, level: int, *args):
 	#def _print_log(cls, level: int, message: str, name: str=None,*args):
@@ -257,29 +270,36 @@ SEVERITY[5] = "FATAL" 		\n
 			msg_str = args[0]
 			message = msg_str % args[1:]
 		# Actualy check if the header is required
-		cls._has_header()
+		if cls._has_header(cls):
+			print(f"Logfile: Detected header comment for logfile: {log_file}")
+		else:
+			print(f"Logfile: Written missing header comment for logfile: {log_file}")
 		
 		def __print_log_savefile(cls, level:int, message=message, fn=log_file, name: str=cls.settings.name, encoding=cls.settings.encoding):
 			"""
 			This saves a copy of the settings applied to the log settings.
 			"""
-			if cls.settings.bAutoSave:
+			# Prepare output strings
+			# Write: Date	Level	Type	Message
+			from datetime import datetime as _datetime
+			current_time = _datetime.now()
+			formatted_time = current_time.strftime("%F_%H:%M:%S.%f")
+			msg_out = f"{formatted_time}\t\t{level}\t{name}\t\t{message}"
+
+			# Save outpout
+			if cls.settings.bAutoSave and fn is not None:
 				with open(fn, 'at' , encoding=encoding) as thisLOG:
-					# Write: Date	Level	Type	Message
-					from datetime import datetime as _datetime
-					current_time = _datetime.now()
-					formatted_time = current_time.strftime("%F_%H:%M:%S.%f")
-					print(f"{formatted_time}\t\t{level}\t{name}\t\t{message}", file=thisLOG)
+					print(f"{msg_out}", file=thisLOG)
 			else:
 				# Append to messages
-				cls.messages.append("TODO")
+				cls.messages.append(f"{msg_out}")
 			return
 		# Show to user?
 		if level >= iShow:
 			_tui.status(1000 + level, message)
 		# Save to file?
 		if level >= iSave:
-			__print_log_savefile(cls, level, message)
+			__print_log_savefile(cls, level, message, log_file)
 	# 
 	def DEBUG(self, *args):
 		""""
