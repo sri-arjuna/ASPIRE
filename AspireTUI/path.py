@@ -78,41 +78,49 @@ def exists(filename: str=None, bVerbose=False, bDual=False, bShowFull=False):
 	# Init vars
 	fn = None
 	ret_bool = False
+	ret_msg = f"{_MSG.word_found} "
+	ret_err = f"AspireTUI.Path.exists(filename={filename}, bVerbose={bVerbose}, bDual={bDual}, bShowFull={bShowFull}) requires at least 1 argument (filename)."
 
 	# Most important
 	if filename is None:
-		ret_msg = f"AspireTUI.Path.exists(filename={filename}, bVerbose={bVerbose}, bDual={bDual}, bShowFull={bShowFull}) requires at least 1 argument (filename)."
 		# Output?
 		if bVerbose:
-			_tui.status(ret_bool, ret_msg)
+			_tui.status(ret_bool, ret_err)
 		# Exit
 		if bDual:
-			return ret_bool, ret_msg
+			return ret_bool, ret_err
 		else:
 			return ret_bool
-	
-	# Continue as regular
-	ret_msg = f"{_MSG.word_found}: "
-	if _os.path.exists(filename):
+	elif _os.path.exists(filename):
+		#print(f"DEBUG : abs: {_os.path.abspath(filename)}")
 		ret_bool = True
+	#return ret_bool
+	# Get details
+	if ret_bool:
 		fn = _os.path.basename(filename)
-		if isDir(filename, bVerbose=bVerbose):
-			ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_dir}"
-		elif isFile(filename, bVerbose=bVerbose):
-			ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_file}"
-		elif isLink(filename, bVerbose=bVerbose):
-			ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_link}"
-		elif isMount(filename, bVerbose=bVerbose):
-			ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_mount}"
+		ret_type = None
+		if isDir(filename, bVerbose=False):
+			ret_type = f"{_MSG.word_filesystem_dir}"
+			#ret_msg += f"{_MSG.word_filesystem_dir}"
+		elif isFile(filename, bVerbose=False):
+			ret_type = f"{_MSG.word_filesystem_file}"
+			#ret_msg += f"{_MSG.word_filesystem_file}"
+		elif isLink(filename, bVerbose=False):
+			ret_type = f"{_MSG.word_filesystem_link}"
+			#ret_msg += f"{_MSG.word_filesystem_link}"
+		elif isMount(filename, bVerbose=False):
+			ret_type = f"{_MSG.word_filesystem_mount}"
+			#ret_msg += f"{_MSG.word_filesystem_mount}"
+		ret_msg += f"{ret_type}" # '{filename}'"
 		
 	if bShowFull:
 		# Currently: Whatever is passed
 		# Eventualy: Absolute full path
-		ret_msg = f"{ret_msg}: {filename}"
+		ret_msg = f"{ret_msg}: '{filename}'"
 	else:
 		# Currently: - theoreticly the last part
 		# Eventualy: The last part (just filename or last/deepest dir)
-		ret_msg = f"{ret_msg}: {fn}"
+		ret_msg = f"{ret_msg}: '{fn}'"
 
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg)
