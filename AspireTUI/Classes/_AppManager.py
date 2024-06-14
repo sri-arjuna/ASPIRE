@@ -23,7 +23,9 @@ CLASSIC.save()
 """
 # Imports
 from .. import tui as _tui
+from .. import Path as _Path
 from .. import Strings as _stew
+from .. import _VersionInfo
 from ..Lists import LOG_LEVEL as LEVEL
 from ..Lists import LOG_SEVERITY as SEVERITY
 #
@@ -197,7 +199,9 @@ base_filename:	\t	\t
 
 		#self._values.set = set(self)
 		#self._values.get = get(self)
-		
+		if self._self.bDaily:
+			if not _Path.exists(self.__get_name_log()):
+				self.__create_log()
 		self.read()
 		#self.__write_log = __write_log(self, *message)
 	#
@@ -243,7 +247,8 @@ base_filename:	\t	\t
 		"""
 		message: str=None
 		if self._self.bDefaultComment:
-			message = f"Logfile created for '{self._self.base_filename}' on {_stew.now()}"
+			message = f"{_VersionInfo.FileGenComment}\n"
+			message += f"Logfile created for '{self._self.base_filename}' on {_stew.now()}"
 			message += f"\nDatetime                 Level        Type        Message"
 		if self._self.comment_log is not None:
 			# Its not none, overwriting default message
@@ -258,14 +263,15 @@ base_filename:	\t	\t
 			with open(self.__get_name_log(), "a", encoding=self._self.encoding) as fn:
 				for msg in message.split("\n"):
 					print(f"# {msg}", file=fn)
-			self.INFO("Log header created")
+			self.DEBUG(f"Log header created: {self.__get_name_log()}")
 	def __create_conf(self):
 		"""
 		Writes the heading comment of the configuration file.
 		"""
 		message: str=None
 		if self._self.bDefaultComment:
-			message = f"Logfile created for '{self._self.base_filename}' on {_stew.now()}"
+			message = f"{_VersionInfo.FileGenComment}\n"
+			message += f"Conffile created for '{self._self.base_filename}' on {_stew.now()}"
 		if self._self.comment_conf:
 			# Its not none, overwriting default message
 			message = self._self.comment_conf
@@ -311,8 +317,12 @@ base_filename:	\t	\t
 		global SEVERITY
 		if cls._self.iShowUser <= level:
 			num = 1000 + level
-			print("DEBUG: ", num, message)
-			_tui.status(num, message)
+			#print("DEBUG: ", num, message)
+			for stat in _tui._put.STATUS: #.__reversed__():
+				if num in stat.value:
+					break
+			ret = _tui.status(stat.value, message)
+			#print("DEBUG: ", ret, stat.value)
 		if cls._self.iSaveLog <= level:
 			# Prepare output
 			n = SEVERITY[level]
@@ -344,43 +354,31 @@ base_filename:	\t	\t
 		""""
 		Show / Save message to user / file
 		"""
-		global LEVEL
-		#cls.__write_log(cls, int(LEVEL.DEBUG.value), *args)
 		cls.__write_log(0, *args)
 	def INFO(cls, *args):
 		""""
 		Show / Save message to user / file
 		"""
-		global LEVEL
-		#cls.__write_log(cls, int(LEVEL.DEBUG.value), *args)
 		cls.__write_log(1, *args)
 	def WARNING(cls, *args):
 		""""
 		Show / Save message to user / file
 		"""
-		global LEVEL
-		#cls.__write_log(cls, int(LEVEL.DEBUG.value), *args)
 		cls.__write_log(2, *args)
 	def ERROR(cls, *args):
 		""""
 		Show / Save message to user / file
 		"""
-		global LEVEL
-		#cls.__write_log(cls, int(LEVEL.DEBUG.value), *args)
 		cls.__write_log(3, *args)
 	def CRITICAL(cls, *args):
 		""""
 		Show / Save message to user / file
 		"""
-		global LEVEL
-		#cls.__write_log(cls, int(LEVEL.DEBUG.value), *args)
 		cls.__write_log(4, *args)
 	def FATAL(cls, *args):
 		""""
 		Show / Save message to user / file
 		"""
-		global LEVEL
-		#cls.__write_log(cls, int(LEVEL.DEBUG.value), *args)
 		cls.__write_log(5, *args)
 	#
 	#	Conf functions
@@ -396,15 +394,13 @@ base_filename:	\t	\t
 		cls._content = None
 		cls._values = []
 		if fn:
-			from .. import Path as _Path
 			if _Path.exists(fn):
 				with open(fn, "r", encoding=cls._self.encoding) as thisConf:
-					#cls.DEBUG(f"Reading: {fn}")
 					cls._content = thisConf.read()
 			else:
-				cls.__create_conf()
-				cls.__create_log()
-				cls.DEBUG(f"Created: this logfile & {fn}")
+				if not _Path.exists(cls.__get_name_log()):
+					cls.__create_log()
+					cls.DEBUG(f"Created: this logfile & {fn}")
 				return
 		#
 		# Parse raw data (_content) to usable data (_values)
