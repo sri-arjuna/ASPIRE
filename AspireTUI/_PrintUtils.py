@@ -130,9 +130,9 @@ class STATUS(_Enum):
 	)
 	INFO = _Entry(
 		1000 + LOG_LEVEL.INFO.value,
-		"ℹ️ℹ️ℹ️",
+		"inf", #ℹ️ℹ️ℹ️
 		"INFO",
-		"ℹ️ℹ️ℹ️",
+		"iii",
 	)
 	Warning = _Entry(
 		1000 + LOG_LEVEL.WARNING.value,
@@ -202,9 +202,9 @@ class STATUS(_Enum):
 	)
 	Info = _Entry(
 		111,
-		"ℹ️ℹ️ℹ️",
+		"inf", #ℹ️ℹ️ℹ️
 		"Info",
-		"ℹ️ℹ️ℹ️",
+		"iii",
 	)
 
 def status(ID: _Union[int, bool, _Entry, STATUS], separators="[]"):
