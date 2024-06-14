@@ -24,6 +24,13 @@ Based on my TUI & SWARM for the BASH shell © 2011
 #################################################################################################################
 #####                                           Simple structure for Classes                                #####
 #################################################################################################################
+"""
 from AspireTUI.Classes._Conf import Conf
 from AspireTUI.Classes._Log import Log
 from AspireTUI.Classes._Crashlog import CrashLog
+#from AspireTUI.Classes._App import AppManager
+"""
+from ._Conf import Conf
+from ._Log import Log
+from ._Crashlog import CrashLog
+from ._AppManager import AppManager
