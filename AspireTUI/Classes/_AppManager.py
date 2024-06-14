@@ -150,8 +150,8 @@ base_filename:	\t	\t
 				self.bVerbose = bVerbose
 				self.bDaily = bDaily
 				self.bDisableLog = bDisableLog
-				self.iShowUser = iShowUser
-				self.iSaveLog = iSaveLog
+				self.iShowUser: int= iShowUser
+				self.iSaveLog: int= iSaveLog
 				self.encoding = encoding
 				self.log_format = log_format
 				self.ext_conf = ext_conf
@@ -210,6 +210,10 @@ base_filename:	\t	\t
 			if not _Path.exists(self.__get_name_log()):
 				self.__create_log()
 		self.read()
+		#for entry in self._values: # , self._self:
+		#	print(f"* {entry}")
+		
+		#_tui.status(111, f"MAIN: Should have updated theme: {self._self.theme}")
 		#self.__write_log = __write_log(self, *message)
 	#
 	#	Tools
@@ -322,15 +326,20 @@ base_filename:	\t	\t
 		
 		# Final actions
 		global SEVERITY
-		if cls._self.iShowUser <= level:
+		iSaveLog = int(cls._self.iSaveLog)
+		iShowUser = int(cls._self.iShowUser) 
+		if level >= iShowUser: # - 1:
 			num = 1000 + level
 			#print("DEBUG: ", num, message)
 			for stat in _tui._put.STATUS: #.__reversed__():
 				if num in stat.value:
 					break
+				if num == stat.value.id:
+					#_tui.status(num, f"DEBUG stat.value.id == {num}")
+					break
 			ret = _tui.status(stat.value, message)
-			#print("DEBUG: ", ret, stat.value)
-		if cls._self.iSaveLog <= level:
+			#cls.DEBUG(f"DEBUG: {stat.value}")
+		if level >= iSaveLog: # <= : # - 1:
 			# Prepare output
 			n = SEVERITY[level]
 			if len(n) <= 6:
@@ -343,13 +352,12 @@ base_filename:	\t	\t
 				output = f"{output}\t{tmp}"
 			output = f"{output}\t{message}"
 			# Write to log
-			if cls._self.bDisableLog: # or not cls._self.base_filename:
+			if bool(cls._self.bDisableLog): # or not cls._self.base_filename:
 				cls.messages.append(output)
 			else:
 				fn = cls.__get_name_log()
 				#print(f"Should write: {output} --> {fn}")
 				# Verify we have a filename or section name
-				
 				if fn:
 					with open(fn, 'a' , encoding=cls._self.encoding) as thisLOG:
 						print(f"{output}", file=thisLOG)
@@ -394,6 +402,7 @@ base_filename:	\t	\t
 		"""
 		Reads the configuration file
 		"""
+		#_tui.status(111, f"READ: insdie")
 		fn = cls.__get_name_conf()
 		#
 		# Read data raw
@@ -407,7 +416,7 @@ base_filename:	\t	\t
 			else:
 				if not _Path.exists(cls.__get_name_log()):
 					cls.__create_log()
-					cls.DEBUG(f"Created: this logfile & {fn}")
+					cls.DEBUG(f"Created: {cls._file_log}")
 				return
 		#
 		# Parse raw data (_content) to usable data (_values)
@@ -447,9 +456,33 @@ base_filename:	\t	\t
 			if key:
 				#val = f"{sec_cur} || {key[0]} == {key[1]}"	# val = {sec_cur, key[0]}
 				#print(f"DEBUG {c}:: {sec_cur} || {key[0]} == {key[1]}")
-				cls.set(cls, sec_cur, key[0], key[1])
-
-		#print(f"DEBUG {c} values:", cls._values)	
+				sect = cls._self.chr_sect
+				key_use: str = key[0].replace(sect[:1],"")
+				key_use: str = key_use.replace(sect[1:],"")
+				var: str = key[1].replace('"',"")
+				var: str = var.replace('\'',"")
+				if not sec_cur == "AspireTUI":
+					#print(f"{sec_cur} :: {key_use} = {var}")
+					if key_use == "THEME":
+						_tui._Theme.set(var)
+						cls._self.theme = var
+						cls.DEBUG(f"ini: Updated theme: {var}")
+					if key_use == "bDaily":
+						var: bool=bool(var)
+						cls._self.bDaily = var
+						cls._file_log = cls.__get_name_conf
+						cls.DEBUG(f"ini: Daily log file: {var}")
+					if key_use == "iShowUser":
+						var: int=int(var)
+						cls._self.iShowUser = var
+						cls.DEBUG(f"ini: ShowUser messages: {SEVERITY[var]} / {var}")
+					if key_use == "iSaveLog":
+						var: int=int(var)
+						cls._self.iSaveLog = var
+						cls.DEBUG(f"ini: SaveLog messages: {SEVERITY[var]} / {var}")
+					#pass
+				cls.set(Section=sec_cur, Key=key_use, Value=var)
+				#cls.DEBUG(f"ini -> _values :: sec:{sec_cur} / key:{key_use} / var:{var}")
 	#
 	#	Configuration tools
 	#
@@ -464,8 +497,14 @@ base_filename:	\t	\t
 		Set the value for the'[section]' with 'key=value'
 		"""
 		#def set(self, sector, key, value):
+		if not isinstance(Section, str):
+			Section = Key
+			Key = Value
+			Value = bVerbose
 		if not Section or not Key or not Value:
-			_tui.status(False, _tui._MSG.args_missing)
+			msg = f"'AppMAnager.set()': {_tui._MSG.args_missing} / sec:{Section} / key:{Key} / var:{Value}"
+			cls.WARNING(msg)
+			#_tui.status(False, msg)
 			return False
 		#if not cls._values:
 		#	_tui.status(0, "Empty _values:") #_tui._MSG.)
