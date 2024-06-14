@@ -46,9 +46,10 @@ _default_encoding: str="UTF-8"
 _default_log_format: str="%F %H:%M:%S.%f"
 _default_ext_log: str="log"
 _default_ext_conf: str="ini"
-_default_chr_sep: str=" = "
+_default_chr_sep: str="="
 _default_chr_sect: str="[]"
 _default_chr_comm: list=["#", ";"]
+_default_theme: str="Default"
 
 class AppManager:
 	def __init__(self, 
@@ -69,7 +70,8 @@ class AppManager:
 			ext_conf: str=_default_ext_conf,
 			chr_sep: str=_default_chr_sep,
 			chr_sect: str=_default_chr_sect,
-			chr_comm: list=_default_chr_comm
+			chr_comm: list=_default_chr_comm,
+			theme: str=_default_theme
 			):
 		"""# Handle conf- & logfiles
 
@@ -134,9 +136,10 @@ base_filename:	\t	\t
 					log_format: str="%F %H:%M:%S.%f",
 					ext_conf: str="ini",
 					ext_log: str="log",
-					chr_sep: str=" = ",
+					chr_sep: str="=",
 					chr_sect: str="[]",
-					chr_comm: list=["#", ";"]
+					chr_comm: list=["#", ";"],
+					theme: str="Default"
 					):
 				self.base_filename = base_filename
 				self.base_section = base_section
@@ -156,6 +159,7 @@ base_filename:	\t	\t
 				self.chr_sep = chr_sep
 				self.chr_sect = chr_sect
 				self.chr_comm = chr_comm
+				self.theme = theme
 		# Assign values to class
 		self._self = sub_self(
 			base_filename=base_filename,
@@ -175,17 +179,20 @@ base_filename:	\t	\t
 			ext_log = ext_log,
 			chr_sep = chr_sep,
 			chr_sect = chr_sect,
-			chr_comm = chr_comm
+			chr_comm = chr_comm,
+			theme = theme
 		)
 		from .. import Path as _Path
 		from .. import OS as _OS
 		# Init 
 		self.tui = _tui
+		self.tui._Theme.set(self._self.theme)
 		self.Path = _Path
 		self.OS = _OS
 		self.messages = []
 		self._content = []
 		self._values = [] #DataContainer()
+		#self._theme = theme
 		# Simplify and verify
 		if "/" in base_filename or "\\" in base_filename:
 			# Has a regular path:
