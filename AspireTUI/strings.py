@@ -59,7 +59,7 @@ def Menu():
 #################################################################################################################
 #####                                           String Utils (stew)                                         #####
 #################################################################################################################
-def date(bNames=False) -> str:
+def date(bNames=False) -> _datetime:
 	"""
 	Returns date like:
 	2024.12.30
@@ -70,7 +70,7 @@ def date(bNames=False) -> str:
 		formatted_date += f" {current_date.strftime('%A, %B')}"
 	return formatted_date
 
-def time(bLong=False) -> str:
+def time(bLong=False) -> _datetime:
 	"""
 	Returns time like:
 	15:30
@@ -81,7 +81,7 @@ def time(bLong=False) -> str:
 		formatted_time += f":{current_time.strftime('%S')}"
 	return formatted_time
 
-def now(clean=False, sep="/", bLong=False, bNames=False) -> str:
+def now(clean=False, sep="/", bLong=False, bNames=False) -> _datetime:
 	"""
 	Returns date and time like: \n
 	2024.12.30 / 15:45
