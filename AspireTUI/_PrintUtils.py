@@ -123,38 +123,38 @@ class STATUS(_Enum):
 		f"{_cat.front.red}{_cat.text.bold} X {_cat.reset}",
 	)
 	DEBUG = _Entry(
-		1000 + LOG_LEVEL.DEBUG.value,
-		" 🐞 ",
+		1000,
+		f"{_cat.front.dark_gray}{_cat.text.bold}DBUG{_cat.reset}", # 🐞
 		"DBUG",
 		" 🐞 ",
 	)
 	INFO = _Entry(
-		1000 + LOG_LEVEL.INFO.value,
-		"inf", #ℹ️ℹ️ℹ️
+		1001,
+		f"{_cat.front.green}{_cat.text.bold}INFO{_cat.reset}", #ℹ️ℹ️ℹ️
 		"INFO",
-		"iii",
+		"ℹ️ℹ️ℹ️",
 	)
 	Warning = _Entry(
-		1000 + LOG_LEVEL.WARNING.value,
-		" ⚠️ ",
+		1002,
+		f"{_cat.front.yellow}{_cat.text.bold}WARN{_cat.reset}", # ⚠️
 		"WARN",
 		" ⚠️ ",
 	)
 	ERROR = _Entry(
-		1000 + LOG_LEVEL.ERROR.value,
-		" ❌ ",
+		1003,
+		f"{_cat.front.red}{_cat.text.bold}EROR{_cat.reset}", # ❌
 		"EROR",
 		" ❌ ",
 	)
 	CRITICAL = _Entry(
-		1000 + LOG_LEVEL.CRITICAL.value,
-		" 🔴 ",
+		1004,
+		f"{_cat.front.red}{_cat.codes.blink}{_cat.text.bold}CRIT{_cat.reset}", # 🔴
 		"CRIT",
 		" 🔴 ",
 	)
 	FATAL = _Entry(
-		1000 + LOG_LEVEL.FATAL.value,
-		" ☠️ ",
+		1005,
+		f"{_cat.front.red}{_cat.codes.blink}{_cat.text.bold}FATL{_cat.reset}", # ☠️
 		"FATL",
 		" ☠️ ",
 	)
@@ -262,7 +262,10 @@ def status(ID: _Union[int, bool, _Entry, STATUS], separators="[]"):
 		# We could retrieve the approriate entry
 		if _OS.IS_GUI:
 			# These have length 3 = icons, so 1 extra space
-			val_out = f"{sepL} {val_member.gui}  {sepR}"
+			if val_ret >= 1000:
+				val_out = f"{sepL} {val_member.gui} {sepR}"
+			else:
+				val_out = f"{sepL} {val_member.gui}  {sepR}"
 		else:
 			# These have length 4 = text
 			val_out =f"{sepL} {val_member.tty} {sepR}"
