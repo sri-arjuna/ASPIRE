@@ -47,51 +47,97 @@ def dir_app():
 		return _pathlib.Path(_os.path.abspath(__file__)).parent
 
 # FileDescriptorOrPath
-def exists(filename: str, bVerbose=False, bDual=False):
+def exists(filename: str=None, bVerbose=False, bDual=False, bShowFull=False):
 	"""
 	Returns True if filename exists, or both, bool and message.
 	
 	Examples:
-		if _Files.file_exists(filename):
-			# Do stuff
+
+		if _Path.exists(filename):
+		
+			\# Do stuff
+
 			pass
 		
-		ret_bool, ret_msg = _Files.file_exists(filename, bDual=True)
+		ret_bool, ret_msg = _Path.exists(filename, bDual=True)
 
 	"""
-	ret_bool = None
-	ret_bool = _os.path.exists(filename)
-	fn = _os.path.basename(filename)
-	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_file}: {fn}"
+	# Init vars
+	fn = None
+	ret_bool = False
 
-	if ret_bool:
-		ret_msg = _MSG.file_exists
+	# Most important
+	if filename is None:
+		ret_msg = f"AspireTUI.Path.exists(filename={filename}, bVerbose={bVerbose}, bDual={bDual}, bShowFull={bShowFull}) requires at least 1 argument (filename)."
+		# Output?
+		if bVerbose:
+			_tui.status(ret_bool, ret_msg)
+		# Exit
+		if bDual:
+			return ret_bool, ret_msg
+		else:
+			return ret_bool
+	
+	# Continue as regular
+	ret_msg = f"{_MSG.word_found}: "
+	if _os.path.exists(filename):
+		ret_bool = True
+		fn = _os.path.basename(filename)
+		if isDir(filename, bVerbose=bVerbose):
+			ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_dir}"
+		elif isFile(filename, bVerbose=bVerbose):
+			ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_file}"
+		elif isLink(filename, bVerbose=bVerbose):
+			ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_link}"
+		elif isMount(filename, bVerbose=bVerbose):
+			ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_mount}"
+		
+	if bShowFull:
+		# Currently: Whatever is passed
+		# Eventualy: Absolute full path
+		ret_msg = f"{ret_msg}: {filename}"
 	else:
-		ret_msg = _MSG.file_not_found
-	# Display things, if desired
+		# Currently: - theoreticly the last part
+		# Eventualy: The last part (just filename or last/deepest dir)
+		ret_msg = f"{ret_msg}: {fn}"
+
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg)
-	# Return 
+
 	if bDual:
 		return ret_bool, ret_msg
 	else:
 		return ret_bool
 
-def isfile(filename: str, bVerbose=False, bDual=False):
+
+def isFile(filename: str, bVerbose=False, bDual=False):
 	"""
 	Returns True if it is a file.
 	"""
 	# Init vars
 	ret_bool = False
-	fn = _os.path.basename(filename)
-	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_file}: {fn}"
-	# Start checking
-	if exists(filename, bVerbose=bVerbose):
-		if _os.path.isfile(filename):
-			# Its a file
-			ret_bool = True
-	else:
-		raise TypeError(filename)
+
+	# Most important
+	if filename is None:
+		ret_msg = f"isFile(filename={filename}) requires an argument."
+		# Output?
+		if bVerbose:
+			_tui.status(ret_bool, ret_msg)
+		# Exit
+		if bDual:
+			return ret_bool, ret_msg
+		else:
+			return ret_bool
+	
+	# Main check
+	if _os.path.isfile(filename):
+		# Its a file
+		ret_bool = True
+	
+		fn = _os.path.basename(filename)
+		
+		ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_file}: {fn}"
+	
 	# Display things, if desired
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg, fn)
@@ -101,21 +147,37 @@ def isfile(filename: str, bVerbose=False, bDual=False):
 	else:
 		return ret_bool
 
-def isdir(filename: str, bVerbose=False, bDual=False):
+def isDir(filename: str=None, bVerbose=False, bDual=False):
 	"""
 	Returns True if it is a direcctory.
 	"""
 	# Init vars
 	ret_bool = False
+
+	# Most important
+	if filename is None:
+		ret_msg = f"isDir(filename={filename}) requires an argument."
+		# Output?
+		if bVerbose:
+			_tui.status(ret_bool, ret_msg)
+		# Exit
+		if bDual:
+			return ret_bool, ret_msg
+		else:
+			return ret_bool
+	
+	# Main task
+	if _os.path.isdir(filename):
+		# Its a dir
+		ret_bool = True
+
+	# Check is done, lets prepare output message
 	fn = _os.path.basename(filename)
+	if fn == "" or None:
+		# Got too short
+		fn = filename
 	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_dir}: {fn}"
-	# Start checking
-	if exists(filename, bVerbose=bVerbose):
-		if _os.path.isdir(filename):
-			# Its a dir
-			ret_bool = True
-	else:
-		raise TypeError(filename)
+	
 	# is Verbose?
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg)
@@ -125,21 +187,34 @@ def isdir(filename: str, bVerbose=False, bDual=False):
 	else:
 		return ret_bool
 
-def islink(filename: str, bVerbose=False, bDual=False):
+def isLink(filename: str=None, bVerbose=False, bDual=False):
 	"""
 	Returns True if it is a link.
 	"""
 	# Init vars
 	ret_bool = False
+
+	# Most important
+	if filename is None:
+		ret_msg = f"isDir(filename={filename}) requires an argument."
+		# Output?
+		if bVerbose:
+			_tui.status(ret_bool, ret_msg)
+		# Exit
+		if bDual:
+			return ret_bool, ret_msg
+		else:
+			return ret_bool
+	
+	# Main task
+	if _os.path.islink(filename):
+		# Its a dir
+		ret_bool = True
+
+	# Check is done, lets prepare output message
 	fn = _os.path.basename(filename)
 	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_link}: {fn}"
-	# Start checking
-	if exists(filename, bVerbose=bVerbose):
-		if _os.path.islink(filename):
-			# Its a dir
-			ret_bool = True
-	else:
-		raise TypeError(filename)
+
 	# is Verbose?
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg)
@@ -149,21 +224,34 @@ def islink(filename: str, bVerbose=False, bDual=False):
 	else:
 		return ret_bool
 
-def ismount(filename: str, bVerbose=False, bDual=False):
+def isMount(filename: str=None, bVerbose=False, bDual=False):
 	"""
 	Returns True if it is a direcctory.
 	"""
 	# Init vars
 	ret_bool = False
+
+	# Most important
+	if filename is None:
+		ret_msg = f"isDir(filename={filename}) requires an argument."
+		# Output?
+		if bVerbose:
+			_tui.status(ret_bool, ret_msg)
+		# Exit
+		if bDual:
+			return ret_bool, ret_msg
+		else:
+			return ret_bool
+	
+	# Main task
+	if _os.path.ismount(filename):
+		# Its a dir
+		ret_bool = True
+
+	# Check is done, lets prepare output message
 	fn = _os.path.basename(filename)
 	ret_msg = f"{_MSG.word_found} {_MSG.word_filesystem_mount}: {fn}"
-	# Start checking
-	if exists(filename, bVerbose=bVerbose):
-		if _os.path.ismount(filename):
-			# Its a dir
-			ret_bool = True
-	else:
-		raise TypeError(filename)
+
 	# is Verbose?
 	if bVerbose:
 		_tui.status(ret_bool, ret_msg)
