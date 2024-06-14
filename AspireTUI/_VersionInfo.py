@@ -3,9 +3,9 @@
 """
 from . import Strings as _stew
 Created = "2023.11.09"
-Changed = "20242.03.03"
+Changed = "2024.06.14"
 Major = 0
-Minor = 2
-Build = 3
+Minor = 4
+Build = 0
 Version = f"{Major}.{Minor}.{Build}"
-FileGenComment = f"# Created by AspireTUI ({Version} / {Changed}), on {_stew.now()}"
+FileGenComment = f"Created by AspireTUI ({Version} from {Changed}), https://github.com/sri-arjuna/ASPIRE" #on {_stew.now()}"
