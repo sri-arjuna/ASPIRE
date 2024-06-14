@@ -25,8 +25,21 @@ from . import _MSG
 #from . import Classes as _Classes
 #from . import strings as _stew
 from . import tui as _tui
+from . import OS as _OS
 from typing import Union as _Union
 import glob as _glob
+#
+#	Paths = Simple access for dirs
+#
+_HOME = _os.path.expanduser("~").replace('\\','/')
+DIRS_DICT = {
+	"home": _HOME,
+	"docs": _HOME+"/Documents",
+	"games_my":  _HOME+"/Documents/My Games",
+	"games_saved":  _HOME+"/Saved Games",
+	"localappdata": _os.path.expandvars("%localappdata%").replace('\\','/'),
+	
+}
 ################################################################################################################
 #####                                            Basic Checks                                              #####
 ################################################################################################################
