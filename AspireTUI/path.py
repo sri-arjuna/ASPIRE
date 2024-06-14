@@ -47,7 +47,7 @@ def dir_cur():
 	"""
 	Returns the absolute current working directory
 	"""
-	return _os.path.abspath(_os.getcwd())
+	return _os.path.abspath(_os.getcwd()).replace("\\","/")
 
 def dir_app():
 	"""
@@ -55,9 +55,9 @@ def dir_app():
 	"""
 	if hasattr(__file__, 'read'):
 		# We're in an interactive session
-		return _os.path.abspath(_os.getcwd())
+		return _os.path.abspath(_os.getcwd()).replace("\\","/")
 	else:
-		return _pathlib.Path(_os.path.abspath(__file__)).parent
+		return _pathlib.Path(_os.path.abspath(__file__)).parent.replace("\\","/")
 
 # FileDescriptorOrPath
 def exists(filename: str=None, bVerbose=False, bDual=False, bShowFull=False):
