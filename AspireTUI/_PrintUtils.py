@@ -282,12 +282,13 @@ def status(ID: _Union[int, bool, _Entry, STATUS], separators="[]"):
 #################################################################################################################
 #####                                           Print Utils (_put)                                          #####
 #################################################################################################################
-def remove_console_codes(text) -> str:
+def remove_console_codes(text: str) -> str:
 	# Remove console/color codes from text
 	if text is None or text == "":
 		return ""
 	if not isinstance(text, str):
-		raise ValueError(text, str)
+		# Dont be so sensitive, by now, its output only.
+		text = str(text)
 	return _re.sub(r'\033\[[0-9;]+m', '', text)
 
 def _calc_pos_left() -> int:
@@ -295,11 +296,11 @@ def _calc_pos_left() -> int:
 	# Calculate the indentation based on the length of the text
 	return abs(2 + len(style.border_right))
 
-def _calc_pos_center(text) -> int:
+def _calc_pos_center(text: str) -> int:
 	# Calculate the indentation based on the length of the text
 	return abs(_settings["full"] // 2 - (len(remove_console_codes(text)) // 2) )
 
-def _calc_pos_right(text) -> int:
+def _calc_pos_right(text: str) -> int:
 	# Calculate the indentation based on the length of the text
 	style = _Theme.get()
 	return abs(_settings["full"] - len(remove_console_codes(text)) - len(style.border_right))
