@@ -22,6 +22,7 @@ CLASSIC.save()
 
 """
 # Imports
+import traceback
 from .. import tui as _tui
 from .. import Path as _Path
 from .. import Strings as _stew
@@ -191,30 +192,30 @@ base_filename:	\t	\t
 		self.OS = _OS
 		self.messages = []
 		self._content = []
-		self._values = [] #DataContainer()
-		#self._theme = theme
+		# Data Container
+		self._sections = []
+		self._keys = []
+		self._values = []
+		#
 		# Simplify and verify
+		#
 		if "/" in base_filename or "\\" in base_filename:
 			# Has a regular path:
-			self._file_dir = _tui._os.path.abspath(".")
+			self._file_dir = _tui._os.path.abspath(".").replace("\\","/")
 		else:
 			# No path provided, use current dir (usualy where the script/bin is)
 			self._file_dir = _tui._os.path.abspath(".").replace("\\","/")
+		# 
 		self._file_conf = f"{self._file_dir}/{self.__get_name_conf()}"
 		self._file_log = f"{self._file_dir}/{self.__get_name_log()}"
-		#print(f"DEBUG: c:{self._file_conf} d:{self._file_dir} l:{self._file_log}")
-
-		#self._values.set = set(self)
-		#self._values.get = get(self)
+		#
+		#	Make sure daily log exists
+		#
 		if self._self.bDaily:
-			if not _Path.exists(self.__get_name_log()):
+			if not _Path.exists(self._file_log):
 				self.__create_log()
+		# Get config file first
 		self.read()
-		#for entry in self._values: # , self._self:
-		#	print(f"* {entry}")
-		
-		#_tui.status(111, f"MAIN: Should have updated theme: {self._self.theme}")
-		#self.__write_log = __write_log(self, *message)
 	#
 	#	Tools
 	#
@@ -400,19 +401,31 @@ base_filename:	\t	\t
 	#
 	def read(cls):
 		"""
-		Reads the configuration file
+		Reads the configuration file and applies AspireTUI settings.
 		"""
 		#_tui.status(111, f"READ: insdie")
 		fn = cls.__get_name_conf()
 		#
+		# reset data containers
+		# 
+		cls._content = []
+		cls._values = []
+		cls._keys = []
+		cls._sections = []
+		#
 		# Read data raw
 		# 
-		cls._content = None
-		cls._values = []
 		if fn:
 			if _Path.exists(fn):
+				#try:
 				with open(fn, "r", encoding=cls._self.encoding) as thisConf:
-					cls._content = thisConf.read()
+					#cls._content = thisConf.read()
+						#for line in thisConf.readline():
+						#	cls._content.__add__(line)
+					for line in thisConf.read().splitlines():
+						cls._content.append(line)
+				#except:
+				#	cls.ERROR(f"Could not read: {fn}")
 			else:
 				if not _Path.exists(cls.__get_name_log()):
 					cls.__create_log()
@@ -423,15 +436,11 @@ base_filename:	\t	\t
 		# 
 		sec_cur = None
 		sec_new = ""
-		c=0
 		if cls._content is None:
 			# Nothing to do
 			return
-		for cont in cls._content.split("\n"):
-			c+=1
-			# Skip if comment
-			doSkip = False
-			if cont.startswith(cls._self.chr_comm[0]):
+		for cont in cls._content: #.split("\n"):
+			if str(cont).startswith(cls._self.chr_comm[0]):
 				next
 			
 			# Adjust if new section:
@@ -459,9 +468,10 @@ base_filename:	\t	\t
 				sect = cls._self.chr_sect
 				key_use: str = key[0].replace(sect[:1],"")
 				key_use: str = key_use.replace(sect[1:],"")
+				# Remove quotes
 				var: str = key[1].replace('"',"")
 				var: str = var.replace('\'',"")
-				if not sec_cur == "AspireTUI":
+				if sec_cur == "AspireTUI":
 					#print(f"{sec_cur} :: {key_use} = {var}")
 					if key_use == "THEME":
 						_tui._Theme.set(var)
@@ -478,48 +488,190 @@ base_filename:	\t	\t
 						cls.DEBUG(f"ini: ShowUser messages: {SEVERITY[var]} / {var}")
 					if key_use == "iSaveLog":
 						var: int=int(var)
-						cls._self.iSaveLog = var
 						cls.DEBUG(f"ini: SaveLog messages: {SEVERITY[var]} / {var}")
+						cls._self.iSaveLog = var
+						
 					#pass
 				cls.set(Section=sec_cur, Key=key_use, Value=var)
-				#cls.DEBUG(f"ini -> _values :: sec:{sec_cur} / key:{key_use} / var:{var}")
+				#cls.DEBUG(f"ini: Read -> _values :: sec:{sec_cur} / key:{key_use} / var:{var}")
+	def save(cls):
+		"""
+		Saves data to conf file.
+
+		If only data related to [AspireTUI] (log) is available, it skips writing the file.
+		"""
+		# Ignore save, if only log/AspireTUI settings avvailable
+		if len(cls.list_sections()) == 1 and "AspireTUI" in cls.list_sections(0) :
+			# Nothing to do
+			return False
+		
+		# Check every section
+		for sec in cls.list_sections():
+			# Easier find or add:
+			sec_str =f"{cls._self.chr_sect[:1]}{sec}{cls._self.chr_sect[1:]}"
+			#
+			#	Section 1 
+			#	Add new section if its not in content yet
+			#
+			try:
+				if cls._content.index(sec_str):
+					# Sadly, this works better than: "if sec_str in cls._content:"
+					pass
+				#print("good")
+			except:
+				cls._content.append(sec_str)
+				print(f"ADDED:{sec_str} to _content")
+				for key in cls.list_keys(sec):
+					#cur_index = cls._content.index(key)
+					cur_str = f"{key}{cls._self.chr_sep}{cls.get(sec, key)}"
+					cls._content.append(cur_str)
+					cls.DEBUG(f"ini - Added to: {sec} || {key} = {cls.get(sec, key)}")
+				next
+			#
+			#	Section 2 - Keys
+			#	Found Section in content, lets update the keys or skip them
+			#
+			keys_not_found = []
+			for key in cls.list_keys(sec):
+				# Init
+				val = None
+				val = cls.get(sec, key)
+				key_str2 = f"{key}{cls._self.chr_sep}"
+				key_str1 = f"{key_str2}{val}"
+
+				# Get line/key index per key
+				for line in cls._content:
+					# Which lines to skip?
+					if line != "":
+						first = str(line)[0]
+					else:
+						# Nothing to work with
+						next
+					# Comments can be extensive and include examples, lets skip them
+					if first in f"{cls._self.chr_sect}{cls._self.chr_comm}":
+						# Sections are already handled
+						# Comments could be handled here
+						# This is just for minor performance gain - at best.
+						# I mean, there are people who do like to write an
+						# aweful lot of comments on rather short code that follows.
+						# Just to demonstrate a point, occasionaly.
+						# And for this example, I just want to illustrate and state,
+						# that sometimes people do provide comments to their config
+						# files, and thus those should remain, but also not be worked
+						# with, as that could have the potential to slow down parsing.
+						next
+					#
+					#	Section 2 - Keys
+					#	Found Section in content, lets update the keys or skip them
+					#
+					# Start working
+					if str(line).startswith(key_str2):
+						# Good for replacing / reset text
+						line_index = cls._content.index(line)
+						if key_str1 == str(cls._content[line_index]):
+							# Its identical, nothing to do
+							next
+						else:
+							# Value has changed, update it
+							val_old = cls._content[line_index]
+							cls.DEBUG(f"ini - Updated to: {key_str1} / from: {val_old}")
+							cls._content[line_index] = f"{key_str1}"
+							next
+		#
+		# 	Save finaly
+		#
+		try:
+			with open(cls._file_conf, "w", encoding=cls._self.encoding) as thisConf:
+				#cls._content.append("test blub")	# This resents the list and not even "test blub" is to be found.. (empty file)
+				content_str = "\n".join(cls._content)
+				thisConf.write(content_str)
+				cls.DEBUG(f"Saved: '{cls._file_conf}'")
+				return True
+		except:
+			cls.ERROR(f"Could not save: '{cls._file_conf}'")
+			cls.__write_log(3, traceback.format_exc(4,True))
+			return False
 	#
 	#	Configuration tools
 	#
+	def list_sections(cls) -> list:
+		"""
+		Returns a list of sections
+		"""
+		out = []
+		for sec in cls._sections:
+			if not sec in out:
+				out.append(sec)
+		return out
+	def list_keys(cls, Section:str=None) -> list:
+		"""
+		Returns list of all keys from Section
+		"""
+		if not Section:
+			ValueError(Section)
+		out = []
+		C=0
+		MAX = len(cls._sections)
+
+		while C < MAX:
+			if cls._sections[C] == Section:
+				if not cls._keys[C] in out:
+					out.append(cls._keys[C])
+			C+=1
+		return out
 	
 	def get(cls, Section: str=None, Key: str=None, bVerbose=False):
 		"""
 		Raturns the value from the 'key=' of '[section]'
 		"""
-		pass
-	def set(cls, Section: str=None, Key: str=None, Value: str=None, bVerbose=False):
+		# minimal verification for proper arguments
+		if not Section or not Key:
+			msg = f"'AppMAnager.set()': {_tui._MSG.args_missing} / sec:{Section} / key:{Key}"
+			cls.WARNING(msg)
+			return False
+		C=0
+		MAX = len(cls._sections)
+		while C < MAX:
+			if cls._sections[C] == Section and cls._keys[C] == Key:
+				return cls._values[C]
+			C+=1
+
+	def set(cls, Section: str=None, Key: str=None, Value: str=None, bVerbose=False) -> bool:
 		"""
 		Set the value for the'[section]' with 'key=value'
 		"""
 		#def set(self, sector, key, value):
-		if not isinstance(Section, str):
-			Section = Key
-			Key = Value
-			Value = bVerbose
+		#if not isinstance(Section, str):
+		#	Section = Key
+		#	Key = Value
+		#	Value = bVerbose
 		if not Section or not Key or not Value:
 			msg = f"'AppMAnager.set()': {_tui._MSG.args_missing} / sec:{Section} / key:{Key} / var:{Value}"
 			cls.WARNING(msg)
-			#_tui.status(False, msg)
 			return False
-		#if not cls._values:
-		#	_tui.status(0, "Empty _values:") #_tui._MSG.)
-		#	print(cls._values)
-		#	return False
 		
 		# If not found, add a new entry
-		if not cls._values:
-			cls._values.append({'section': Section, 'key': Key, 'value': Value})
+		if Key not in cls._keys:
+			#cls._sections
+			i = len(cls._keys)
+			cls._sections.append(Section)
+			cls._keys.append(Key)
+			cls._values.append(Value)
+			cls.DEBUG(f"ini: Added Section:{Section}, Key:{Key}, Value: {Value}")
+			return True
 		else:
 			# Update values
-			for entry in cls._values:
-				if entry['section'] == Section and entry['key'] == Key:
-					entry['value'] = Value
-					return
+			C=0
+			MAX = len(cls._sections) #- 1
+			
+			#_tui.print(len(cls._sections), len(cls._keys), len(cls._values))
+			#print("Max:", MAX)
 
-
-		
+			while C < MAX:
+				#print(C)
+				#print(f"C: {C} // {cls._sections[C]} // {cls._keys[C]} // {cls._values[C]}")
+				if cls._sections[C] == Section and cls._keys[C] == Key:
+					cls.DEBUG(f"ini: Update '{Section}' '{Key}' from '{cls._values[C]}' to '{Value}'")
+					cls._values[C] = Value
+					break
+				C+=1
