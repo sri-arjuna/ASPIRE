@@ -399,11 +399,12 @@ base_filename:	\t	\t
 	#
 	#	Conf functions
 	#
-	def read(cls):
+	def read(cls, bSafeFirst: bool=False):
 		"""
 		Reads the configuration file and applies AspireTUI settings.
 		"""
-		#_tui.status(111, f"READ: insdie")
+		if bSafeFirst:
+			cls.save()
 		fn = cls.__get_name_conf()
 		#
 		# reset data containers
@@ -419,13 +420,10 @@ base_filename:	\t	\t
 			if _Path.exists(fn):
 				#try:
 				with open(fn, "r", encoding=cls._self.encoding) as thisConf:
-					#cls._content = thisConf.read()
-						#for line in thisConf.readline():
-						#	cls._content.__add__(line)
 					for line in thisConf.read().splitlines():
 						cls._content.append(line)
 				#except:
-				#	cls.ERROR(f"Could not read: {fn}")
+				#	cls.ERROR(f"ini Could not read: {fn}")
 			else:
 				if not _Path.exists(cls.__get_name_log()):
 					cls.__create_log()
@@ -517,7 +515,6 @@ base_filename:	\t	\t
 				if cls._content.index(sec_str):
 					# Sadly, this works better than: "if sec_str in cls._content:"
 					pass
-				#print("good")
 			except:
 				cls._content.append(sec_str)
 				print(f"ADDED:{sec_str} to _content")
@@ -525,7 +522,7 @@ base_filename:	\t	\t
 					#cur_index = cls._content.index(key)
 					cur_str = f"{key}{cls._self.chr_sep}{cls.get(sec, key)}"
 					cls._content.append(cur_str)
-					cls.DEBUG(f"ini - Added to: {sec} || {key} = {cls.get(sec, key)}")
+					cls.DEBUG(f"ini - Save: Added to: {sec} || {key} = {cls.get(sec, key)}")
 				next
 			#
 			#	Section 2 - Keys
@@ -574,21 +571,21 @@ base_filename:	\t	\t
 						else:
 							# Value has changed, update it
 							val_old = cls._content[line_index]
-							cls.DEBUG(f"ini - Updated to: {key_str1} / from: {val_old}")
+							cls.DEBUG(f"ini - Save: Updated to '{key_str1}' from '{val_old}'")
 							cls._content[line_index] = f"{key_str1}"
 							next
 		#
 		# 	Save finaly
 		#
 		try:
+			cls.__create_conf()
 			with open(cls._file_conf, "w", encoding=cls._self.encoding) as thisConf:
-				#cls._content.append("test blub")	# This resents the list and not even "test blub" is to be found.. (empty file)
 				content_str = "\n".join(cls._content)
 				thisConf.write(content_str)
-				cls.DEBUG(f"Saved: '{cls._file_conf}'")
+				cls.DEBUG(f"ini - Save: All saved to: '{cls._file_conf}'")
 				return True
 		except:
-			cls.ERROR(f"Could not save: '{cls._file_conf}'")
+			cls.ERROR(f"ini - Save: There was an error saving: '{cls._file_conf}'")
 			cls.__write_log(3, traceback.format_exc(4,True))
 			return False
 	#
