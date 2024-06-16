@@ -247,9 +247,9 @@ class _ThemesList(_Enum):
 		title_bold=True,
 		title_underline=True,
 		title_italic=True,
-		header_left="",
-		header_right="",
-		header_filler=""
+		header_left="   ",
+		header_right="   ",
+		header_filler=" "
 	)
 # Internal themes
 #_available_themes = {theme.name: theme.value for theme in _ThemesList}
