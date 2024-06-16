@@ -231,6 +231,26 @@ class _ThemesList(_Enum):
 		header_right="▀█ ",
 		header_filler="▀"
 	)
+	Skyrim = _ThemeAttributes(
+		border_left=" █ ",
+		border_right=" █ ",
+		color_fg="black",
+		color_bg="light_yellow",
+		prompt_read="\076",
+		prompt_select="\076",
+		bar_empty="░",
+		bar_half="▒",
+		bar_full="▓",
+		title_left=" ▄▄",
+		title_right="▄▄ ",
+		title_filler="▀",
+		title_bold=True,
+		title_underline=True,
+		title_italic=True,
+		header_left="",
+		header_right="",
+		header_filler=""
+	)
 # Internal themes
 #_available_themes = {theme.name: theme.value for theme in _ThemesList}
 #################################################################################################################
