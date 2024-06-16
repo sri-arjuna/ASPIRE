@@ -425,13 +425,13 @@ def border(style='print'):
 	cur_theme = _Theme.get()
 	width = _settings["full"]
 	if style == 'header':
-		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_left}"
+		left_border = f"{_cat.reset}{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_left}"
 		right_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.header_right}{_cat.reset}"
 	elif style == 'title':
-		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.title_left}{_cat.codes.invert}"
+		left_border = f"{_cat.reset}{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.title_left}{_cat.codes.invert}"
 		right_border = f"{_cat.reset}{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.title_right}{_cat.reset}"
 	elif style == 'print' or style == 'status':
-		left_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_left}{_cat.reset}"
+		left_border = f"{_cat.reset}{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_left}{_cat.reset}"
 		right_border = f"{cur_theme.color_fg}{cur_theme.color_bg}{cur_theme.border_right}{_cat.reset}"
 	else:
 		raise ValueError(_MSG.tui_style_invalid, f"{style}")
