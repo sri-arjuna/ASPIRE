@@ -234,8 +234,8 @@ class _ThemesList(_Enum):
 	Skyrim = _ThemeAttributes(
 		border_left=" █ ",
 		border_right=" █ ",
-		color_fg="black",
-		color_bg="light_yellow",
+		color_fg="white",
+		color_bg="green",
 		prompt_read="\076",
 		prompt_select="\076",
 		bar_empty="░",
@@ -258,7 +258,7 @@ class _ThemesList(_Enum):
 #################################################################################################################
 def list() -> list:
 	"""
-	Returns a list of themese
+	Returns a list of themes
 	"""
 	return {theme for theme in _ThemesList.__members__}
 
