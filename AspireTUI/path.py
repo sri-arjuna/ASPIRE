@@ -91,32 +91,28 @@ def exists(filename: str=None, bVerbose=False, bDual=False, bShowFull=False):
 			return ret_bool, ret_err
 		else:
 			return ret_bool
-	elif _os.path.exists(filename):
-		#print(f"DEBUG : abs: {_os.path.abspath(filename)}")
+	
+	fn_abs = f"{_os.path.abspath(str(filename))}"
+	if _os.path.exists(fn_abs):
 		ret_bool = True
-	#return ret_bool
+	
 	# Get details
 	if ret_bool:
-		fn = _os.path.basename(filename)
+		fn = _os.path.basename(fn_abs)
 		ret_type = None
-		if isDir(filename, bVerbose=False):
+		if isDir(fn_abs, bVerbose=False):
 			ret_type = f"{_MSG.word_filesystem_dir}"
-			#ret_msg += f"{_MSG.word_filesystem_dir}"
-		elif isFile(filename, bVerbose=False):
+		elif isFile(fn_abs, bVerbose=False):
 			ret_type = f"{_MSG.word_filesystem_file}"
-			#ret_msg += f"{_MSG.word_filesystem_file}"
-		elif isLink(filename, bVerbose=False):
+		elif isLink(fn_abs, bVerbose=False):
 			ret_type = f"{_MSG.word_filesystem_link}"
-			#ret_msg += f"{_MSG.word_filesystem_link}"
-		elif isMount(filename, bVerbose=False):
+		elif isMount(fn_abs, bVerbose=False):
 			ret_type = f"{_MSG.word_filesystem_mount}"
-			#ret_msg += f"{_MSG.word_filesystem_mount}"
 		ret_msg += f"{ret_type}" # '{filename}'"
 		
 	if bShowFull:
-		# Currently: Whatever is passed
-		# Eventualy: Absolute full path
-		ret_msg = f"{ret_msg}: '{filename}'"
+		# Absolute full path
+		ret_msg = f"{ret_msg}: '{fn_abs}'"
 	else:
 		# Currently: - theoreticly the last part
 		# Eventualy: The last part (just filename or last/deepest dir)
