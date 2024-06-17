@@ -6,6 +6,8 @@ Achieving Seamless Performance In Real-time Environments
 > This is the official rewrite of TUI/SWARM by the original inventor/author Simon Arjuna Erat. \
 > Please be aware that this is an unstable work in progress, and some references in this text may refer to habits/behaviour based on the original BASH source code.
 
+Total: [![Downloads](https://static.pepy.tech/badge/AspireTUI)](https://pepy.tech/project/AspireTUI) // [![Downloads Month](https://static.pepy.tech/badge/AspireTUI/month)](https://pepy.tech/project/AspireTUI)
+
 Brief
 -----
 ASPIRE is a Python 3.11+ module that offers an easy to use line-based text user interface framework.
@@ -73,7 +75,7 @@ Installation
 
 At least thats where i want to go:
 ```
-pip install ASPIRE
+pip install AspireTUI
 ```
 
 
