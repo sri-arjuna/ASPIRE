@@ -1,7 +1,7 @@
 """
 # Application Manager
 
-*most simple handling for ini and log files*
+*most simple handling for cfg and log files*
 
 from AspireTUI import Application
 
@@ -35,7 +35,8 @@ from ..Lists import LOG_SEVERITY as SEVERITY
 _default_base_filename: str=None
 _default_base_section: str=None
 _default_bDefaultComment: bool=True
-_default_bAutoRead: bool=True
+_default_bAutoRead: bool=False
+_default_bAutoSave: bool=False
 _default_comment_conf: str=None
 _default_comment_log: str=None
 _default_bVerbose: bool=False
@@ -46,7 +47,7 @@ _default_iSaveLog: int=0
 _default_encoding: str="UTF-8"
 _default_log_format: str="%F %H:%M:%S.%f"
 _default_ext_log: str="log"
-_default_ext_conf: str="ini"
+_default_ext_conf: str="cfg"
 _default_chr_sep: str="="
 _default_chr_sect: str="[]"
 _default_chr_comm: list=["#", ";"]
@@ -54,25 +55,26 @@ _default_theme: str="Default"
 
 class AppManager:
 	def __init__(self, 
-			base_filename: str=_default_base_filename,
-			base_section: str=_default_base_section,
-			bDefaultComment: bool=_default_bDefaultComment,
-			bAutoRead: bool=_default_bAutoRead,
-			comment_conf: str=_default_comment_conf,
-			comment_log: str=_default_comment_log,
-			bVerbose: bool=_default_bVerbose,
-			bDaily: bool=_default_bDaily,
-			bDisableLog: bool=_default_bDisableLog,
-			iShowUser: int=_default_iShowUser,
-			iSaveLog: int=_default_iSaveLog,
-			encoding: str=_default_encoding,
-			log_format: str=_default_log_format,
-			ext_log: str=_default_ext_log,
-			ext_conf: str=_default_ext_conf,
-			chr_sep: str=_default_chr_sep,
-			chr_sect: str=_default_chr_sect,
-			chr_comm: list=_default_chr_comm,
-			theme: str=_default_theme
+			base_filename: str=None,
+			base_section: str=None,
+			bDefaultComment: bool=True,
+			bAutoRead: bool=True,
+			bAutoSave: bool=True,
+			comment_conf: str=None,
+			comment_log: str=None,
+			bVerbose: bool=False,
+			bDaily: bool=False,
+			bDisableLog: bool=False,
+			iShowUser: int=2,
+			iSaveLog: int=1,
+			encoding: str="UTF-8",
+			log_format: str="%F %H:%M:%S.%f",
+			ext_log: str="log",
+			ext_conf: str="cfg",
+			chr_sep: str="=",
+			chr_sect: str="[]",
+			chr_comm: list="#;",
+			theme: str="Default"
 			):
 		"""# Handle conf- & logfiles
 
@@ -126,6 +128,7 @@ base_filename:	\t	\t
 					base_section: str=None,
 					bDefaultComment: bool=True,
 					bAutoRead: bool=True,
+					bAutoSave: bool=True,
 					comment_conf: str=None,
 					comment_log: str=None,
 					bVerbose: bool=False,
@@ -135,7 +138,7 @@ base_filename:	\t	\t
 					iSaveLog: int=0,
 					encoding: str="UTF-8",
 					log_format: str="%F %H:%M:%S.%f",
-					ext_conf: str="ini",
+					ext_conf: str="cfg",
 					ext_log: str="log",
 					chr_sep: str="=",
 					chr_sect: str="[]",
@@ -146,6 +149,7 @@ base_filename:	\t	\t
 				self.base_section = base_section
 				self.bDefaultComment = bDefaultComment
 				self.bAutoRead = bAutoRead
+				self.bAutoSave = bAutoSave
 				self.comment_conf = comment_conf
 				self.comment_log = comment_log
 				self.bVerbose = bVerbose
@@ -167,6 +171,7 @@ base_filename:	\t	\t
 			base_section = base_section,
 			bDefaultComment = bDefaultComment,
 			bAutoRead = bAutoRead,
+			bAutoSave = bAutoSave,
 			comment_conf = comment_conf,
 			comment_log = comment_log,
 			bVerbose = bVerbose,
@@ -258,7 +263,12 @@ base_filename:	\t	\t
 		If bDisaleLog = True, the heading comment is appended to messages.
 		"""
 		message: str=None
+		ret_bool = False
+		# Skip if header exists
 		if self._self.bDefaultComment:
+			if f"{_VersionInfo.FileGenComment}\n" in self.messages:
+				# Log already exists and has heading comment
+				return True
 			message = f"{_VersionInfo.FileGenComment}\n"
 			message += f"Logfile created for '{self._self.base_filename}' on {_stew.now()}"
 			message += f"\nDatetime                 Level        Type        Message"
@@ -270,12 +280,15 @@ base_filename:	\t	\t
 			# No, just pre-save it
 			for msg in message.split("\n"):
 				self.messages.append(f"# {msg}")
+			ret_bool = True
 		else:
 			# Actually write the logfile
 			with open(self.__get_name_log(), "a", encoding=self._self.encoding) as fn:
 				for msg in message.split("\n"):
 					print(f"# {msg}", file=fn)
 			self.DEBUG(f"Log header created: {self.__get_name_log()}")
+			ret_bool = True
+		return ret_bool
 	def __create_conf(self):
 		"""
 		Writes the heading comment of the configuration file.
@@ -399,47 +412,71 @@ base_filename:	\t	\t
 	#
 	#	Conf functions
 	#
-	def read(cls, bSafeFirst: bool=False):
+	def read(cls, bSaveFirst: bool=False):
 		"""
 		Reads the configuration file and applies AspireTUI settings.
 		"""
-		if bSafeFirst:
+		if bSaveFirst:
 			cls.save()
 		fn = cls.__get_name_conf()
 		#
-		# reset data containers
+		# Reset data containers
 		# 
 		cls._content = []
 		cls._values = []
 		cls._keys = []
 		cls._sections = []
 		#
+		# Some reused chars
+		#
+		sep = cls._self.chr_sep
+		sect = cls._self.chr_sect
+		sec_cur = None
+		sec_new = ""
+		key = None
+		#
 		# Read data raw
 		# 
 		if fn:
-			if _Path.exists(fn):
-				#try:
-				with open(fn, "r", encoding=cls._self.encoding) as thisConf:
-					for line in thisConf.read().splitlines():
-						cls._content.append(line)
-				#except:
-				#	cls.ERROR(f"ini Could not read: {fn}")
-			else:
-				if not _Path.exists(cls.__get_name_log()):
+			# Create logfile first - if required:
+			if not _Path.exists(cls.__get_name_log()):
 					cls.__create_log()
-					cls.DEBUG(f"Created: {cls._file_log}")
+					if cls._self.bVerbose: cls.DEBUG(f"cfg - Read: Created: {cls._file_log}")
+			"""else:
+				# File exists, lets make sure first line is a comment
+				isComm = False
+				with open(cls._file_conf, "r", encoding=cls._self.encoding) as thisConf:
+					# 
+					for comm_char in cls._self.chr_comm:
+						if str(thisConf).strip().startswith(comm_char):
+							print(f"\n{comm_char}\n")
+							isComm = True
+				if not isComm: cls.__create_log()
+			"""
+			# Lets read the conf file
+			if _Path.exists(fn):
+				try:
+					with open(fn, "r", encoding=cls._self.encoding) as thisConf:
+						for line in thisConf.read().splitlines():
+							cls._content.append(line)
+					if cls._self.bVerbose: cls.DEBUG(f"cfg - Read: Read raw data from: {fn}")
+				except:
+					if cls._self.bVerbose: cls.ERROR(f"cfg - Read: An error occoured while trying to read: {fn}")
+					cls.__write_log(3, traceback.format_exc(4,True))
+					return False
+			#else:
+				if cls._self.bVerbose: cls.DEBUG(f"cfg - Read: No conf file to read from: {cls._file_conf}")
 				return
 		#
 		# Parse raw data (_content) to usable data (_values)
 		# 
-		sec_cur = None
-		sec_new = ""
 		if cls._content is None:
 			# Nothing to do
-			return
-		for cont in cls._content: #.split("\n"):
+			return False
+		# Work with each line
+		for cont in cls._content:
 			if str(cont).startswith(cls._self.chr_comm[0]):
-				next
+				continue
 			
 			# Adjust if new section:
 			if cont.startswith(cls._self.chr_sect[:1]):
@@ -448,23 +485,21 @@ base_filename:	\t	\t
 				if sec_new != sec_cur and sec_new != "":
 					sec_cur = sec_new
 					sec_new = ""
-					next
+					continue
 			
 			# Since skip does not work for some reason...
 			# Lets try this approach instead.
-			sep = cls._self.chr_sep
-			key = None
 			if sep in cont:
 				key = cont.split(sep)
 			else:
-				next
+				continue
 			
 			# Add to _values
 			if key:
 				#val = f"{sec_cur} || {key[0]} == {key[1]}"	# val = {sec_cur, key[0]}
 				#print(f"DEBUG {c}:: {sec_cur} || {key[0]} == {key[1]}")
-				sect = cls._self.chr_sect
-				key_use: str = key[0].replace(sect[:1],"")
+				
+				key_use: str = str(key[0]).replace(sect[:1],"")
 				key_use: str = key_use.replace(sect[1:],"")
 				# Remove quotes
 				var: str = key[1].replace('"',"")
@@ -474,33 +509,44 @@ base_filename:	\t	\t
 					if key_use == "THEME":
 						_tui._Theme.set(var)
 						cls._self.theme = var
-						cls.DEBUG(f"ini: Updated theme: {var}")
+						cls.DEBUG(f"cfg: Updated theme: {var}")
 					if key_use == "bDaily":
 						var: bool=bool(var)
 						cls._self.bDaily = var
-						cls._file_log = cls.__get_name_conf
-						cls.DEBUG(f"ini: Daily log file: {var}")
+						cls._file_log = cls.__get_name_conf()
+						if not _Path.exists(cls._file_log):
+							cls.__create_log()
+						cls.DEBUG(f"cfg: Daily log file: {var}")
 					if key_use == "iShowUser":
 						var: int=int(var)
 						cls._self.iShowUser = var
-						cls.DEBUG(f"ini: ShowUser messages: {SEVERITY[var]} / {var}")
+						cls.DEBUG(f"cfg: ShowUser messages: {SEVERITY[var]} / {var}")
 					if key_use == "iSaveLog":
 						var: int=int(var)
-						cls.DEBUG(f"ini: SaveLog messages: {SEVERITY[var]} / {var}")
+						cls.DEBUG(f"cfg: SaveLog messages: {SEVERITY[var]} / {var}")
 						cls._self.iSaveLog = var
 						
 					#pass
 				cls.set(Section=sec_cur, Key=key_use, Value=var)
-				#cls.DEBUG(f"ini: Read -> _values :: sec:{sec_cur} / key:{key_use} / var:{var}")
+				#cls.DEBUG(f"cfg: Read -> _values :: sec:{sec_cur} / key:{key_use} / var:{var}")
+			return True
 	def save(cls):
 		"""
 		Saves data to conf file.
 
 		If only data related to [AspireTUI] (log) is available, it skips writing the file.
 		"""
-		# Ignore save, if only log/AspireTUI settings avvailable
-		if len(cls.list_sections()) == 1 and "AspireTUI" in cls.list_sections(0) :
-			# Nothing to do
+		# First, lets write all possible messages to log
+		if cls.messages and cls._file_log:
+			# Something is there
+			if cls._self.bVerbose: cls.DEBUG(f"log - Save: Writing messages to: {cls._file_log}")
+			with open(cls._file_log, "a", encoding=cls._self.encoding) as thisLOG:
+				for entry in cls.messages: print(entry, file=thisLOG)
+
+
+		# Ignore save conf, if only log/AspireTUI settings avvailable
+		if len(cls.list_sections()) == 1 and "AspireTUI" in cls.list_sections() :
+			# AspireTUI is the only section, nothing to do
 			return False
 		
 		# Check every section
@@ -511,18 +557,14 @@ base_filename:	\t	\t
 			#	Section 1 
 			#	Add new section if its not in content yet
 			#
-			try:
-				if cls._content.index(sec_str):
-					# Sadly, this works better than: "if sec_str in cls._content:"
-					pass
-			except:
+			if not sec_str in cls._content:
+				# Not written yet
 				cls._content.append(sec_str)
-				print(f"ADDED:{sec_str} to _content")
+				# Lets add all keys of the section as well
 				for key in cls.list_keys(sec):
-					#cur_index = cls._content.index(key)
 					cur_str = f"{key}{cls._self.chr_sep}{cls.get(sec, key)}"
 					cls._content.append(cur_str)
-					cls.DEBUG(f"ini - Save: Added to: {sec} || {key} = {cls.get(sec, key)}")
+					if cls._self.bVerbose: cls.DEBUG(f"cfg - Save: Added to: {sec} || {key} = {cls.get(sec, key)}")
 				next
 			#
 			#	Section 2 - Keys
@@ -531,7 +573,6 @@ base_filename:	\t	\t
 			keys_not_found = []
 			for key in cls.list_keys(sec):
 				# Init
-				val = None
 				val = cls.get(sec, key)
 				key_str2 = f"{key}{cls._self.chr_sep}"
 				key_str1 = f"{key_str2}{val}"
@@ -565,14 +606,25 @@ base_filename:	\t	\t
 					if str(line).startswith(key_str2):
 						# Good for replacing / reset text
 						line_index = cls._content.index(line)
-						if key_str1 == str(cls._content[line_index]):
+						val_old = cls._content[line_index]
+						val_old = str(val_old).split(cls._self.chr_sep)[1]
+						val_new = cls.get(sec, key)
+						
+
+						#print(f"old: {val_old} // val: {val}")
+						#if str(val).strip() == str(val_old).strip():
+						#if str(val).strip() == str(val_old).split(cls._self.chr_sep)[1].strip():
+						if str(val).strip() == str(val_old).strip():
+						#if key_str1 == str(cls._content[line_index]):
 							# Its identical, nothing to do
+							if cls._self.bVerbose: cls.DEBUG(f"cfg - Save: Skipping '{key_str1}'")
+							#print(f"key: {key} // old: {val_old} // new: {val_new}")
 							next
 						else:
 							# Value has changed, update it
-							val_old = cls._content[line_index]
-							cls.DEBUG(f"ini - Save: Updated to '{key_str1}' from '{val_old}'")
+							if cls._self.bVerbose: cls.DEBUG(f"cfg - Save: Updated to '{key_str1}' from '{val_old}'")
 							cls._content[line_index] = f"{key_str1}"
+							#print(f"key: {key} // old: {val_old} // new: {val_new} ... are NOT the same ?!")
 							next
 		#
 		# 	Save finaly
@@ -582,10 +634,10 @@ base_filename:	\t	\t
 			with open(cls._file_conf, "w", encoding=cls._self.encoding) as thisConf:
 				content_str = "\n".join(cls._content)
 				thisConf.write(content_str)
-				cls.DEBUG(f"ini - Save: All saved to: '{cls._file_conf}'")
+				if cls._self.bVerbose: cls.DEBUG(f"cfg - Save: All saved to: '{cls._file_conf}'")
 				return True
 		except:
-			cls.ERROR(f"ini - Save: There was an error saving: '{cls._file_conf}'")
+			cls.ERROR(f"cfg - Save: There was an error saving: '{cls._file_conf}'")
 			cls.__write_log(3, traceback.format_exc(4,True))
 			return False
 	#
@@ -622,29 +674,28 @@ base_filename:	\t	\t
 		Raturns the value from the 'key=' of '[section]'
 		"""
 		# minimal verification for proper arguments
-		if not Section or not Key:
-			msg = f"'AppMAnager.set()': {_tui._MSG.args_missing} / sec:{Section} / key:{Key}"
-			cls.WARNING(msg)
+		if Section is None or Key is None:
+			msg = f"'AppMAnager.get()': {_tui._MSG.args_missing} / sec:{Section} / key:{Key}"
+			cls.ERROR(msg)
 			return False
 		C=0
 		MAX = len(cls._sections)
+		out = False
 		while C < MAX:
 			if cls._sections[C] == Section and cls._keys[C] == Key:
-				return cls._values[C]
+				out = cls._values[C]
+				break
 			C+=1
+		return out
 
 	def set(cls, Section: str=None, Key: str=None, Value: str=None, bVerbose=False) -> bool:
 		"""
 		Set the value for the'[section]' with 'key=value'
 		"""
-		#def set(self, sector, key, value):
-		#if not isinstance(Section, str):
-		#	Section = Key
-		#	Key = Value
-		#	Value = bVerbose
-		if not Section or not Key or not Value:
+		ret_bool = False
+		if Section is None or Key is None or Value is None:
 			msg = f"'AppMAnager.set()': {_tui._MSG.args_missing} / sec:{Section} / key:{Key} / var:{Value}"
-			cls.WARNING(msg)
+			cls.ERROR(msg)
 			return False
 		
 		# If not found, add a new entry
@@ -654,21 +705,28 @@ base_filename:	\t	\t
 			cls._sections.append(Section)
 			cls._keys.append(Key)
 			cls._values.append(Value)
-			cls.DEBUG(f"ini: Added Section:{Section}, Key:{Key}, Value: {Value}")
-			return True
+			if bVerbose: 
+				cls.DEBUG(f"cfg - Set: Added Key:{Key} in Section:{Section} with Value: {Value}")
+			ret_bool = True
 		else:
 			# Update values
 			C=0
-			MAX = len(cls._sections) #- 1
-			
-			#_tui.print(len(cls._sections), len(cls._keys), len(cls._values))
-			#print("Max:", MAX)
-
+			MAX = len(cls._sections)
 			while C < MAX:
-				#print(C)
-				#print(f"C: {C} // {cls._sections[C]} // {cls._keys[C]} // {cls._values[C]}")
 				if cls._sections[C] == Section and cls._keys[C] == Key:
-					cls.DEBUG(f"ini: Update '{Section}' '{Key}' from '{cls._values[C]}' to '{Value}'")
-					cls._values[C] = Value
-					break
+					if {cls._values[C]} != Value:
+						if bVerbose: 
+							cls.DEBUG(f"cfg - Set: Update value from '{cls._values[C]}' to '{Value}' in '{Section}' '{Key}'")
+						cls._values[C] = Value
+						ret_bool = True
+						break
 				C+=1
+		if not ret_bool:
+			if bVerbose: print(f"set: why not set/update: {Section}, {Key}, {Value} -- Not an issue yet, but might be??")
+		#
+		# Instant save?
+		#
+		if cls._self.bAutoSave:
+			cls.save()
+		if bVerbose: _tui.status(ret_bool, f"{Key}{cls._self.chr_sep}{Value}")
+		return ret_bool
