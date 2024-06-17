@@ -487,7 +487,7 @@ def text(*args, **kwargs):
 		if need_split:
 			if 1 == arg_count:
 				if "title" == style:
-					w = LineLength * 0.5
+					w = LineLength * 0.75
 					linesC = _internal.split_string_preserve_words(args[0], w)
 					print(_center(linesC[0], style=style))
 					border(style=style)
@@ -520,7 +520,10 @@ def text(*args, **kwargs):
 					else:
 						# Nope, needs 2 lines
 						# More complex handling
-						w = LineLength * 0.45
+						if style == "status":
+							w = LineLength * 0.75
+						else:
+							w = LineLength * 0.45
 						linesR = _internal.split_string_preserve_words(args[1], w)
 						# First line
 						print(_left(linesL, style=style), _right(linesR[0], style=style))
