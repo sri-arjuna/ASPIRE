@@ -28,6 +28,7 @@ from . import tui as _tui
 from . import OS as _OS
 from typing import Union as _Union
 import glob as _glob
+import fnmatch as _fnmatch
 #
 #	Paths = Simple access for dirs
 #
@@ -355,8 +356,6 @@ def list_content(location: str=None,
 				for item in result:
 					if f in item:
 						result.remove(item)
-
-
 	#
 	#	Final output
 	#
@@ -364,3 +363,20 @@ def list_content(location: str=None,
 		return ret, output
 	else:
 		return output
+
+
+def hasFiles(pattern, path='.', bDual=False):
+	"""
+	Looks for pattern in path and returns bool if found.
+
+	if bDual is true, it retuns {bool list} like: True, [a,b,c]
+	"""
+	#return [f for f in _os.listdir(path) if _fnmatch.fnmatch(f, '*.' + extension)]
+	ret_bool = False
+	ret_list = []
+	ret_list = [f for f in _os.listdir(path) if _fnmatch.fnmatch(f, pattern)]
+	if ret_list: ret_bool = True
+	if bDual:
+		return ret_bool, ret_list
+	else:
+		return ret_bool
