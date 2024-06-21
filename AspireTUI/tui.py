@@ -214,6 +214,11 @@ def status(ID: _Union[int, bool, _put._Entry, STATUS], *args, align_right=True, 
 	#
 	_put._update()
 	_put.border()
+	# Double check alignment:
+	theme = _Theme.get()
+	bInversedStatus = theme.bInversedStatus
+	if bInversedStatus: align_right=False
+
 	# How to present main output?
 	if len(args) == 0:
 		# Nothing else passed,
@@ -226,7 +231,10 @@ def status(ID: _Union[int, bool, _put._Entry, STATUS], *args, align_right=True, 
 		if align_right:
 			_put.text(*args, _put.status(ret_value), end=end)
 		else:  # left
-			_put.text(_put.status(ret_value), *args, end=end)
+			if len(args) == 1:
+				_put.text(f"{_put.status(ret_value)} {args[0]}", end=end)
+			else:
+				_put.text(_put.status(ret_value), *args, end=end)
 	#
 	#	Do the dual output?
 	#
