@@ -1,4 +1,4 @@
-![Logo](./docs/ASPIRE_Logo.png)
+![Logo](https://github.com/sri-arjuna/Aspire/blob/master/docs/ASPIRE_Logo.png?raw=true)
 
 Achieving Seamless Performance In Real-time Environments
 ================================================================
@@ -19,7 +19,7 @@ Target Audience
 ---------------
 For developers aiming to enhance the user experience with the console.
 
-[![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/1.HelloWorld/HelloWorld.jpg?raw=true)]
+![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/1.HelloWorld/HelloWorld.jpg?raw=true)
 
 Detail
 ------
@@ -28,7 +28,7 @@ ASPIRE simplifies common tasks by providing various functions that wrap around f
 One of ASPIRE's key focuses is to enhance the console experience by offering themable designs. You, as the author, can choose from a variety of ASCII-based themes that include colors, symbols, bold and underline fonts, and more. Users also have the option to select a different theme or even create their own (if you allow so (WIP)).
 
 This is just an incomplete preview of options. \
-[![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/themes/themes_preview_new.jpg?raw=true)]
+![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/themes/themes_preview_new.jpg?raw=true)
 
 ASPIRE is designed with simplified usability in mind for both end users and developers. \
 These functions aim to streamline interactions and improve the overall experience, coding and usage wise.
