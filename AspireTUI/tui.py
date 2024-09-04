@@ -376,25 +376,25 @@ def list(*args, bRoman=False, bAlpha=False, bMenu=False, sSeperator=")"):
 	if bMenu:
 		# The menu entry is always on 0
 		list_entries = [_MSG.tui_list_back, *args]
-		start_count = 0
+		visual_index_mod = 0
 		count_args += 1
 	else:
 		list_entries = args
-		start_count = 1
+		visual_index_mod = 1
 	#
-	#    List Loop
+	#	List Loop
 	#
 	entries_per_row = COL
-	for i in range(start_count, count_args, entries_per_row):
+	for i in range(0, count_args, entries_per_row):
 		current_entries = list_entries[i:i + entries_per_row]
 		formatted_entries = []
 		for j, entry in enumerate(current_entries, start=i):
 			if bRoman:
-				entry_count = _stew.num2roman(j)
+				entry_count = _stew.num2roman(j+visual_index_mod)
 			elif bAlpha:
-				entry_count = _stew.num2alpha(j)
+				entry_count = _stew.num2alpha(j+visual_index_mod)
 			else:
-				entry_count = str(j)
+				entry_count = str(j+visual_index_mod)
 			formatted_entries.append(f"{entry_count}{sSeperator} {entry}")
 		print(*formatted_entries, end="\n")
 
@@ -403,48 +403,71 @@ def pick(*args, text: str =_MSG.tui_pick_please_pick, bDual=False, bMenu=False, 
 	Prints passed 'args' as list and allows user to pick a choice
 
 	Parameters:
-	- text: 		Text so show instead of default test
+	- text: 		Text so show instead of default text
 	- bDual:		Returns 'selected_index' and 'list_item' 
 	- bMenu:		Always show "Back" (translated) to user as first option (always: 0)
 					When user selects 0 for "Back" (translated), it will return "Back" (hardcoded) as "list_item".
-	- bTranslated:	Return translated "Back" as "list_item", requires bMenu=True.
+	- bTranslated:	Return translated "Back" as "list_item", requires bMenu=True. (only visual to user, coding is hardcoded english "back")
 	- bVerbose:		Use 'tui.status' for "pick-feedback".
 
 	Examples:
 	- ret_index, ret_string = pick(*LIST, bDual=True)
 	- index_picked = pick(*LIST)
 	"""
+	
 	# init
 	_theme = _Theme.get()
+	
 	# This many options
 	_count = len(args)
-	# Length of option count
+	
+	# Length of option count (character count or arg count : 12 args = 2 digits/chars)
 	_len = len(str(_count))
+	
 	# Show options
 	list(*args, bMenu=bMenu)
+	
 	# Show text ?
 	text = f"{text} {_theme.prompt_select} "
-	_put.border()
-	_put.text(text, end="")
-	_put._cursor2pos(len(text) + 5)
-	# Read user input
-	index_input = None
-	while True:
-		index_input = _internal.get_input_charcount(_len)
-		if int(index_input) <= len(args) and int(index_input) >= 0:
-			# TODO: for the moment
-			break
-	# Make sure it is int (to work with)
-	selected_index = int(index_input)
-	# Adjust the selected index if bMenu is True
-	if bMenu and selected_index == 0:
-		selected_index = 0
-		str_ret = "Back"	# This must be hardcoded for easier/consistent coding
-	elif bMenu:
-		selected_index -= 1
-		str_ret = args[selected_index]
+	
+	# Counting starts at
+	if bMenu:
+		range_min = 0
+		list_entries = [_MSG.tui_list_back, *args]
 	else:
-		str_ret = args[selected_index]
+		range_min = 1
+		list_entries = args
+	
+	# Prepare user input
+	index_input = None
+	
+	# Loop basic output until valid input is detected
+	while True:
+		# Print basic output
+		_put.border()
+		_put.text(text, end="")
+		# TODO: 5 should become dynamic for any possile custom themes (but works perfectly with all default themes)
+		_put._cursor2pos(len(text) + 5)
+
+		# Read actual user input
+		index_input = _internal.get_input_charcount(_len)
+
+		# Make sure it is int (to work with)
+		selected_index = int(index_input)
+		
+		# Zero is only allowed if Menu -> check range_min
+		if selected_index >= range_min:
+			# its valid min range
+			if selected_index <= len(list_entries):
+				# Its valid max range
+				break
+	
+	# Prepare output
+	if bMenu and selected_index == 0:
+		str_ret = "Back"	# This must be hardcoded for easier/consistent coding
+	else:
+		str_ret = args[selected_index - 1]
+	
 	# How to show?
 	if bVerbose:
 		msg = f"{_MSG.word_picked}: {index_input} ({str_ret})"
@@ -454,11 +477,12 @@ def pick(*args, text: str =_MSG.tui_pick_please_pick, bDual=False, bMenu=False, 
 			status(True, msg)
 	else:
 		print(text, f"{index_input} ({str_ret})")
+	
 	# Return the result based on bDual
 	if bDual:
-		return int(index_input), str_ret
+		return selected_index, str_ret
 	else:
-		return int(index_input)
+		return selected_index
 
 def open(filename: str=None): #, doWait: bool=False):
 	"""
