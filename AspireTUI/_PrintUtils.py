@@ -61,8 +61,12 @@ def _width_full() -> int:
 	
 def _width_inner() -> int:
 	# Return width_full minus borders
-	style = _Theme.get()
-	return _settings["full"] - len(style.border_left) - len(style.border_right) - 2
+	theme = _Theme.get()
+	#return _settings["full"] - len(theme.border_left) - len(theme.border_right) - 2
+	if theme.border_left == "":
+		return _settings["full"] - len(theme.border_left) - len(theme.border_right) - 2
+	else:
+		return _settings["full"] - 2
 
 def _update(forced=False, DEBUG=None):
 	"""
@@ -207,7 +211,7 @@ class STATUS(_Enum):
 		"iii",
 	)
 
-def status(ID: _Union[int, bool, _Entry, STATUS], separators="[]"):
+def status(ID: _Union[int, bool, _Entry, STATUS]):
 	"""
 	This translates int, bool or _namedtuple (_Entry :: STATUS_STRINGS)	into a "show-able" string. \n
 	It determines if we're in a GUI or TTY, and uses the according entry.
@@ -218,6 +222,8 @@ def status(ID: _Union[int, bool, _Entry, STATUS], separators="[]"):
 	val_member = None
 	val_out = None
 	val_ret = False
+	theme = _Theme.get()
+	separators = theme.status_separators
 	# Lets verify wether we use seperators or not:
 	if separators and len(separators) > 0:
 		sepL, sepR = separators[:len(separators) // 2], separators[len(separators) // 2:]

@@ -59,6 +59,8 @@ class _ThemeStyle:
 	header_left: str
 	header_right: str
 	header_filler: str
+	status_separators: str
+	bInversedStatus: bool
 
 class _ListStyle(_Enum):
 	Default = _ThemeStyle(
@@ -67,7 +69,8 @@ class _ListStyle(_Enum):
 		bar_empty=" ",			bar_half="─",			bar_full="═",
 		title_left=" ╟─",		title_right="─╢ ",		title_filler="─",
 		title_bold=True,		title_underline=False,	title_italic=True,
-		header_left=" ╔═",		header_right="═╗ ",		header_filler="═"
+		header_left=" ╔═",		header_right="═╗ ",		header_filler="═",
+		status_separators="[]", bInversedStatus=False
 	)
 	Classic = _ThemeStyle(
 		border_left="# |",		border_right="| #",
@@ -75,15 +78,17 @@ class _ListStyle(_Enum):
 		bar_empty=" ",			bar_half="_",			bar_full="=",
 		title_left="# |",		title_right="| #",		title_filler=" ",
 		title_bold=True,		title_underline=False,	title_italic=False,
-		header_left="# |",		header_right="| #",		header_filler=" "
+		header_left="# |",		header_right="| #",		header_filler=" ",
+		status_separators="[]", bInversedStatus=False
 	)
 	Console = _ThemeStyle(
-		border_left="",			border_right="",
+		border_left="",		border_right="",
 		prompt_read="\076",		prompt_select="\076",
-		bar_empty=" ",			bar_half="_",			bar_full="=",
+		bar_empty="_ ",			bar_half="-",			bar_full="=",
 		title_left="",			title_right="",			title_filler=" ",
 		title_bold=False,		title_underline=True,	title_italic=False,
-		header_left="",			header_right="",		header_filler=" "
+		header_left="",			header_right="",		header_filler=" ",
+		status_separators="│", bInversedStatus=True
 	)
 	# Blocks = https://en.wikipedia.org/wiki/Block_Elements
 	Blocks = _ThemeStyle(
@@ -92,7 +97,8 @@ class _ListStyle(_Enum):
 		bar_empty="░",			bar_half="▒",			bar_full="▓",
 		title_left=" █▄",		title_right="▄█ ",		title_filler="▀",
 		title_bold=True,		title_underline=False,	title_italic=False,
-		header_left=" █▀",		header_right="▀█ ",		header_filler="▀"
+		header_left=" █▀",		header_right="▀█ ",		header_filler="▀",
+		status_separators="▒▒", bInversedStatus=False
 	)
 	Elegance = _ThemeStyle(
 		border_left=" █ ",		border_right=" █ ",
@@ -100,5 +106,62 @@ class _ListStyle(_Enum):
 		bar_empty="░",			bar_half="▒",			bar_full="▓",
 		title_left=" ▄▄",		title_right="▄▄ ",		title_filler="▀",
 		title_bold=True,		title_underline=True,	title_italic=True,
-		header_left="   ",		header_right="   ",		header_filler=" "
+		header_left="   ",		header_right="   ",		header_filler=" ",
+		status_separators="││", bInversedStatus=False
+	)
+	ConsoleRegular = _ThemeStyle(
+		border_left="",		border_right="",
+		prompt_read="\076",		prompt_select="\076",
+		bar_empty="_ ",			bar_half="-",			bar_full="=",
+		title_left="",			title_right="",			title_filler=" ",
+		title_bold=False,		title_underline=True,	title_italic=False,
+		header_left="",			header_right="",		header_filler=" ",
+		status_separators="││", bInversedStatus=False
+	)
+@_dataclass
+class _ThemeProperty:
+	style: _ThemeStyle
+	color: _ThemeColors
+	#bInversedStatus: bool
+
+class _ThemesList(_Enum):
+	Default = _ThemeProperty(
+		style = _ListStyle.Default.value,
+		color = _ListColor.white_blue,
+		#bInversedStatus=False
+	)
+	Admin = _ThemeProperty(
+		style = _ListStyle.Default.value,
+		color = _ListColor.white_red,
+		#bInversedStatus=False
+	)
+	Console = _ThemeProperty(
+		style = _ListStyle.Console.value,
+		color = _ListColor.white_black,
+		#bInversedStatus=True
+	)
+	Classic = _ThemeProperty(
+		style = _ListStyle.Classic.value,
+		color = _ListColor.white_blue,
+		#bInversedStatus=False
+	)
+	Blocks = _ThemeProperty(
+		style = _ListStyle.Blocks.value,
+		color = _ListColor.white_red,
+		#bInversedStatus=False
+	)
+	Elegance = _ThemeProperty(
+		style = _ListStyle.Elegance.value,
+		color = _ListColor.white_dark_gray,
+		#bInversedStatus=False
+	)
+	CyberPunk = _ThemeProperty(
+		style = _ListStyle.Blocks.value,
+		color = _ListColor.black_light_yellow,
+		#bInversedStatus=False
+	)
+	Skyrim = _ThemeProperty(
+		style = _ListStyle.Elegance.value,
+		color = _ListColor.white_green,
+		#bInversedStatus=False
 	)

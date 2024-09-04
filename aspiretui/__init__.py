@@ -49,5 +49,7 @@ _settings_console = {
 	"inner": 		112,
 	"lang":			"english",
 	"theme":		"Default",
+	"theme_color":	None,
+	"theme_style":	None,
 	"due":			12,
 }

@@ -66,85 +66,34 @@
 from dataclasses import dataclass as _dataclass
 from collections import namedtuple as _namedtuple
 from enum import Enum as _Enum
+import re as _re
 #
 #	Internals
 #
 from .. import _settings_console as _settings
 from ..ColorAndText import cat as _cat
-from .styles import _ThemeColors, _ThemeStyle, _ListStyle, _ListColor
+from .styles import _ThemeColors, _ThemeStyle, _ListStyle, _ListColor, _ThemeProperty, _ThemesList
 #from . import colors
 ################################################################################################################
 #####                                            Theme Structure                                           #####
 ################################################################################################################
-@_dataclass
-class _ThemeProperty:
-	style: _ThemeStyle
-	color: _ThemeColors
-	bInversedStatus: bool
-	
-@_dataclass
-class _ThemeAttributes:
-	border_left: str
-	border_right: str
-	color_fg: str
-	color_bg: str
-	prompt_read: str
-	prompt_select: str
-	bar_empty: str
-	bar_half: str
-	bar_full: str
-	title_left: str
-	title_right: str
-	title_filler: str
-	title_bold: bool
-	title_underline: bool
-	title_italic: bool
-	header_left: str
-	header_right: str
-	header_filler: str
-	bInversedStatus: bool
+REQUIRED_ATTRIBUTES = [
+	'border_left', 'border_right', 'prompt_read', 'prompt_select', 'bar_empty',
+	'bar_half', 'bar_full', 'title_left', 'title_right', 'title_filler',
+	'title_bold', 'title_underline', 'title_italic', 'header_left', 'header_right',
+	'header_filler', 'bInversedStatus', 'color_fg', 'color_bg', 'status_separators'
+]
+class Theme:
+	"""Trying out, this class instead of named tuple??"""
+	def __init__(self, **entries: dict):
+		self.__dict__.update(entries)
 
-class _ThemesList(_Enum):
-	Default = _ThemeProperty(
-		style = _ListStyle.Default,
-		color = _ListColor.white_blue,
-		bInversedStatus=False
-	)
-	Admin = _ThemeProperty(
-		style = _ListStyle.Default,
-		color = _ListColor.white_red,
-		bInversedStatus=False
-	)
-	Console = _ThemeProperty(
-		style = _ListStyle.Console,
-		color = _ListColor.white_black,
-		bInversedStatus=True
-	)
-	Classic = _ThemeProperty(
-		style = _ListStyle.Classic,
-		color = _ListColor.white_blue,
-		bInversedStatus=False
-	)
-	Blocks = _ThemeProperty(
-		style = _ListStyle.Blocks,
-		color = _ListColor.white_red,
-		bInversedStatus=False
-	)
-	Elegance = _ThemeProperty(
-		style = _ListStyle.Elegance,
-		color = _ListColor.white_dark_gray,
-		bInversedStatus=False
-	)
-	CyberPunk = _ThemeProperty(
-		style = _ListStyle.Elegance,
-		color = _ListColor.black_light_yellow,
-		bInversedStatus=False
-	)
-	Skyrim = _ThemeProperty(
-		style = _ListStyle.Elegance.value,
-		color = _ListColor.white_green,
-		bInversedStatus=False
-	)
+def sanitize_key(key):
+	""" Sanitize a string to be a valid Python identifier """
+	key = _re.sub(r'\W|^(?=\d)', '_', key)
+	return key
+
+
 
 #################################################################################################################
 #####                                           Theme Stuff                                                 #####
@@ -182,12 +131,15 @@ def set(newTheme: str, theme_style=None, theme_color=None):
 
 def get():
 	"""
-	Retrieves current theme from _settings["theme"] and returns an iterable object (not notation)
+	Retrieves current theme from _settings["theme"] and returns an iterable theme
 	"""
 	#
 	# Get theme values
 	#
-	if _settings["theme"] == "Custom":
+	theme_name = str(_settings["theme"])
+	#print("DEBUG: _settings dict:\n%s" % _settings)
+	
+	if theme_name == "Custom" and _settings["theme_color"] is not None and _settings["theme_style"] is not None:
 		# Special
 		for clr in _ListColor.__members__:
 			# get Color
@@ -203,13 +155,19 @@ def get():
 			Custom = _ThemeProperty(
 				style = Style,
 				color = Color,
-				bInversedStatus=False
+				#bInversedStatus=False
 			)
 		)
 		theme_raw = CustomList.value
 	else:
 		# Default handling
-		theme_raw = _ThemesList[_settings["theme"]].value
+		if theme_name in _ThemesList.__members__:
+			# Passed theme exists
+			theme_raw = _ThemesList[theme_name].value
+		else:
+			print(f"The theme name used '{theme_name}' is not supported." , f"\nFalling back to default theme!")
+			theme_raw = _ThemesList["Default"].value
+			
 	#
 	# Apply console codes to color attribbutes
 	#
@@ -231,29 +189,13 @@ def get():
 		if attribute.startswith('_'):  # Skip internal attributes
 			continue
 		theme_use[attribute] = value
-
-	# Extract top-level attributes
-	_list_top_level = ["bInversedStatus"]
-	for attribute, value in theme_raw.__dict__.items():
-		if attribute in _list_top_level:
-			theme_use[attribute] = value
 	
-	# Debug
-	#for item in theme_use:
-	#	print("----- ITEM", item, theme_use[str(item)])
-	#	if "border_left" == item:
-	#		print("here")
-	#print("\nDEBUG:\n%s\n\n" % theme_use.keys())
-		
+	 # Ensure all required attributes are included with default values
+	for attr in REQUIRED_ATTRIBUTES: #theme_raw.__dict__.items(): #REQUIRED_ATTRIBUTES:
+		if attr not in theme_use:
+			theme_use[attr] = "" if 'color_' not in attr else None
+			
 	# Return
-	Theme = _namedtuple( _settings["theme"], theme_use.keys())
+	#print("DEBUG: theme_use dict:\n%s" % theme_use)
+	Theme = _namedtuple( theme_name, theme_use.keys())
 	return Theme(**theme_use)
-	#print("------------------------------", theme_raw)
-	#print(theme_use, "------------------------------")
-	return type('ThemeData', (), theme_use).__dict__.items()
-	#return type('ThemeData', (), theme_use.__getitem__().values())
-	#return type('ThemeData', tuple(_ThemeAttributes), theme_use)
-	#return _ThemeProperty(theme_use)
-
-them = get()
-them
