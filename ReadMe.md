@@ -19,13 +19,16 @@ Target Audience
 ---------------
 For developers aiming to enhance the user experience with the console.
 
-![HelloWorld](./docs/help/1.HelloWorld/HelloWorld.jpg)
+[![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/1.HelloWorld/HelloWorld.jpg?raw=true)]
 
 Detail
 ------
 ASPIRE simplifies common tasks by providing various functions that wrap around frequently used code. It serves as a three-way interface between the system (MS Windows, any *Nix based system, and even Apple's iOS), the author/developer, and the end user.
 
-One of ASPIRE's key focuses is to enhance the console experience by offering themable designs. You, as the author, can choose from a variety of ASCII-based themes that include colors, symbols, bold and underline fonts, and more. Users also have the option to select a different theme or even create their own (if you allow so).
+One of ASPIRE's key focuses is to enhance the console experience by offering themable designs. You, as the author, can choose from a variety of ASCII-based themes that include colors, symbols, bold and underline fonts, and more. Users also have the option to select a different theme or even create their own (if you allow so (WIP)).
+
+This is just an incomplete preview of options. \
+[![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/themes/themes_preview_new.jpg?raw=true)]
 
 ASPIRE is designed with simplified usability in mind for both end users and developers. \
 These functions aim to streamline interactions and improve the overall experience, coding and usage wise.
@@ -40,8 +43,8 @@ All descriptions are based on the default theme.
 | print		|  Standart output, prints borders in foreground color and accepts up to 3 strings.<br>Will allign them as follows:<br>1. Left<br>2. Left,  Right<br>3. Left, Center, Right |
 | ask		| Printing borders and the passed question, encapsules the default ``input``, returns the input. |
 | yesno		| Similar to ``ask``, but will only accept yes/no, returns according bool. |
-| select	| Pass a list as argument, uses ``list`` to print them. Returns the string of the shown/entered number. |
-| list 		| Used by ``select`` to print a number to each item of the list |
+| pick	| Pass a list as argument, uses ``list`` to print them. Returns the string of the shown/entered number. |
+| list 		| Used by ``pick`` to print a number to each item of the list |
 | bar 		| Provides a progress bar with different options that can be used within the project. |
 
 
@@ -62,10 +65,10 @@ tui.press()
 
 This is how "Hello World" (using ``header``, ``title`` and ``print``) can look like:
 
-![preview](./docs/help/1.HelloWorld/HelloWorld.jpg)
+![preview](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/1.HelloWorld/HelloWorld.jpg?raw=true)
 
-- There are some test projects in [[examples](./examples)]
-- You can find more detailed help in [[docs/help](./docs/help)]
+- There are some test projects in [[examples](https://github.com/sri-arjuna/Aspire/blob/master/examples)]
+- You can find more detailed help in [[docs/help](https://github.com/sri-arjuna/Aspire/blob/master/docs/help)]
 
 ----
 
@@ -79,7 +82,7 @@ pip install AspireTUI
 ```
 
 
-For an example list of different use cases, please see: [[USAGE](./docs/USAGE.md)]
+For an example list of different use cases, please see: [[USAGE](https://github.com/sri-arjuna/Aspire/blob/master/docs/USAGE.md)]
 
 Example:
 --------
