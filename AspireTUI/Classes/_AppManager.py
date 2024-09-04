@@ -52,6 +52,9 @@ _default_chr_sep: str="="
 _default_chr_sect: str="[]"
 _default_chr_comm: list=["#", ";"]
 _default_theme: str="Default"
+_default_theme_color: str=None
+_default_theme_style: str=None
+_default_status_separators: str="[]"
 
 class AppManager:
 	def __init__(self, 
@@ -74,7 +77,10 @@ class AppManager:
 			chr_sep: str="=",
 			chr_sect: str="[]",
 			chr_comm: list="#;",
-			theme: str="Default"
+			theme: str="Default",
+			theme_color: str=None,
+			theme_style: str=None,
+			status_separators: str="[]"
 			):
 		"""# Handle conf- & logfiles
 
@@ -143,7 +149,10 @@ base_filename:	\t	\t
 					chr_sep: str="=",
 					chr_sect: str="[]",
 					chr_comm: list=["#", ";"],
-					theme: str="Default"
+					theme: str="Default",
+					theme_color: str=None,
+					theme_style: str=None,
+					status_separators: str="[]"
 					):
 				self.base_filename = base_filename
 				self.base_section = base_section
@@ -165,6 +174,9 @@ base_filename:	\t	\t
 				self.chr_sect = chr_sect
 				self.chr_comm = chr_comm
 				self.theme = theme
+				self.theme_color = theme_color
+				self.theme_style = theme_style
+				self.status_separators = status_separators
 		# Assign values to class
 		self._self = sub_self(
 			base_filename=base_filename,
@@ -186,13 +198,19 @@ base_filename:	\t	\t
 			chr_sep = chr_sep,
 			chr_sect = chr_sect,
 			chr_comm = chr_comm,
-			theme = theme
+			theme = theme,
+			theme_color = theme_color,
+			theme_style = theme_style,
+			status_separators = status_separators
 		)
 		from .. import Path as _Path
 		from .. import OS as _OS
 		# Init 
 		self.tui = _tui
-		self.tui._Theme.set(self._self.theme)
+		if self._self.theme == "Custom":
+			self.tui._Theme.set(self._self.theme, theme_style=theme_style, theme_color=theme_color)
+		else:
+			self.tui._Theme.set(self._self.theme)
 		self.Path = _Path
 		self.OS = _OS
 		self.messages = []
@@ -206,10 +224,10 @@ base_filename:	\t	\t
 		#
 		if "/" in base_filename or "\\" in base_filename:
 			# Has a regular path:
-			self._file_dir = _tui._os.path.abspath(".").replace("\\","/")
+			self._file_dir = _tui._os.path.abspath(base_filename).replace("\\","/")
 		else:
 			# No path provided, use current dir (usualy where the script/bin is)
-			self._file_dir = _tui._os.path.abspath(".").replace("\\","/")
+			self._file_dir = _tui._os.path.abspath(base_filename).replace("\\","/")
 		# 
 		self._file_conf = f"{self._file_dir}/{self.__get_name_conf()}"
 		self._file_log = f"{self._file_dir}/{self.__get_name_log()}"
@@ -218,6 +236,7 @@ base_filename:	\t	\t
 		#
 		if self._self.bDaily:
 			if not _Path.exists(self._file_log):
+				# Create logfile if it does not exist
 				self.__create_log()
 		# Get config file first
 		self.read()
@@ -640,6 +659,21 @@ base_filename:	\t	\t
 			cls.ERROR(f"cfg - Save: There was an error saving: '{cls._file_conf}'")
 			cls.__write_log(3, traceback.format_exc(4,True))
 			return False
+	def edit(cls):
+		"""
+		A  very basic menu for endusers to select their theme /or combo.
+		"""
+		ret_sel = None
+		while True:
+			_tui.clear()
+			_tui.header("AspireTUI")
+			_tui.title("Configuration Editor")
+			ret_sel = _tui.pick(bMenu=True)
+			if ret_sel == _tui._MSG.tui_list_back:
+				# User wants to exit
+				return 0
+
+
 	#
 	#	Configuration tools
 	#
