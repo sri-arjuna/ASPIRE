@@ -426,6 +426,7 @@ def pick(*args, text: str =_MSG.tui_pick_please_pick, bDual=False, bMenu=False, 
 	
 	# Show options
 	list(*args, bMenu=bMenu)
+	print()
 	
 	# Show text ?
 	text = f"{text} {_theme.prompt_select} "
