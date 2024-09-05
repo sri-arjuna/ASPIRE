@@ -16,7 +16,7 @@ tui._Theme.set("Tron")
 tui.header()
 tui.title("new conf")
 -------------------------
-CLASSIC.{get|set}[section,key,val]
+CLASSIC.{get|set}(section,key[,val])
 CLASSIC.DEBUG("")
 CLASSIC.save()
 
@@ -32,30 +32,6 @@ from ..Lists import LOG_SEVERITY as SEVERITY
 #
 #	Defaults
 #
-_default_base_filename: str=None
-_default_base_section: str=None
-_default_bDefaultComment: bool=True
-_default_bAutoRead: bool=False
-_default_bAutoSave: bool=False
-_default_comment_conf: str=None
-_default_comment_log: str=None
-_default_bVerbose: bool=False
-_default_bDaily: bool=False
-_default_bDisableLog: bool=False
-_default_iShowUser: int=2
-_default_iSaveLog: int=0
-_default_encoding: str="UTF-8"
-_default_log_format: str="%F %H:%M:%S.%f"
-_default_ext_log: str="log"
-_default_ext_conf: str="cfg"
-_default_chr_sep: str="="
-_default_chr_sect: str="[]"
-_default_chr_comm: list=["#", ";"]
-_default_theme: str="Default"
-_default_theme_color: str=None
-_default_theme_style: str=None
-_default_status_separators: str="[]"
-
 class AppManager:
 	def __init__(self, 
 			base_filename: str=None,
@@ -76,7 +52,7 @@ class AppManager:
 			ext_conf: str="cfg",
 			chr_sep: str="=",
 			chr_sect: str="[]",
-			chr_comm: list="#;",
+			chr_comm: list=["#", ";"],
 			theme: str="Default",
 			theme_color: str=None,
 			theme_style: str=None,
@@ -203,42 +179,48 @@ base_filename:	\t	\t
 			theme_style = theme_style,
 			status_separators = status_separators
 		)
+		# Init
+		import configparser as _cfgp
 		from .. import Path as _Path
 		from .. import OS as _OS
-		# Init 
 		self.tui = _tui
+		
+		# Apply theme
 		if self._self.theme == "Custom":
 			self.tui._Theme.set(self._self.theme, theme_style=theme_style, theme_color=theme_color)
 		else:
 			self.tui._Theme.set(self._self.theme)
+		
+		# Assign Aspire functions to class for easy use
 		self.Path = _Path
 		self.OS = _OS
+		
+		# Data Container
 		self.messages = []
 		self._content = []
-		# Data Container
 		self._sections = []
 		self._keys = []
 		self._values = []
-		#
-		# Simplify and verify
-		#
+		
+		# Verify base_filename
 		if "/" in base_filename or "\\" in base_filename:
 			# Has a regular path:
 			self._file_dir = _tui._os.path.abspath(base_filename).replace("\\","/")
 		else:
 			# No path provided, use current dir (usualy where the script/bin is)
 			self._file_dir = _tui._os.path.abspath(base_filename).replace("\\","/")
-		# 
+		
+		# Create filenames from passed base_filename
 		self._file_conf = f"{self._file_dir}/{self.__get_name_conf()}"
 		self._file_log = f"{self._file_dir}/{self.__get_name_log()}"
-		#
-		#	Make sure daily log exists
-		#
+		
+		# Is it a daily log?
 		if self._self.bDaily:
 			if not _Path.exists(self._file_log):
 				# Create logfile if it does not exist
 				self.__create_log()
-		# Get config file first
+		
+		# Read config file data
 		self.read()
 	#
 	#	Tools
@@ -248,66 +230,92 @@ base_filename:	\t	\t
 		Returns the generated log name, or None
 		"""
 		if self._self.base_filename:
+			# Prepare varnames
 			n = self._self.base_filename
 			s = self._self.base_section
 			l = self._self.ext_log
 			t = _stew.date().replace(".","_")
-			#filename = filename.replace(".log", f"-{_tui._stew.date().replace('.','_')}.log")
+			
+			# Sanity check
 			if not n:
 				if not s:
 					return False
 				else:
 					n = s
+			
+			# Adjust for daily log
 			if self._self.bDaily:
 				return f"{n}-{t}.{l}"
 			else:
 				return f"{n}.{l}"
 		else:
+			# No filename passed
 			return None
+	
 	def __get_name_conf(self):
 		"""
 		Returns the generated conf name, or None
 		"""
 		if self._self.base_filename:
-			n = self._self.base_filename
-			c = self._self.ext_conf
-			return f"{n}.{c}"
+			return f"{self._self.base_filename}.{self._self.ext_conf}"
 		else:
 			return None
-
+	
 	def __create_log(self):
 		"""
 		Writes the heading comment of the logfile.
 
-		If bDisaleLog = True, the heading comment is appended to messages.
+		If bDisableLog = True, the heading comment is appended to messages.
 		"""
+		# Init default values
 		message: str=None
 		ret_bool = False
-		# Skip if header exists
-		if self._self.bDefaultComment:
-			if f"{_VersionInfo.FileGenComment}\n" in self.messages:
-				# Log already exists and has heading comment
-				return True
-			message = f"{_VersionInfo.FileGenComment}\n"
-			message += f"Logfile created for '{self._self.base_filename}' on {_stew.now()}"
-			message += f"\nDatetime                 Level        Type        Message"
-		if self._self.comment_log is not None:
-			# Its not none, overwriting default message
-			message = self._self.comment_log
-		# Write it?
-		if self._self.bDisableLog or self.__get_name_log() is None:
-			# No, just pre-save it
+		logfile = None
+		logfile = self.__get_name_log()
+		hasHeader=False
+
+		# Keep in memory?
+		if self._self.bDisableLog or logfile is None:
+			# Write to self.message
 			for msg in message.split("\n"):
 				self.messages.append(f"# {msg}")
-			ret_bool = True
+			# All done
+			return True
+		
+		# No, actualy write a file
+		# Check if file exists
+		if _Path.isFile(logfile):
+			# File exists, check for log header comment
+			with open(logfile, "r", encoding=self._self.encoding) as fn:
+				# Read the first line
+				first_line = fn.readline()
+				# Check if it starts with '#'
+				if first_line.startswith("#"):
+					hasHeader = True
 		else:
-			# Actually write the logfile
-			with open(self.__get_name_log(), "a", encoding=self._self.encoding) as fn:
+			# File does not exist, write heading for sure
+			hasHeader=False
+		
+		# Write header if missing
+		if not hasHeader:
+			# Prepare header:
+			if self._self.comment_log is not None:
+				# Custom heading is passed, use that
+				message = self._self.comment_log
+			else:
+				# Use default heading:
+				message = f"{_VersionInfo.FileGenComment}\n"
+				message += f"Logfile created for '{self._self.base_filename}' on {_stew.now()}"
+				message += f"\nDatetime                 Level        Type        Message"
+			
+			# Write message
+			with open(logfile, "a", encoding=self._self.encoding) as fn:
 				for msg in message.split("\n"):
 					print(f"# {msg}", file=fn)
-			self.DEBUG(f"Log header created: {self.__get_name_log()}")
-			ret_bool = True
+				ret_bool = True
+		# All done
 		return ret_bool
+	
 	def __create_conf(self):
 		"""
 		Writes the heading comment of the configuration file.
@@ -328,7 +336,7 @@ base_filename:	\t	\t
 		"""
 		Write the actual log entries
 		"""
-		err_msg = "To log a message, you must pass a level (int) and a message (str ;or;  STR_with_VAR_placeholder , VAR)."
+		err_msg = "To log a message, you must pass a level (int) and a message (str)."
 		# Verify passed arguments
 		if level is None or args is None:
 			# No values passed, abort
@@ -394,7 +402,7 @@ base_filename:	\t	\t
 				if fn:
 					with open(fn, 'a' , encoding=cls._self.encoding) as thisLOG:
 						print(f"{output}", file=thisLOG)
-
+	
 	#
 	# 	LOG functions
 	#
@@ -428,6 +436,7 @@ base_filename:	\t	\t
 		Show / Save message to user / file
 		"""
 		cls.__write_log(5, *args)
+	
 	#
 	#	Conf functions
 	#
@@ -435,9 +444,13 @@ base_filename:	\t	\t
 		"""
 		Reads the configuration file and applies AspireTUI settings.
 		"""
+		# TODO: Remove the bSaveFirst arg for AppManager.read()??
 		if bSaveFirst:
 			cls.save()
+
+		# Get config name
 		fn = cls.__get_name_conf()
+
 		#
 		# Reset data containers
 		# 
@@ -445,6 +458,44 @@ base_filename:	\t	\t
 		cls._values = []
 		cls._keys = []
 		cls._sections = []
+
+		#
+		# Wrap around configparser
+		#
+		# Function to remove leading and trailing quotes from strings
+		def strip_quotes(value):
+			if isinstance(value, str) and value.startswith('"') and value.endswith('"'):
+				return value[1:-1]
+			return value
+		# Lets get started
+		import configparser as _cfgp
+		this_config = _cfgp.ConfigParser()
+		# Preser CaseSensitify
+		this_config.optionxform = str
+		# Open file
+		this_config.read(fn)
+		
+		#
+		# Fill Data containers
+		#
+		# Debug: Print the full configuration
+		#for section in this_config.sections():
+		#	print(f"[{section}]")
+		#	for key in this_config.options(section):
+		#		value = this_config.get(section, key)
+		#		print(f"{key} = {value}")  # This will show if DIR_GAME is read correctly
+
+		for s in this_config.sections():
+			#print("DEBUBG: s", s)
+			bla = this_config.options(s)
+			#print("DEBUBG: keys", *bla)
+			for key in bla:
+				val = this_config.get(s,key)
+				#print(f"DEBUBG: {s} {key} == ", val)
+				cls._sections.append(s)
+				cls._keys.append(key)
+				cls._values.append(strip_quotes(val))
+		
 		#
 		# Some reused chars
 		#
@@ -461,7 +512,8 @@ base_filename:	\t	\t
 			if not _Path.exists(cls.__get_name_log()):
 					cls.__create_log()
 					if cls._self.bVerbose: cls.DEBUG(f"cfg - Read: Created: {cls._file_log}")
-			"""else:
+			"""
+			else:
 				# File exists, lets make sure first line is a comment
 				isComm = False
 				with open(cls._file_conf, "r", encoding=cls._self.encoding) as thisConf:
@@ -549,6 +601,7 @@ base_filename:	\t	\t
 				cls.set(Section=sec_cur, Key=key_use, Value=var)
 				#cls.DEBUG(f"cfg: Read -> _values :: sec:{sec_cur} / key:{key_use} / var:{var}")
 			return True
+	
 	def save(cls):
 		"""
 		Saves data to conf file.
@@ -672,8 +725,8 @@ base_filename:	\t	\t
 			if ret_sel == _tui._MSG.tui_list_back:
 				# User wants to exit
 				return 0
-
-
+			_tui.print("TODO: Config Edit Menu")
+			_tui.print("Needs to be added ")
 	#
 	#	Configuration tools
 	#
@@ -686,6 +739,7 @@ base_filename:	\t	\t
 			if not sec in out:
 				out.append(sec)
 		return out
+	
 	def list_keys(cls, Section:str=None) -> list:
 		"""
 		Returns list of all keys from Section
@@ -708,14 +762,24 @@ base_filename:	\t	\t
 		Raturns the value from the 'key=' of '[section]'
 		"""
 		# minimal verification for proper arguments
-		if Section is None or Key is None:
+		#for s in cls._sections:
+		#	print("DEBUG: sec", s)
+		if Section in cls.list_sections() and Key in cls.list_keys(Section):
+			pass
+		elif Section is None or Key is None:
 			msg = f"'AppMAnager.get()': {_tui._MSG.args_missing} / sec:{Section} / key:{Key}"
 			cls.ERROR(msg)
 			return False
 		C=0
-		MAX = len(cls._sections)
+		cls.read()
+		MAX = int(len(cls.list_sections()))
 		out = False
-		while C < MAX:
+		#print("DEBUG - MAX:", MAX)
+		while C <= MAX:
+			#print("DEBUG - C:", C)
+			#print("DEBUG - sec:", cls._sections[C])
+			#print("DEBUG - key:", cls._keys[C])
+			
 			if cls._sections[C] == Section and cls._keys[C] == Key:
 				out = cls._values[C]
 				break
