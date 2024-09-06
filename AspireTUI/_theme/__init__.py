@@ -104,6 +104,12 @@ def list() -> list:
 	"""
 	return {theme for theme in _ThemesList.__members__}
 
+def list_color() -> list:
+	"""
+	Returns a list of color sets
+	"""
+	return {color for color in _ListColor.__members__}
+
 def set(newTheme: str, theme_style=None, theme_color=None):
 	"""
 	Saves passed string as _settings["theme"] and returns True
