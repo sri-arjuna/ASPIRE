@@ -450,6 +450,7 @@ base_filename:	\t	\t
 
 		# Get config name
 		fn = cls.__get_name_conf()
+		logfile = cls.__get_name_log()
 
 		#
 		# Reset data containers
@@ -459,15 +460,15 @@ base_filename:	\t	\t
 		cls._keys = []
 		cls._sections = []
 
-		#
-		# Wrap around configparser
-		#
 		# Function to remove leading and trailing quotes from strings
 		def strip_quotes(value):
 			if isinstance(value, str) and value.startswith('"') and value.endswith('"'):
 				return value[1:-1]
 			return value
-		# Lets get started
+		
+		#
+		# Wrap around configparser
+		#
 		import configparser as _cfgp
 		this_config = _cfgp.ConfigParser()
 		# Preser CaseSensitify
@@ -478,13 +479,6 @@ base_filename:	\t	\t
 		#
 		# Fill Data containers
 		#
-		# Debug: Print the full configuration
-		#for section in this_config.sections():
-		#	print(f"[{section}]")
-		#	for key in this_config.options(section):
-		#		value = this_config.get(section, key)
-		#		print(f"{key} = {value}")  # This will show if DIR_GAME is read correctly
-
 		for s in this_config.sections():
 			#print("DEBUBG: s", s)
 			bla = this_config.options(s)
@@ -496,111 +490,71 @@ base_filename:	\t	\t
 				cls._keys.append(key)
 				cls._values.append(strip_quotes(val))
 		
-		#
 		# Some reused chars
-		#
 		sep = cls._self.chr_sep
 		sect = cls._self.chr_sect
 		sec_cur = None
 		sec_new = ""
 		key = None
-		#
-		# Read data raw
-		# 
-		if fn:
+		
+		# Read logfile raw
+		if logfile:
 			# Create logfile first - if required:
-			if not _Path.exists(cls.__get_name_log()):
-					cls.__create_log()
-					if cls._self.bVerbose: cls.DEBUG(f"cfg - Read: Created: {cls._file_log}")
-			"""
-			else:
-				# File exists, lets make sure first line is a comment
-				isComm = False
-				with open(cls._file_conf, "r", encoding=cls._self.encoding) as thisConf:
-					# 
-					for comm_char in cls._self.chr_comm:
-						if str(thisConf).strip().startswith(comm_char):
-							print(f"\n{comm_char}\n")
-							isComm = True
-				if not isComm: cls.__create_log()
-			"""
-			# Lets read the conf file
-			if _Path.exists(fn):
-				try:
-					with open(fn, "r", encoding=cls._self.encoding) as thisConf:
-						for line in thisConf.read().splitlines():
-							cls._content.append(line)
-					if cls._self.bVerbose: cls.DEBUG(f"cfg - Read: Read raw data from: {fn}")
-				except:
-					if cls._self.bVerbose: cls.ERROR(f"cfg - Read: An error occoured while trying to read: {fn}")
-					cls.__write_log(3, traceback.format_exc(4,True))
-					return False
-			#else:
-				if cls._self.bVerbose: cls.DEBUG(f"cfg - Read: No conf file to read from: {cls._file_conf}")
-				return
+			if not _Path.exists(logfile):
+				cls.__create_log()
+				if cls._self.bVerbose: cls.DEBUG(f"cfg - Read: Created: {cls._file_log}")
+		
+		"""
+		Lets handle public internal settings
+		This refers to [AspireTUI]
+		This is already parse and available in memory: _sections, _keys, _values
+		"""
+		# Lets retrieve the values first:
+		T = "AspireTUI"
+		this_theme		= this_config.get(T,"THEME")
+		this_theme_color = this_config.get(T,"THEME_COLOR")
+		this_theme_style = this_config.get(T,"THEME_STYLE")
+		this_bdaily 	= this_config.get(T,"bDaily")
+		this_savelog 	= this_config.get(T,"iSaveLog")
+		this_showuser	= this_config.get(T,"iShowUser")
+
+		# Apply values to _self from config -> overwrite 'defaults'
+		if this_bdaily is not None : cls._self.bDaily = this_bdaily
+		if this_savelog is not None : cls._self.iSaveLog = this_savelog
+		if this_showuser is not None : cls._self.iShowUser = this_showuser
+		# Special theme handling
+		if this_theme_color is not None : cls._self.theme_color = this_theme_color
+		if this_theme_style is not None : cls._self.theme_style = this_theme_style
+		print(cls._self.theme_style, cls._self.theme_color)
+
 		#
-		# Parse raw data (_content) to usable data (_values)
-		# 
-		if cls._content is None:
-			# Nothing to do
-			return False
-		# Work with each line
-		for cont in cls._content:
-			if str(cont).startswith(cls._self.chr_comm[0]):
-				continue
-			
-			# Adjust if new section:
-			if cont.startswith(cls._self.chr_sect[:1]):
-				sec_new = cont.replace(cls._self.chr_sect[:1], "")
-				sec_new = sec_new.replace(cls._self.chr_sect[1:], "")
-				if sec_new != sec_cur and sec_new != "":
-					sec_cur = sec_new
-					sec_new = ""
-					continue
-			
-			# Since skip does not work for some reason...
-			# Lets try this approach instead.
-			if sep in cont:
-				key = cont.split(sep)
-			else:
-				continue
-			
-			# Add to _values
-			if key:
-				#val = f"{sec_cur} || {key[0]} == {key[1]}"	# val = {sec_cur, key[0]}
-				#print(f"DEBUG {c}:: {sec_cur} || {key[0]} == {key[1]}")
-				
-				key_use: str = str(key[0]).replace(sect[:1],"")
-				key_use: str = key_use.replace(sect[1:],"")
-				# Remove quotes
-				var: str = key[1].replace('"',"")
-				var: str = var.replace('\'',"")
-				if sec_cur == "AspireTUI":
-					#print(f"{sec_cur} :: {key_use} = {var}")
-					if key_use == "THEME":
-						_tui._Theme.set(var)
-						cls._self.theme = var
-						cls.DEBUG(f"cfg: Updated theme: {var}")
-					if key_use == "bDaily":
-						var: bool=bool(var)
-						cls._self.bDaily = var
-						cls._file_log = cls.__get_name_conf()
-						if not _Path.exists(cls._file_log):
-							cls.__create_log()
-						cls.DEBUG(f"cfg: Daily log file: {var}")
-					if key_use == "iShowUser":
-						var: int=int(var)
-						cls._self.iShowUser = var
-						cls.DEBUG(f"cfg: ShowUser messages: {SEVERITY[var]} / {var}")
-					if key_use == "iSaveLog":
-						var: int=int(var)
-						cls.DEBUG(f"cfg: SaveLog messages: {SEVERITY[var]} / {var}")
-						cls._self.iSaveLog = var
-						
-					#pass
-				cls.set(Section=sec_cur, Key=key_use, Value=var)
-				#cls.DEBUG(f"cfg: Read -> _values :: sec:{sec_cur} / key:{key_use} / var:{var}")
-			return True
+		#	Theme handling
+		#
+		# Check for valid theme entry / value
+		if this_theme is None : 
+			this_theme = "Default"
+		elif this_theme not in _tui._Theme.list() and this_theme.lower() != "random" and this_theme.lower() != "custom":
+			this_theme = "Default"
+		
+		# Handle the theme
+		lst_theme = list(_tui._Theme.list())
+		#print(lst_theme)
+		#print(this_theme)
+		
+		if "random" == str(this_theme).lower():
+			import random
+			rnd_theme = random.choice(lst_theme)
+			cls._self.theme = rnd_theme
+			_tui._Theme.set(cls._self.theme)
+		elif "custom" == str(this_theme).lower():
+			# This should apply the custom color and style to the _settings
+			_tui._Theme.set("Custom", cls._self.theme_style, cls._self.theme_color)
+		else:
+			cls._self.theme = this_theme
+			_tui._Theme.set(cls._self.theme)
+		
+		# asdf
+		return True
 	
 	def save(cls):
 		"""
