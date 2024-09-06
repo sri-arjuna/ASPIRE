@@ -143,44 +143,46 @@ def get():
 	# Get theme values
 	#
 	theme_name = str(_settings["theme"])
-	#print("DEBUG: _settings dict:\n%s" % _settings)
 	
-	if theme_name == "Custom" and _settings["theme_color"] is not None and _settings["theme_style"] is not None:
-		# Special
-		for clr in _ListColor.__members__:
-			# get Color
-			if clr == _settings["theme_color"]:
-				Color = _ListColor[clr].value
-				break
-		for sty in _ListStyle.__members__:
-			# get Style
-			if sty ==  _settings["theme_style"]:
-				Style = _ListStyle[sty].value
-		# Generate data
-		CustomList = _ThemesList(
-			Custom = _ThemeProperty(
-				style = Style,
-				color = Color,
-				#bInversedStatus=False
-			)
-		)
-		theme_raw = CustomList.value
-	else:
-		# Default handling
-		if theme_name in _ThemesList.__members__:
-			# Passed theme exists
-			theme_raw = _ThemesList[theme_name].value
-		else:
-			print(f"The theme name used '{theme_name}' is not supported." , f"\nFalling back to default theme!")
+	# Default handling
+	if theme_name in _ThemesList.__members__:
+		# Passed theme exists
+		theme_raw = _ThemesList[theme_name].value
+	elif "custom" == theme_name.lower():
+		# Custom theme handling
+		this_color = str(_settings["theme_color"])
+		this_style = str(_settings["theme_style"])
+		
+		# Verify values exist
+		if not this_color in _ListColor.__members__ or not this_style in _ListStyle.__members__:
+			# Style or Color was not found
+			print(f"Theme '{theme_name}' selected, but either color ({this_color}) or style ({this_style}) is invalid or empty.")
 			theme_raw = _ThemesList["Default"].value
+		else:
+			# Color and style are valid for custom theme
+			Color = _ListColor[this_color].value
+			Style = _ListStyle[this_style].value
 			
+			# Generate data
+			# Use "enum overkill" to ensure the handling remains identical within the rest of the code
+			class _ThisCustom(_Enum):
+				Custom = _ThemeProperty(
+					style=Style,
+					color=Color,
+				)
+			theme_raw = _ThisCustom["Custom"].value
+	else:
+		# Provided theme name is not handled
+		print(f"The theme name used '{theme_name}' is not supported." , f"\nFalling back to default theme!")
+		theme_raw = _ThemesList["Default"].value
+	
 	#
 	# Apply console codes to color attribbutes
+	# This applies for for provided themes and custom combinations
 	#
 	theme_use = {}
 	# Extract color attributes
 	for attribute, value in theme_raw.color.value.__dict__.items():
-		#print("DEBUG: in color attributes\n%s" % attribute)
 		if attribute.startswith('_'):  # Skip internal attributes
 			continue
 		if 'fg' in attribute:
@@ -202,6 +204,5 @@ def get():
 			theme_use[attr] = "" if 'color_' not in attr else None
 			
 	# Return
-	#print("DEBUG: theme_use dict:\n%s" % theme_use)
 	Theme = _namedtuple( theme_name, theme_use.keys())
 	return Theme(**theme_use)
