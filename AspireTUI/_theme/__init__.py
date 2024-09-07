@@ -132,6 +132,12 @@ def set(newTheme: str, theme_style=None, theme_color=None):
 	if newTheme in _ThemesList.__members__:
 		_settings["theme"] = newTheme
 		return True
+	elif newTheme.lower() == "random":
+		import random
+		lst_theme = list()
+		rnd_theme = random.choice(lst_theme)
+		print("\nSaving random:", rnd_theme, "\n")
+		_settings[rnd_theme]
 	else:
 		return False
 
@@ -144,12 +150,21 @@ def get():
 	#
 	theme_name = str(_settings["theme"])
 	
+	if False:
+		# Debug output:
+		print("DEBUG - settings:		", _settings)
+		print("DEBUG - Themes/& -styles:	", list() ) #_ThemesList.__members__)
+		print("DEBUG - Colors:			", list_color() )
+		#print("DEBUG - Theme Property:", ) #_ThemeProperty.color , _ThemeProperty.style)
+		print()
+
 	# Default handling
 	if theme_name in _ThemesList.__members__:
 		# Passed theme exists
 		theme_raw = _ThemesList[theme_name].value
 	elif "custom" == theme_name.lower():
 		# Custom theme handling
+		_settings["theme"] = theme_name
 		this_color = str(_settings["theme_color"])
 		this_style = str(_settings["theme_style"])
 		
@@ -159,18 +174,18 @@ def get():
 			print(f"Theme '{theme_name}' selected, but either color ({this_color}) or style ({this_style}) is invalid or empty.")
 			theme_raw = _ThemesList["Default"].value
 		else:
-			# Color and style are valid for custom theme
-			Color = _ListColor[this_color].value
-			Style = _ListStyle[this_style].value
-			
 			# Generate data
 			# Use "enum overkill" to ensure the handling remains identical within the rest of the code
+			# This is so I can assign/access the properties of this custom theme the very same way as all other themes
 			class _ThisCustom(_Enum):
-				Custom = _ThemeProperty(
-					style=Style,
-					color=Color,
+				CustomTheme = _ThemeProperty(
+					color = _ListColor[this_color],
+					style = _ListStyle[this_style].value
 				)
-			theme_raw = _ThisCustom["Custom"].value
+			# Assign custom enum theme to same var like the other themes
+			theme_raw = _ThisCustom.CustomTheme.value
+	elif "random" == theme_name.lower():
+		asdf
 	else:
 		# Provided theme name is not handled
 		print(f"The theme name used '{theme_name}' is not supported." , f"\nFalling back to default theme!")
