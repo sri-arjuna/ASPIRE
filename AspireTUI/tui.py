@@ -249,7 +249,7 @@ def status(ID: _Union[int, bool, _put._Entry, STATUS], *args, align_right=True, 
 	else:
 		return ret_value
 
-def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
+def progress( text: str, cur: int, max: int, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
 	"""
 	Prints a leading 'text' with a progress indicator according to passed style.	\n
 	If no 'text' is passed (read: empty-string=""), the progress bar fills all of the screen, otherwise its 50/50.
@@ -267,7 +267,6 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 	else:
 		# TODO: Why do i need " - 12" for this value???
 		width = _settings["inner"] - 12
-		#width = _settings["inner"] - space_text
 	# Styles
 	if "num" == style:
 		prog_out = f"[ {cur} / {max} ]"
@@ -288,12 +287,13 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 		else:
 			text_new = _internal.shorten(text, width, True)
 	_put.border()
-	_put.text(text_new, prog_out, end="")
-	#_put.text(f"{text_new} {prog_out}", end="")
+	if cur == max:
+		final="\n"
+	else:
+		final=""
+	_put.text(text_new, prog_out, end=final)
 	import sys as _sys
 	_sys.stdout.flush()
-	if cur == max:
-		print() #"\r\n")
 	return True
 
 def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False, iIntervall=1):
