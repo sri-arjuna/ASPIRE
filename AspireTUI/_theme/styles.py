@@ -22,17 +22,25 @@ class _ThemeColors:
 	bg: str
 
 class _ListColor(_Enum):
+	# Used for official themes
 	white_black = _ThemeColors(			fg="white",	bg="black")
 	white_blue = _ThemeColors(			fg="white",	bg="blue")
 	white_light_blue = _ThemeColors(	fg="white",	bg="light_blue")
 	white_dark_gray = _ThemeColors(		fg="white",	bg="dark_gray")
-	white_green = _ThemeColors(			fg="white",	bg="green")
 	white_red = _ThemeColors(			fg="white",	bg="red")
-	light_gray_dark_gray = _ThemeColors(fg="light_gray",	bg="dark_gray")
+	# Counter colors of official themes
+	black_white = _ThemeColors(			fg="black",	bg="white")
+	blue_white = _ThemeColors(			fg="blue",	bg="white")
+	light_blue_white = _ThemeColors(	fg="light_blue", bg="white")
+	dark_gray_white = _ThemeColors(		fg="dark_gray",	bg="white")
+	red_white = _ThemeColors(			fg="red",	bg="white")
+	# These should look acceptable in most consoles
 	black_blue = _ThemeColors(			fg="black",	bg="blue")
 	black_light_blue = _ThemeColors(	fg="black",	bg="light_blue")
 	black_light_gray = _ThemeColors(	fg="black",	bg="light_gray")
-	black_white = _ThemeColors(			fg="black",	bg="white")
+	light_gray_dark_gray = _ThemeColors(fg="light_gray",	bg="dark_gray")
+	# These might look weird in some consoles
+	white_green = _ThemeColors(			fg="white",	bg="green")
 	black_cyan = _ThemeColors(			fg="black",	bg="cyan")
 	black_light_green = _ThemeColors(	fg="black",	bg="light_green")
 	black_light_yellow = _ThemeColors(	fg="black",	bg="light_yellow")
