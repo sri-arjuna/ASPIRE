@@ -683,12 +683,14 @@ def bar(cur: int, max: int, width: int = _settings["inner"], reverse: bool = Fal
 
 	tmp = p.split(".")[1]					# Get value after decimal
 	if int(tmp) >= 50: bar_half = h			# Fill half if percentage > 50%
-	bar_empty = e * int(length)				# Prepare bar-empty
-	bar_full = f * int(length_fill)			# Prepare bar-filled
+
+	# Calculate the strings
+	bar_full = f * int(length_fill / 2 * 2)			# Prepare bar-filled
+	bar_empty = e * int(length-length_fill / 2 * 2)	# Prepare bar-empty
 
 	# Prepare final string
 	output = bar_empty[:-len(bar_full)]
-	if bar_half: output = bar_empty[:-len(bar_half)]
+	if bar_half: bar_empty = bar_empty[:-len(bar_half)]
 	output = f"{bar_full}{bar_half}{bar_empty}"
 
 	if reverse:
