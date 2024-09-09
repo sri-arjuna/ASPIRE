@@ -1,5 +1,5 @@
 """
-Proves the dataclasses for theme based, styles, colors and properties
+Provides the dataclasses for theme based, styles, colors and properties
 """
 ################################################################################################################
 #####                                            Imports                                                   #####
@@ -7,7 +7,6 @@ Proves the dataclasses for theme based, styles, colors and properties
 #
 #	Prepare data structures
 #
-#from collections import namedtuple as _namedtuple
 from dataclasses import dataclass as _dataclass
 from enum import Enum as _Enum
 
@@ -118,50 +117,45 @@ class _ListStyle(_Enum):
 		header_left="",			header_right="",		header_filler=" ",
 		status_separators="││", bInversedStatus=False
 	)
+
+#
+#	Actual offical themes
+#
 @_dataclass
 class _ThemeProperty:
 	style: _ThemeStyle
 	color: _ThemeColors
-	#bInversedStatus: bool
 
 class _ThemesList(_Enum):
 	Default = _ThemeProperty(
 		style = _ListStyle.Default.value,
 		color = _ListColor.white_blue,
-		#bInversedStatus=False
 	)
 	Admin = _ThemeProperty(
 		style = _ListStyle.Default.value,
 		color = _ListColor.white_red,
-		#bInversedStatus=False
 	)
 	Console = _ThemeProperty(
 		style = _ListStyle.Console.value,
 		color = _ListColor.white_black,
-		#bInversedStatus=True
 	)
 	Classic = _ThemeProperty(
 		style = _ListStyle.Classic.value,
 		color = _ListColor.white_blue,
-		#bInversedStatus=False
 	)
 	Blocks = _ThemeProperty(
 		style = _ListStyle.Blocks.value,
 		color = _ListColor.white_red,
-		#bInversedStatus=False
 	)
 	Elegance = _ThemeProperty(
 		style = _ListStyle.Elegance.value,
 		color = _ListColor.white_dark_gray,
-		#bInversedStatus=False
 	)
 	CyberPunk = _ThemeProperty(
 		style = _ListStyle.Blocks.value,
 		color = _ListColor.black_light_yellow,
-		#bInversedStatus=False
 	)
 	Skyrim = _ThemeProperty(
 		style = _ListStyle.Elegance.value,
 		color = _ListColor.white_green,
-		#bInversedStatus=False
 	)
