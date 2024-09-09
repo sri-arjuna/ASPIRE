@@ -257,17 +257,23 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 	Valid styles are: bar, num	\n
 	"""
 	_put._update()	# DEBUG=text
+	space_raw = _settings["inner"]
+	space_text = len(text)
+	space_bar = space_raw
 	if text:
-		width = _settings["inner"] / 2
+		#if space_text >= space_raw:
+		#	text = text[:space_raw/2]
+		width = space_raw / 2
 	else:
 		# TODO: Why do i need " - 12" for this value???
 		width = _settings["inner"] - 12
+		#width = _settings["inner"] - space_text
 	# Styles
 	if "num" == style:
 		prog_out = f"[ {cur} / {max} ]"
 		#return True
 	elif "bar" == style:
-		prog_out = f"{_put.bar(cur,max,width,reverse=reverse)}"
+		prog_out = f"{_put.bar(cur, max, width, reverse=reverse)}"
 	else:
 		msg_progress_style = _MSG.tui_progress_bar
 		raise ValueError(msg_progress_style)
@@ -283,8 +289,11 @@ def progress( text: str, cur: float, max: float, style: str = "bar", cut_from_en
 			text_new = _internal.shorten(text, width, True)
 	_put.border()
 	_put.text(text_new, prog_out, end="")
+	#_put.text(f"{text_new} {prog_out}", end="")
+	import sys as _sys
+	_sys.stdout.flush()
 	if cur == max:
-		print()
+		print() #"\r\n")
 	return True
 
 def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False, iIntervall=1):
