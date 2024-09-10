@@ -29,6 +29,7 @@ from .. import Strings as _stew
 from .. import _VersionInfo
 from ..Lists import LOG_LEVEL as LEVEL
 from ..Lists import LOG_SEVERITY as SEVERITY
+from .. import _settings_console as settings
 #
 #	Defaults
 #
@@ -471,7 +472,7 @@ base_filename:	\t	\t
 		#
 		import configparser as _cfgp
 		this_config = _cfgp.ConfigParser()
-		# Preser CaseSensitify
+		# Preserve CaseSensitify
 		this_config.optionxform = str
 		# Open file
 		this_config.read(fn)
@@ -525,7 +526,7 @@ base_filename:	\t	\t
 		# Special theme handling
 		if this_theme_color is not None : cls._self.theme_color = this_theme_color
 		if this_theme_style is not None : cls._self.theme_style = this_theme_style
-		print(cls._self.theme_style, cls._self.theme_color)
+		#print(cls._self.theme_style, cls._self.theme_color)
 
 		#
 		#	Theme handling
@@ -542,13 +543,20 @@ base_filename:	\t	\t
 		#print(this_theme)
 		
 		if "random" == str(this_theme).lower():
-			import random
-			rnd_theme = random.choice(lst_theme)
-			cls._self.theme = rnd_theme
-			_tui._Theme.set(cls._self.theme)
+			# Check if random already had been applied
+			if str(settings["theme"]).lower() != "random":
+				import random
+				rnd_theme = random.choice(lst_theme)
+				cls._self.theme = rnd_theme
+				# Apply theme that is neither "Default" nor literal "Random"
+				settings["theme"] = rnd_theme
+				_tui._Theme.set(cls._self.theme)
 		elif "custom" == str(this_theme).lower():
 			# This should apply the custom color and style to the _settings
 			_tui._Theme.set("Custom", cls._self.theme_style, cls._self.theme_color)
+			settings["theme"] = "Custom"
+			settings["theme_color"] = this_theme_color
+			settings["theme_style"] = this_theme_style
 		else:
 			cls._self.theme = this_theme
 			_tui._Theme.set(cls._self.theme)
