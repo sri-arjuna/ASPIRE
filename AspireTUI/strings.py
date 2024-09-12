@@ -333,10 +333,12 @@ _HKEY = {
 }
 def reg_value_get(hive_key, key_path, value_name) -> str:
 	"""
-	Attempts to read passed arguments and returns the according value.	\n
-	Recommended:\n
-	 		success, message = reg_value_get("HKEY_CURRENT_USER", "path/in/HKCU/", "VarName")	\n
-			tui.status(success, message)
+	Attempts to read passed arguments and returns the according value.
+
+	Recommended:
+
+		success, message = reg_value_get("HKEY_CURRENT_USER", "path/in/HKCU/", "VarName")	\n
+		tui.status(success, message)
 	"""
 	try:
 		if hive_key in _HKEY:
@@ -353,10 +355,12 @@ def reg_value_get(hive_key, key_path, value_name) -> str:
 
 def reg_value_set(hive_key, key_path, value_name, value, value_type=_winreg.REG_SZ):
 	"""
-	Attempts to set passed value and returns a bool.	\n
-	Recommended:\n
-	 		success, message = reg_value_set("HKEY_CURRENT_USER", "path/in/HKCU/", "VarName", "value")	\n
-			tui.status(success, message)
+	Attempts to set passed value and returns a bool.
+	
+	Recommended:
+
+		success, message = reg_value_set("HKEY_CURRENT_USER", "path/in/HKCU/", "VarName", "value")	\n
+		tui.status(success, message)
 	"""
 	try:
 		if hive_key in _HKEY:
@@ -371,10 +375,12 @@ def reg_value_set(hive_key, key_path, value_name, value, value_type=_winreg.REG_
 
 def reg_value_list_key(hive_key, key_path):
 	"""
-	Attempts to list all key inside passed key_path, returns them as list.	\n
-	Recommended:\n
-	 		success, message = reg_value_list_key("HKEY_CURRENT_USER", "path/in/HKCU/")	\n
-			tui.status(success, message)
+	Attempts to list all key inside passed key_path, returns them as list.
+
+	Recommended:
+
+		success, message = reg_value_list_key("HKEY_CURRENT_USER", "path/in/HKCU/")	\n
+		tui.status(success, message)
 	"""
 	try:
 		if hive_key in _HKEY:
@@ -390,10 +396,12 @@ def reg_value_list_key(hive_key, key_path):
 
 def reg_value_list_var(hive_key, key_path):
 	"""
-	Attempts to list all variable names inside passed key_path, returns them as list.	\n
-	Recommended:\n
-	 		success, message = reg_value_list_var("HKEY_CURRENT_USER", "path/in/HKCU/")	\n
-			tui.status(success, message)
+	Attempts to list all variable names inside passed key_path, returns them as list.
+
+	Recommended:
+
+	 	success, message = reg_value_list_var("HKEY_CURRENT_USER", "path/in/HKCU/")	\n
+		tui.status(success, message)
 	"""
 	try:
 		if hive_key in _HKEY:
@@ -412,9 +420,11 @@ def reg_value_list_var(hive_key, key_path):
 #################################################################################################################
 def ini_read(c_file, c_key, c_variable):
 	"""
-	Reads c_file as ini file, looks for c_keys (section) and returns the value of c_variable. \n
-	Usage: \n
-			value = ini_read("path/to/filename", "section_name", "variable_name")
+	Reads c_file as ini file, looks for c_keys (section) and returns the value of c_variable.
+
+	Usage:
+
+		value = ini_read("path/to/filename", "section_name", "variable_name")
 	"""
 	config = _configparser.ConfigParser()
 	try:
@@ -427,10 +437,12 @@ def ini_read(c_file, c_key, c_variable):
 
 def ini_write(c_file, c_key, c_variable, c_value):
 	"""
-	Reads c_file as ini file, looks for c_keys (section) and returns the value of c_variable. \n
-	Usage: \n
-			if ini_write("path/to/filename", "section_name", "variable_name", "value"):
-				tui.status(True, "Success message")
+	Reads c_file as ini file, looks for c_keys (section) and returns the value of c_variable.
+
+	Usage:
+
+		if ini_write("path/to/filename", "section_name", "variable_name", "value"):\n
+			tui.status(True, "Success message")
 	"""
 	config = _configparser.ConfigParser()
 	try:
@@ -447,7 +459,9 @@ def ini_write(c_file, c_key, c_variable, c_value):
 def ini_list_keys(c_file):
 	"""
 	Reads c_file as an ini file and returns a list of all section names.
+
 	Usage:
+
 		keys = ini_list_keys("path/to/filename.ini")
 	"""
 	config = _configparser.ConfigParser()
@@ -460,7 +474,9 @@ def ini_list_keys(c_file):
 def ini_list_vars(c_file, c_key):
 	"""
 	Reads c_file as an ini file, looks for c_key (section), and returns a list of all variable names in that section.
+	
 	Usage:
+	
 		vars = ini_list_vars("path/to/filename.ini", "section_name")
 	"""
 	config = _configparser.ConfigParser()
@@ -471,3 +487,12 @@ def ini_list_vars(c_file, c_key):
 		return None
 	except FileNotFoundError as e:
 		return False, f"{_MSG.word_error}:\n{_MSG.file_not_found}: {e}"
+
+# Function to remove leading and trailing quotes from strings
+def strip_quotes(value):
+	"""
+	Removes leading and tailing quotes (") from a string
+	"""
+	if isinstance(value, str) and value.startswith('"') and value.endswith('"'):
+		return value[1:-1]
+	return value
