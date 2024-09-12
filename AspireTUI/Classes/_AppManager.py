@@ -261,10 +261,13 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		else:
 			# No path provided, use current dir (usualy where the script/bin is)
 			self._file_dir = _tui._os.path.abspath(base_filename).replace("\\","/")
+		# Adjust dir to not have basefilename
+		self._file_dir = self._file_dir.replace(base_filename,"")
 		
 		# Create filenames from passed base_filename
 		self._file_conf = f"{self._file_dir}/{self.__get_name_conf()}"
 		self._file_log = f"{self._file_dir}/{self.__get_name_log()}"
+		#print("DEUG INIT: ", self._file_dir)
 		
 		# Is it a daily log?
 		if self._self.bDaily:
@@ -613,7 +616,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		ret_bool = False
 		if Section is None or Key is None or Value is None:
 			msg = f"'AppMAnager.set_custom()': {_tui._MSG.args_missing} / sec:{Section} / key:{Key} / var:{Value}"
-			cls.ERROR(msg)
+			cls.FATAL(msg)
 			return False
 		
 		# If not found, add a new entry
@@ -631,8 +634,11 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			C=0
 			MAX = len(cls._sections)
 			while C <= MAX:
+				#print("DEBUG: set_custom: ", C, MAX, Section, Key, Value)
 				if cls._sections[C] == Section and cls._keys[C] == Key:
+					#print("DEUG found entry to update")
 					if {cls._values[C]} != Value:
+						#print("DEUG found entry values: " ,cls._values[C] , Value )
 						if bVerbose: 
 							cls.DEBUG(f"cfg - Set: Update value from '{cls._values[C]}' to '{Value}' in '{Section}' '{Key}'")
 						cls._values[C] = Value
@@ -644,9 +650,12 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		#
 		# Instant save?
 		#
-		if cls._self.bAutoSave:
-			cls.save()
-		if bVerbose: _tui.status(ret_bool, f"{Key}{cls._self.chr_sep}{Value}")
+		if cls._self.bAutoSave: cls.save()
+			#if cls.save():
+			#	print("all good")
+			#else:
+			#	print("save failed")
+		if bVerbose: _tui.status(ret_bool, f"{Key}={Value}")
 		return ret_bool
 	
 	###############################################################################################################
@@ -751,6 +760,17 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		###########################################################################################################
 		####                                    Theme handling                                                 ####
 		###########################################################################################################
+		#
+		#	Make initial update of theme, expecting proper values
+		#
+		if True:
+			cls._self.theme 		= this_config.get("Theme", "THEME") #cls.get_custom("Theme", "THEME")
+			cls._self.theme_style	= this_config.get("Theme", "THEME_STYLE") #cls.get_custom("Theme", "THEME_STYLE")
+			cls._self.theme_color	= this_config.get("Theme", "THEME_COLOR") #cls.get_custom("Theme", "THEME_COLOR")
+			_tui._Theme.set(cls._self.theme, cls._self.theme_style, cls._self.theme_color)
+			#print("deug :", cls._self.theme, cls._self.theme_style, cls._self.theme_color)
+
+
 		# Check for valid theme entry / value
 		this_theme = cls._self.theme
 		if this_theme is None : 
@@ -781,6 +801,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		else:
 			#cls._self.theme = this_theme
 			_tui._Theme.set(cls._self.theme)
+		#print("theme applied: ", cls._self.theme)
 		
 		# asdf
 		return True
@@ -791,109 +812,90 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 
 		If only data related to [AspireTUI] (log) is available, it skips writing the file.
 		"""
-		# First, lets write all possible messages to log
-		if cls.messages and cls._file_log:
-			# Something is there
-			if cls._self.bVerbose: cls.DEBUG(f"log - Save: Writing messages to: {cls._file_log}")
-			with open(cls._file_log, "a", encoding=cls._self.encoding) as thisLOG:
-				for entry in cls.messages: print(entry, file=thisLOG)
-
-
-		# Ignore save conf, if only log/AspireTUI settings avvailable
-		if len(cls.list_sections()) == 1 and "AspireTUI" in cls.list_sections() :
-			# AspireTUI is the only section, nothing to do
-			return False
+		# Skip with success if bDisableConf AND bDisableLog are True.
+		if cls._self.bDisableConf and cls._self.bDisableLog:
+			return True
 		
-		# Check every section
-		for sec in cls.list_sections():
-			# Easier find or add:
-			sec_str =f"{cls._self.chr_sect[:1]}{sec}{cls._self.chr_sect[1:]}"
-			#
-			#	Section 1 
-			#	Add new section if its not in content yet
-			#
-			if not sec_str in cls._content:
-				# Not written yet
-				cls._content.append(sec_str)
-				# Lets add all keys of the section as well
-				for key in cls.list_keys(sec):
-					cur_str = f"{key}{cls._self.chr_sep}{cls.get(sec, key)}"
-					cls._content.append(cur_str)
-					if cls._self.bVerbose: cls.DEBUG(f"cfg - Save: Added to: {sec} || {key} = {cls.get(sec, key)}")
-				next
-			#
-			#	Section 2 - Keys
-			#	Found Section in content, lets update the keys or skip them
-			#
-			keys_not_found = []
-			for key in cls.list_keys(sec):
-				# Init
-				val = cls.get(sec, key)
-				key_str2 = f"{key}{cls._self.chr_sep}"
-				key_str1 = f"{key_str2}{val}"
-
-				# Get line/key index per key
-				for line in cls._content:
-					# Which lines to skip?
-					if line != "":
-						first = str(line)[0]
-					else:
-						# Nothing to work with
-						next
-					# Comments can be extensive and include examples, lets skip them
-					if first in f"{cls._self.chr_sect}{cls._self.chr_comm}":
-						# Sections are already handled
-						# Comments could be handled here
-						# This is just for minor performance gain - at best.
-						# I mean, there are people who do like to write an
-						# aweful lot of comments on rather short code that follows.
-						# Just to demonstrate a point, occasionaly.
-						# And for this example, I just want to illustrate and state,
-						# that sometimes people do provide comments to their config
-						# files, and thus those should remain, but also not be worked
-						# with, as that could have the potential to slow down parsing.
-						next
-					#
-					#	Section 2 - Keys
-					#	Found Section in content, lets update the keys or skip them
-					#
-					# Start working
-					if str(line).startswith(key_str2):
-						# Good for replacing / reset text
-						line_index = cls._content.index(line)
-						val_old = cls._content[line_index]
-						val_old = str(val_old).split(cls._self.chr_sep)[1]
-						val_new = cls.get(sec, key)
-						
-
-						#print(f"old: {val_old} // val: {val}")
-						#if str(val).strip() == str(val_old).strip():
-						#if str(val).strip() == str(val_old).split(cls._self.chr_sep)[1].strip():
-						if str(val).strip() == str(val_old).strip():
-						#if key_str1 == str(cls._content[line_index]):
-							# Its identical, nothing to do
-							if cls._self.bVerbose: cls.DEBUG(f"cfg - Save: Skipping '{key_str1}'")
-							#print(f"key: {key} // old: {val_old} // new: {val_new}")
-							next
-						else:
-							# Value has changed, update it
-							if cls._self.bVerbose: cls.DEBUG(f"cfg - Save: Updated to '{key_str1}' from '{val_old}'")
-							cls._content[line_index] = f"{key_str1}"
-							#print(f"key: {key} // old: {val_old} // new: {val_new} ... are NOT the same ?!")
-							next
 		#
-		# 	Save finaly
+		# Get file names
 		#
-		try:
-			cls.__create_conf()
-			with open(cls._file_conf, "w", encoding=cls._self.encoding) as thisConf:
-				content_str = "\n".join(cls._content)
-				thisConf.write(content_str)
-				if cls._self.bVerbose: cls.DEBUG(f"cfg - Save: All saved to: '{cls._file_conf}'")
+		fn = cls._file_conf #cls.__get_name_conf()
+		logfile = cls._file_log #cls.__get_name_log() # TODO: ?? cls._file_log
+
+		#################################################################################
+		#
+		#	Lets handle them individualy --> LOG
+		#
+		#################################################################################
+		if not cls._self.bDisableLog:
+			# Logfile is enable
+			if cls.messages and logfile:
+				# Something is there
+				if cls._self.bVerbose: cls.DEBUG(f"log - Save: Writing messages to: {cls._file_log}")
+				with open(cls._file_log, "a", encoding=cls._self.encoding) as thisLOG:
+					for entry in cls.messages: print(entry, file=thisLOG)
+		
+		#################################################################################
+		#
+		#	Lets handle them individualy --> Conf
+		#
+		#################################################################################
+		if not cls._self.bDisableConf:
+			#print("DEBUG: trying to save config")
+			# Config file is enabled, lets check if filename is provided
+			# Also, file should had been created upon initial read()
+			# So we can check for its existence directly
+			#print("DEUG file: " , cls.__get_name_conf(), fn)
+			if _Path.isFile(fn):
+				#print("DEUG file: " , cls._file_conf)
+				# A conf file can only be read if it exists
+				import configparser as _cfgp
+				this_config = _cfgp.ConfigParser(interpolation=None)
+
+				# Preserve CaseSensitify
+				this_config.optionxform = str
+				
+				# Open file (TODO: I guess this is needed, not sure if this will mess up the save process)
+				this_config.read(fn)
+
+				# Conf file exists, lets parse memory storage and pass it to configparse
+				C=0
+				MAX = len(cls._values)
+
+				# Lets parse through memory storage
+				#print("4 save loop")
+				#print("DEUG - save loop: " , C, MAX)
+				while C <= MAX:
+					# Get current setting
+					cur_sec = str(cls._sections[C])
+					cur_key = str(cls._keys[C])
+					cur_val = str(cls._values[C])
+					#print("DEUG - save loop: " , C, MAX, cur_val)
+
+					# Ensure section exist in conf file:
+					if not this_config.has_section(cur_sec):
+						this_config.add_section(cur_sec)
+
+					# Update config parser values
+					this_config.set(cur_sec, cur_key, cur_val)
+
+					# Goto next setting
+					C += 1
+					if C == MAX: break	# TODO Weird, it does not work with: while C << MAX
+				
+				# DEBUG configparser content
+				#print("\nSections and values before saving:\n")
+				#val = invalid_func(asfd)
+				#for section in this_config.sections():
+				#	print(f"[{section}]")
+				#	for key, value in this_config.items(section):
+				#		print(f"{key} = {value}")
+
+				# Write file using configparser
+				#this_config.write(fn)
+				with open(fn, 'w') as configfile:
+					this_config.write(configfile)
+
 				return True
-		except:
-			cls.ERROR(f"cfg - Save: There was an error saving: '{cls._file_conf}'")
-			cls.__write_log(3, traceback.format_exc(4,True))
-			return False
-
-
+		return False
+	
