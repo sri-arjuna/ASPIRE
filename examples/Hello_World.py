@@ -5,56 +5,34 @@
 	URL:			https://www.github.com/sri-arjuna/ASPIRE
 """
 
-
-# These are only required (here) for relative path import
-import os
-import sys
-from os.path import abspath, dirname, join
-# Add the ASPIRE directory to the system path
-aspire_dir = abspath(join(dirname(__file__), '..'))
-sys.path.append(aspire_dir)
-
-## Usualy, this would be only:
-##		from aspire import Aspire as tui
-#from aspire.aspire import Aspire as tui
-
-
 #
-#	AspireTUI
+#	Imports required for this example
 #
-# Public
 from AspireTUI import tui
-from AspireTUI import StringUtils as stew
-from AspireTUI import Lists
-# Advanced
-from AspireTUI.ColorAndText import cat
-from AspireTUI.Classes.Config import conf
-from AspireTUI.Classes.Config import winreg
-from AspireTUI.Classes.Config import yaml
-from AspireTUI.Classes import ConfigEditor
-from AspireTUI.Classes import CrashLog
-from AspireTUI.Classes import Log
-from AspireTUI.Classes import Conf
+from AspireTUI import Strings as _stew
 
+#
+#	Other imports that could be used
+#
+#	Please be aware that the concept of _Capital-letter
+#	is ment to avoid mis-conception with native python libraries, 
+# 	as these are TUI related wrappers.
+#
+from AspireTUI import Lists as _Lists
+from AspireTUI import Path as _Path
+from AspireTUI import OS as _OS
+from AspireTUI.ColorAndText import cat as _cat
 
-# Aspire Internal
-# Same as above, but with _<name> alias
-from AspireTUI import _settings
-from AspireTUI import _PrintUtils as _put
-from AspireTUI import _theme as _Theme
-_theme_list = _Theme.list()
-_theme = _Theme.get()
-
-
-
+#
 # Basic "Hello World"
-tui.header("ASPIRE by (sea/sri-arjuna)", f"{stew.now()}")
+#
+tui.header("ASPIRE by (sea/sri-arjuna)", f"{_stew.now()}")
 tui.title("Hello World")
-tui.print("Left", "Center", "Right")
+tui.print("Left String", "Center String", "Right String")
 tui.print()
-tui.print("Lets load the AspireTUI config")
-tui.wait(5,"Wait for it...")
-aConf = Conf("AspireTUI.conf")
-aConf.setting()
 
+#
+# Wait for 5 seconds and user interaction to close the app
+#
+tui.wait(5,"Wait for it...")
 tui.press()
