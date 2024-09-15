@@ -63,65 +63,96 @@ def dir_app():
 # FileDescriptorOrPath
 def exists(filename: str=None, bVerbose=False, bDual=False, bShowFull=False):
 	"""
-	Returns True if filename exists, or both, bool and message.
-	
-	Examples:
+Returns True if filename exists
 
-		if _Path.exists(filename):
-		
-			# Do stuff
+Use 'bVerbose = True' to print various status messages
 
-			pass
-		
-		ret_bool, ret_msg = _Path.exists(filename, bDual=True)
+Use 'bDual = True' to get: ret_bool and ret_msg
 
-	"""
-	# Init vars
+Use 'bShowFull = True' this will print only basename of filename, still returns full filename (if abs)
+
+Usage:
+
+	if _Path.exists(filename): print("yes")
+
+	ret_bool, ret_msg = _Path.exists(filename, bDual=True)
+"""
+	#
+	#	Init vars
+	#
 	fn = None
+	fn_abs = None
 	ret_bool = False
-	ret_msg = f"{_MSG.word_found} "
+	ret_msg = ""
+	ret_found = f"{_MSG.word_found}"
+	
+	# Error messages for developers are always english
 	ret_err = f"AspireTUI.Path.exists(filename={filename}, bVerbose={bVerbose}, bDual={bDual}, bShowFull={bShowFull}) requires at least 1 argument (filename)."
+	
+	#
+	#	Prepare short and abs string
+	#
+	fn = _os.path.basename(filename)
+	fn_abs = _os.path.abspath(str(filename))
 
-	# Most important
+	#
+	#	Most important
+	#	Make sure required argument filename is passed
+	#
 	if filename is None:
-		# Output?
-		if bVerbose:
-			_tui.status(ret_bool, ret_err)
+		# Print output?
+		if bVerbose: _tui.status(ret_bool, ret_err)
+		
 		# Exit
 		if bDual:
 			return ret_bool, ret_err
 		else:
 			return ret_bool
 	
-	fn_abs = f"{_os.path.abspath(str(filename))}"
+	#
+	#	Check for existing
+	#
 	if _os.path.exists(fn_abs):
 		ret_bool = True
 	
-	# Get details
+	#
+	#	Now we can work properly
+	#	Get type of "filename"
+	# 
+	ret_type = None
+
+	# Get type
 	if ret_bool:
-		fn = _os.path.basename(fn_abs)
-		ret_type = None
+		# filename exists
+		# since bVerbose is handles by exists, lets not spam the user
 		if isDir(fn_abs, bVerbose=False):
-			ret_type = f"{_MSG.word_filesystem_dir}"
+			ret_type = _MSG.word_filesystem_dir
 		elif isFile(fn_abs, bVerbose=False):
-			ret_type = f"{_MSG.word_filesystem_file}"
+			ret_type = _MSG.word_filesystem_file
 		elif isLink(fn_abs, bVerbose=False):
-			ret_type = f"{_MSG.word_filesystem_link}"
+			ret_type = _MSG.word_filesystem_link
 		elif isMount(fn_abs, bVerbose=False):
-			ret_type = f"{_MSG.word_filesystem_mount}"
-		ret_msg += f"{ret_type}" # '{filename}'"
+			ret_type = _MSG.word_filesystem_mount
 		
-	if bShowFull:
-		# Absolute full path
-		ret_msg = f"{ret_msg}: '{fn_abs}'"
+		# Prepare message
+		ret_msg += f"{ret_found} {ret_type}"
 	else:
-		# Currently: - theoreticly the last part
-		# Eventualy: The last part (just filename or last/deepest dir)
-		ret_msg = f"{ret_msg}: '{fn}'"
+		ret_msg = f"{ret_found}"
+	
+	#
+	#	Prepare output
+	#
+	if bShowFull:
+		# Absolute full path for filename
+		ret_msg = f"{ret_msg}: {fn_abs}"
+	else:
+		# Just the short (basename) of filename
+		ret_msg = f"{ret_msg}: {fn}"
 
-	if bVerbose:
-		_tui.status(ret_bool, ret_msg)
+	# Show to user?
+	if bVerbose: _tui.status(ret_bool, ret_msg)
 
+	# Return dual?
 	if bDual:
 		return ret_bool, ret_msg
 	else:
