@@ -23,12 +23,9 @@ For developers aiming to enhance the user experience with the console.
 
 Detail
 ------
-ASPIRE simplifies common tasks by providing various functions that wrap around frequently used code. It serves as a three-way interface between the system (MS Windows, any *Nix based system, and even Apple's iOS), the author/developer, and the end user.
+ASPIRE simplifies common tasks by providing various functions that wrap around frequently used code. It serves as a three-way interface between the system (MS Windows (regular and PS console), any *Nix based system, and even Apple's iOS), the author/developer, and the end user.
 
 One of ASPIRE's key focuses is to enhance the console experience by offering themable designs. You, as the author, can choose from a variety of ASCII-based themes that include colors, symbols, bold and underline fonts, and more. Users also have the option to select a different theme or even create their own (if you allow so (WIP)).
-
-This is just an incomplete preview of options. \
-![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/themes/themes_preview_new.jpg?raw=true)
 
 ASPIRE is designed with simplified usability in mind for both end users and developers. \
 These functions aim to streamline interactions and improve the overall experience, coding and usage wise.
@@ -45,7 +42,7 @@ All descriptions are based on the default theme.
 | yesno		| Similar to ``ask``, but will only accept yes/no, returns according bool. |
 | pick	| Pass a list as argument, uses ``list`` to print them. Returns the string of the shown/entered number. |
 | list 		| Used by ``pick`` to print a number to each item of the list |
-| bar 		| Provides a progress bar with different options that can be used within the project. |
+| progress 		| Provides a progress bar with different options that can be used within the project. |
 
 
 
@@ -90,3 +87,6 @@ Example:
  How the original BASH shell variant with the classic theme looked like: (just to demonstrate how it might look.
 
 ![Preview of old VHS bash variant](https://github.com/sri-arjuna/vhs/blob/master/screenshots/example-with-progressbar.jpg?raw=true)
+
+This is just an incomplete preview of theme options. \
+![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/themes/themes_preview_new.jpg?raw=true)
