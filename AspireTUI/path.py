@@ -1,6 +1,6 @@
 """
 	Description:
-					Public functions to easy several tasks with Files
+					Public functions to easy several tasks with Files and Path
 	Provides:
 					import AspireTUI.UtilsFile as UF
 					ret_bool, ret_str = cu.reg_value_get(file,key,var)
@@ -20,7 +20,7 @@ import os as _os
 import pathlib as _pathlib
 #import sys as _sys
 import re as _re
-#import string as _string
+from . import Strings as _stew
 from . import _MSG
 #from . import Classes as _Classes
 #from . import strings as _stew
@@ -69,7 +69,7 @@ def exists(filename: str=None, bVerbose=False, bDual=False, bShowFull=False):
 
 		if _Path.exists(filename):
 		
-			\# Do stuff
+			# Do stuff
 
 			pass
 		
@@ -380,3 +380,67 @@ def hasFiles(pattern, path='.', bDual=False):
 		return ret_bool, ret_list
 	else:
 		return ret_bool
+
+def gen_filename(fn_base: str=None, fn_ext: str=None, bPath:bool = False, bDaily: bool=False, bUnique: bool=False, bVerbose=False):
+	"""
+	Generates/return basename of filename : {fn_base}.{fn_ext}
+
+	Use 'bDaily = True' to return with current date: {fn_base}-{date}.{fn_ext}
+
+	Use 'bPath = True' to return asolute path using *nix style '/' instead of windows '\\'
+
+	Use 'bUnique = True' to create a new filename like: {fn_base}({count}).{fn_ext}
+
+	__Attention__: 'bPath' only works properly if the file was created already, otherwise current path is used.
+	
+	Also, 'bPath' must be enabled if you pass an absolute directory as filename_base. (bad example: gen_filename("C:\\pagefile", "sys")
+	"""
+	# Make sure possible return values are None
+	this_fn = None
+	this_path = None
+
+	# Check for valid args
+	if not fn_base or not fn_ext:
+		# Either FN or EXT is missing
+		_tui.status(False, f"Must provide both, filename ({fn_base}) and extension ({fn_ext}).")
+		return None
+	
+	# Return FN with/out date?
+	if bDaily:
+		t = _stew.date().replace(".","_")
+		this_fn = f"{fn_base}-{t}.{fn_ext}"
+	else:
+		this_fn = f"{fn_base}.{fn_ext}"
+	
+	# With full path or not?
+	if bPath:
+		if exists(this_fn, bVerbose=bVerbose):
+			# File exists, lets gets its absolute
+			this_path =  _os.path.abspath(this_fn).replace("\\","/")
+		else:
+			# File does not exist, use current path
+			this_path = f"{dir_cur()}/{this_fn}"
+		
+		# Return result after changing \ to /
+		this_path = this_path.replace("\\","/")
+	else:
+		# Nope just simple (basename)
+		this_path = _os.path.basename(this_fn)
+
+	# Final checks for unqiue:
+	if bUnique:
+		# asdf
+		if exists(this_path):
+			# Exists, adjust filename
+			count = 0
+			raw_left, raw_ext = this_path.split(".")
+			while True:
+				this_check = f"{raw_left}({count}).{fn_ext}"
+				if exists(this_check):
+					count += 1
+				else:
+					this_path = this_check
+					if bVerbose: _tui.print(_MSG.path_genfn_unique, this_path)
+					break
+	# Return result
+	return this_path
