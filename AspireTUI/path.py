@@ -529,10 +529,3 @@ Use 'bUnique = True' to create a new filename like: {fn_base}({count}).{fn_ext}
 	# Return result
 	#
 	return this_path
-
-#print( gen_filename(r"C:\$WINRE_BACKUP_PARTITION", "FAIL", bUnique=True) )
-#°print( gen_filename(r"C:\$WINRE_BACKUP_PARTITION", "MARKER", bPath=True, bDaily=True, bVerbose=True) )
-
-string = r"C:\$WINRE_BACKUP_PARTITION.MARKER"
-string = r"E:\AI\webui_forge_cu124_torch24\webui\extensions\sd-dynamic-prompts\wildcards\bg"
-print( exists(string, bShowFull=True, bVerbose=True) )
