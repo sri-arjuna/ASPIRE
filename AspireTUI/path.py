@@ -13,6 +13,9 @@
 
 	Based on my TUI & SWARM for the BASH shell © 2011
 """
+
+# TODO : Once all functions had been tested and are considered functionaly stable, change to: Filename as StrOrBytesPath
+
 #
 #	Essential imports
 #
@@ -26,9 +29,13 @@ from . import _MSG
 #from . import strings as _stew
 from . import tui as _tui
 from . import OS as _OS
-from typing import Union as _Union
 import glob as _glob
 import fnmatch as _fnmatch
+
+from typing import Union as _Union
+# Define the type hint
+StrOrBytesPath = _Union[str, bytes]
+
 #
 #	Paths = Simple access for dirs
 #
@@ -61,7 +68,7 @@ def dir_app():
 		return _pathlib.Path(_os.path.abspath(__file__)).parent.replace("\\","/")
 
 # FileDescriptorOrPath
-def exists(filename: str=None, bVerbose=False, bDual=False, bShowFull=False):
+def exists(filename: StrOrBytesPath=None, bVerbose=False, bDual=False, bShowFull=False) -> StrOrBytesPath:
 	"""
 Returns True if filename exists
 
@@ -69,32 +76,33 @@ Use 'bVerbose = True' to print various status messages
 
 Use 'bDual = True' to get: ret_bool and ret_msg
 
-Use 'bShowFull = True' this will print only basename of filename, still returns full filename (if abs)
+Use 'bShowFull = True' this will print absoltue filename to console (and set Verbose=True)
 
 Usage:
 
-	if _Path.exists(filename): print("yes")
+	if _Path.exists(filename): tui.print("yes")
+
+	if _Path.exist(filename, Verbose=True): tui.print("...")
 
 	ret_bool, ret_msg = _Path.exists(filename, bDual=True)
 """
 	#
 	#	Init vars
 	#
+	ret_bool = False
 	fn = None
 	fn_abs = None
-	ret_bool = False
+	fn_out = None
+	ret_type = None
 	ret_msg = ""
-	ret_found = f"{_MSG.word_found}"
+	ret_found = _MSG.word_found
 	
 	# Error messages for developers are always english
 	ret_err = f"AspireTUI.Path.exists(filename={filename}, bVerbose={bVerbose}, bDual={bDual}, bShowFull={bShowFull}) requires at least 1 argument (filename)."
-	
-	#
-	#	Prepare short and abs string
-	#
-	fn = _os.path.basename(filename)
-	fn_abs = _os.path.abspath(str(filename))
 
+	# Convience
+	if bShowFull: bVerbose=True
+	
 	#
 	#	Most important
 	#	Make sure required argument filename is passed
@@ -103,28 +111,35 @@ Usage:
 		# Print output?
 		if bVerbose: _tui.status(ret_bool, ret_err)
 		
-		# Exit
+		# Exit with error
 		if bDual:
 			return ret_bool, ret_err
 		else:
 			return ret_bool
 	
 	#
-	#	Check for existing
+	#	Prepare short and abs strings
+	#	These we work with
 	#
-	if _os.path.exists(fn_abs):
-		ret_bool = True
-	
-	#
-	#	Now we can work properly
-	#	Get type of "filename"
-	# 
-	ret_type = None
+	#fn = StrOrBytesPath(		_os.path.basename(filename) )
+	#fn_abs = StrOrBytesPath(	_os.path.abspath(filename) )
+	fn = _os.path.basename(filename)
+	fn_abs = _os.path.abspath(filename)
 
-	# Get type
-	if ret_bool:
-		# filename exists
-		# since bVerbose is handles by exists, lets not spam the user
+
+	# Verify proper path:
+
+
+	#
+	#	Check for existing and prepare ret_msg
+	#
+	if _os.path.exists(fn_abs) or _os.path.exists(fn): 
+		ret_bool = True
+		#
+		#	Now we can work properly
+		#	Get type of "filename"
+		# 	since bVerbose is handles by exists, lets not spam the user
+		#
 		if isDir(fn_abs, bVerbose=False):
 			ret_type = _MSG.word_filesystem_dir
 		elif isFile(fn_abs, bVerbose=False):
@@ -412,19 +427,21 @@ def hasFiles(pattern, path='.', bDual=False):
 	else:
 		return ret_bool
 
-def gen_filename(fn_base: str=None, fn_ext: str=None, bPath:bool = False, bDaily: bool=False, bUnique: bool=False, bVerbose=False):
+def gen_filename(fn_base: StrOrBytesPath=None, fn_ext: str=None, bPath:bool = False, bDaily: bool=False, bUnique: bool=False, bVerbose=False):
 	"""
-	Generates/return basename of filename : {fn_base}.{fn_ext}
+Generates/return basename of filename : {fn_base}.{fn_ext}
 
-	Use 'bDaily = True' to return with current date: {fn_base}-{date}.{fn_ext}
+Use 'bDaily = True' to return with current date: {fn_base}-{date}.{fn_ext}
 
-	Use 'bPath = True' to return asolute path using *nix style '/' instead of windows '\\'
+Use 'bPath = True' to return asolute path using *nix style '/' instead of windows '\\'
 
-	Use 'bUnique = True' to create a new filename like: {fn_base}({count}).{fn_ext}
+Use 'bUnique = True' to create a new filename like: {fn_base}({count}).{fn_ext}
 
-	__Attention__: 'bPath' only works properly if the file was created already, otherwise current path is used.
-	
-	Also, 'bPath' must be enabled if you pass an absolute directory as filename_base. (bad example: gen_filename("C:\\pagefile", "sys")
+# _Attention__
+
+* 'bPath' only works properly if the file was created already, otherwise current path is used. \n
+* Also, 'bPath' must be enabled if you pass an absolute directory as filename_base. (bad example: gen_filename("C:\\pagefile", "sys")
+* You can only use either bDaily or bUnique, not both
 	"""
 	# Make sure possible return values are None
 	this_fn = None
@@ -434,44 +451,88 @@ def gen_filename(fn_base: str=None, fn_ext: str=None, bPath:bool = False, bDaily
 	if not fn_base or not fn_ext:
 		# Either FN or EXT is missing
 		_tui.status(False, f"Must provide both, filename ({fn_base}) and extension ({fn_ext}).")
-		return None
+		return False
 	
-	# Return FN with/out date?
-	if bDaily:
-		t = _stew.date().replace(".","_")
-		this_fn = f"{fn_base}-{t}.{fn_ext}"
-	else:
-		this_fn = f"{fn_base}.{fn_ext}"
-	
-	# With full path or not?
-	if bPath:
-		if exists(this_fn, bVerbose=bVerbose):
-			# File exists, lets gets its absolute
-			this_path =  _os.path.abspath(this_fn).replace("\\","/")
-		else:
-			# File does not exist, use current path
-			this_path = f"{dir_cur()}/{this_fn}"
-		
-		# Return result after changing \ to /
-		this_path = this_path.replace("\\","/")
-	else:
-		# Nope just simple (basename)
-		this_path = _os.path.basename(this_fn)
+	if bDaily and bUnique:
+		# Cant use both
+		_tui.status(False, f"You can not use bDaily ({bDaily}) and bUnique ({bUnique}) at the same time.")
+		return False
 
-	# Final checks for unqiue:
-	if bUnique:
-		# asdf
-		if exists(this_path):
-			# Exists, adjust filename
-			count = 0
-			raw_left, raw_ext = this_path.split(".")
-			while True:
-				this_check = f"{raw_left}({count}).{fn_ext}"
-				if exists(this_check):
-					count += 1
-				else:
-					this_path = this_check
-					if bVerbose: _tui.print(_MSG.path_genfn_unique, this_path)
-					break
+	#
+	#	Check if an absolute path was provided
+	#	Or if adjustments for bPath are required
+	#
+	this_fn = f"{fn_base}.{fn_ext}"
+	if _os.path.isabs(this_fn):
+		bAdjustPath = False
+	else:
+		bAdjustPath = True
+	
+	#
+	#	With full path or not?
+	#
+	if bPath:
+		# Yes, full path shall be returned
+		if bAdjustPath:
+			this_path = f"{dir_cur()}/{this_fn}"
+		else:
+			this_path = this_fn
+	else:
+		# Nope, just basename
+		this_path = _os.path.basename(this_fn)
+	
+	#
+	#	Check for existence
+	#
+	if exists(this_path, bVerbose=bVerbose):
+		# File exists, lets gets its absolute
+		ret_bool = True
+	else:
+		# File does not exist, use current path
+		ret_bool = False
+		
+	#
+	# 	Return result after changing \ to /
+	#
+	this_path = this_path.replace("\\","/")
+
+	#
+	# 	Final checks for unqiue or daily:
+	#
+	if bDaily:
+		# Insert current date
+		t = _stew.date().replace(".","_")
+		old_name = _os.path.basename(this_fn)
+
+		# Adjust for daily name
+		new_name = old_name.split(".")[0]
+		new_name = f"{new_name}-{t}.{fn_ext}"
+
+		# Update daily name
+		this_path = this_path.replace(old_name , new_name)
+		if bVerbose: _tui.print(_MSG.path_genfn_unique, this_path)
+
+	elif ret_bool and bUnique:
+		# Needs adjustment for unique filename
+		count = 0
+		raw_left, raw_ext = this_path.split(".")
+		while True:
+			this_check = f"{raw_left}({count}).{fn_ext}"
+			if exists(this_check):
+				count += 1
+			else:
+				this_path = this_check
+				if bVerbose: _tui.print(_MSG.path_genfn_unique, this_path)
+				break
+	
+	#
 	# Return result
+	#
 	return this_path
+
+#print( gen_filename(r"C:\$WINRE_BACKUP_PARTITION", "FAIL", bUnique=True) )
+#°print( gen_filename(r"C:\$WINRE_BACKUP_PARTITION", "MARKER", bPath=True, bDaily=True, bVerbose=True) )
+
+string = r"C:\$WINRE_BACKUP_PARTITION.MARKER"
+string = r"E:\AI\webui_forge_cu124_torch24\webui\extensions\sd-dynamic-prompts\wildcards\bg"
+print( exists(string, bShowFull=True, bVerbose=True) )
