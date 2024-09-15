@@ -23,18 +23,22 @@
 #	Imports
 #
 import requests
-from bs4 import BeautifulSoup
 import re
 
-
+#
+#	Verify proper import
+#
 try:
 	from bs4 import BeautifulSoup
 
 except:
 	print("You are missing BeautifulSoup")
 	print("pip install beautifulsoup4 /OR/ python -m pip install beautifulsoup4")
-	
 
+	
+#
+#	Check for Update functions
+#
 
 def update_from_github(current_version: str, URL: str):
 	"""
@@ -44,6 +48,9 @@ URL must be a valid GitHub address (not gist), leading to the tag page.
 
 --> https://github.com/<user>/<project>/tags <--
 	"""
+
+
+	# Check valid URL
 	try:
 		# Validate and parse the URL
 		match = re.match(r'https://github\.com/([^/]+)/([^/]+)/tags', URL)
