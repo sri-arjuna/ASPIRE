@@ -35,8 +35,12 @@ HW.tui.print()
 HW.tui.title("Lets work with the config file")
 val = HW.get_custom("Theme", "THEME")
 HW.tui.print("Current theme is:", val)
-HW.tui.print()
+newTheme = "Default"
+ret_set = HW.set_custom("Theme", "THEME", newTheme, bVerbose=True)
+HW.save()
 
+HW.tui.status(ret_set, f"Changed theme to: {newTheme}, applied on next start")
 # And exit
 HW.tui.wait(3,"Wait for it...")
+HW.tui.print()
 HW.tui.press()

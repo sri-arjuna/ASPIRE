@@ -12,6 +12,9 @@ from os.path import abspath, dirname, join
 aspire_dir = abspath(join(dirname(__file__), '..'))
 sys.path.append(aspire_dir)
 
+#
+#	This is how your code could look like
+#
 from AspireTUI import tui
 from AspireTUI.ColorAndText import cat
 import AspireTUI._theme as Theme
