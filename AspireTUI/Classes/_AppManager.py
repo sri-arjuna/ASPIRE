@@ -841,22 +841,80 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		#
 		#################################################################################
 		if not cls._self.bDisableConf:
-			#print("DEBUG: trying to save config")
-			# Config file is enabled, lets check if filename is provided
-			# Also, file should had been created upon initial read()
-			# So we can check for its existence directly
-			#print("DEUG file: " , cls.__get_name_conf(), fn)
+			#	Config file is enabled
+			#	Private functions to handle/keep comments in ini file
+			#
+			def read_with_comments(filename):
+				"""
+				Reads a config file and retains comments.
+				"""
+				with open(filename, 'r', encoding='utf-8') as file:
+					lines = file.readlines()
+
+				config = _cfgp.ConfigParser(interpolation=None)
+				config.optionxform = str  # Preserve case
+				config.read(filename)
+
+				return config, lines
+
+			def write_with_comments(filename, config, lines):
+				"""
+				Writes a config file and preserves comments and the correct separator.
+				"""
+				section = None  # Initialize section outside of the loop
+				val_sep = None
+
+				with open(filename, 'w', encoding='utf-8') as file:
+					for line in lines:
+						stripped_line = line.strip()
+						
+						# If the line is a comment or blank, write it directly
+						if stripped_line.startswith('#') or not stripped_line:
+							file.write(line)
+							continue  # Move to the next line
+
+						# Check and remember the separator type
+						if not val_sep:
+							if " = " in line:
+								val_sep = " = "
+							elif "=" in line:
+								val_sep = "="
+
+						# Identify and set the current section
+						if stripped_line.startswith('[') and stripped_line.endswith(']'):
+							section = stripped_line.strip('[]')
+							file.write(line)  # Write section header
+							continue
+
+						# Write key-value pairs, preserving the value separator
+						if val_sep and section and val_sep in line:
+							key, current_value = line.split(val_sep, 1)
+							key = key.strip()
+
+							# Check if the key exists in the current section of the config
+							if key in config[section]:
+								# Write the updated key-value pair
+								file.write(f"{key}{val_sep}{config[section][key]}\n")
+							else:
+								# Write the original line if the key isn't found
+								file.write(line)
+						else:
+							# Write any line that doesn't match expected patterns
+							file.write(line)
+			
+			# Lets check if filename is provided by check for its existence directly
 			if _Path.isFile(fn):
 				#print("DEUG file: " , cls._file_conf)
 				# A conf file can only be read if it exists
 				import configparser as _cfgp
-				this_config = _cfgp.ConfigParser(interpolation=None)
+				#this_config = _cfgp.ConfigParser(interpolation=None)
+				this_config, lines_raw = read_with_comments(fn)
 
 				# Preserve CaseSensitify
-				this_config.optionxform = str
+				#this_config.optionxform = str
 				
 				# Open file (TODO: I guess this is needed, not sure if this will mess up the save process)
-				this_config.read(fn)
+				#this_config.read(fn)
 
 				# Conf file exists, lets parse memory storage and pass it to configparse
 				C=0
@@ -893,8 +951,9 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 
 				# Write file using configparser
 				#this_config.write(fn)
-				with open(fn, 'w') as configfile:
-					this_config.write(configfile)
+				#with open(fn, 'w') as configfile:
+				#	this_config.write(configfile)
+				write_with_comments(fn, this_config, lines_raw)
 
 				return True
 		return False
