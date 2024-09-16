@@ -95,4 +95,4 @@ You can further customize the appearance by using the ``Custom`` theme.
 
 ___Please see [help](https://github.com/sri-arjuna/Aspire/blob/master/docs/help) and [examples](https://github.com/sri-arjuna/Aspire/blob/master/docs/examples) for detailed information.___
 
-![Themes Preview](https://github.com/sri-arjuna/Aspire/blob/master/docs/help/img/themes.jpg?raw=true)
+![Themes Preview](https://github.com/sri-arjuna/Aspire/blob/master/docs/img/themes.jpg?raw=true)
