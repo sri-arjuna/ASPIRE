@@ -53,7 +53,7 @@ DIRS_DICT = {
 ################################################################################################################
 def dir_cur():
 	"""
-	Returns the absolute current working directory
+	Returns the absolute current working directory in *nix-style format (/)
 	"""
 	return _os.path.abspath(_os.getcwd()).replace("\\","/")
 

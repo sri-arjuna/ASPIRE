@@ -437,7 +437,7 @@ def ini_read(c_file, c_key, c_variable):
 
 def ini_write(c_file, c_key, c_variable, c_value):
 	"""
-	Reads c_file as ini file, looks for c_keys (section) and returns the value of c_variable.
+	Writes c_file as ini file, looks for c_keys (section) and returns the value of c_variable.
 
 	Usage:
 
