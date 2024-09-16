@@ -8,7 +8,7 @@ If you want to go "in depth", please see the [HELP.md](./HELP.md) (local) or eve
 ```
 ASPIRE
 + Incldues: 
-	Apsire (as tui)
+	Aspire (as tui)
 	= Provides:
 		All functions for every day tasks.
 		In 99,999% of all cases, you'll never need to include any of the other classes, 

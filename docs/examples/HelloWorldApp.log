@@ -1,0 +1,17 @@
+# Created by AspireTUI (0.4.4 from 2024.09.10), https://github.com/sri-arjuna/ASPIRE
+# Logfile created for 'HelloWorldApp' on 2024.09.12 / 15:53:36
+# Datetime                 Level        Type        Message
+2024-09-12 15:53:36.305564 0-DEBUG		Debug Level -> 0
+2024-09-12 15:53:36.306563 1-INFO		Info level -> 1
+2024-09-12 15:53:36.306563 2-WARNING	Warning level -> 2
+2024-09-12 15:53:36.308556 3-ERROR		Error Level -> 3
+2024-09-12 15:53:36.310550 5-FATAL		Fatal Level -> 4
+2024-09-12 15:53:36.312546 4-CRITICAL	Critical Level -> 5
+2024-09-12 15:53:36.317532 0-DEBUG		cfg - Set: Update value from 'Elegance' to 'Default' in 'Theme' 'THEME'
+2024-09-12 15:57:40.955647 0-DEBUG		Debug Level -> 0
+2024-09-12 15:57:40.956644 1-INFO		Info level -> 1
+2024-09-12 15:57:40.957642 2-WARNING	Warning level -> 2
+2024-09-12 15:57:40.959637 3-ERROR		Error Level -> 3
+2024-09-12 15:57:40.961630 5-FATAL		Fatal Level -> 4
+2024-09-12 15:57:40.963625 4-CRITICAL	Critical Level -> 5
+2024-09-12 15:57:40.969610 0-DEBUG		cfg - Set: Update value from 'Default' to 'Default' in 'Theme' 'THEME'
