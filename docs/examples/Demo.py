@@ -1,11 +1,9 @@
 """
-This is just a very basic example program so you're able to "get the drift".
+	Created on:		2023.July.02
+	Created by:		Simon Arjuna Erat
+	License:		MIT
+	URL:			https://www.github.com/sri-arjuna/ASPIRE
 """
-import os as _os
-import sys as _sys
-aspire_dir = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), '..'))
-_sys.path.append(aspire_dir)
-
 #
 #	Imports
 #

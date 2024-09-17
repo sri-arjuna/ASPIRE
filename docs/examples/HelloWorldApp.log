@@ -15,3 +15,10 @@
 2024-09-12 15:57:40.961630 5-FATAL		Fatal Level -> 4
 2024-09-12 15:57:40.963625 4-CRITICAL	Critical Level -> 5
 2024-09-12 15:57:40.969610 0-DEBUG		cfg - Set: Update value from 'Default' to 'Default' in 'Theme' 'THEME'
+2024-09-16 15:55:30.704083 0-DEBUG		Debug Level -> 0
+2024-09-16 15:55:30.705081 1-INFO		Info level -> 1
+2024-09-16 15:55:30.705081 2-WARNING	Warning level -> 2
+2024-09-16 15:55:30.707101 3-ERROR		Error Level -> 3
+2024-09-16 15:55:30.709063 5-FATAL		Fatal Level -> 4
+2024-09-16 15:55:30.711057 4-CRITICAL	Critical Level -> 5
+2024-09-16 15:55:30.719036 0-DEBUG		cfg - Set: Update value from 'Default' to 'Default' in 'Theme' 'THEME'

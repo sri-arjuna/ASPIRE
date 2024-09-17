@@ -1,26 +1,29 @@
-# These are only required (here) for relative path import
-import os
-import sys
-from os.path import abspath, dirname, join
-# Add the ASPIRE directory to the system path
-aspire_dir = abspath(join(dirname(__file__), '..'))
-sys.path.append(aspire_dir)
-
-# Import Aspire modules
-# Usualy, this would be only:
-#	from aspire import Aspire as tui
+"""
+	Created on:		2023.July.02
+	Created by:		Simon Arjuna Erat
+	License:		MIT
+	URL:			https://www.github.com/sri-arjuna/ASPIRE
+"""
+#
+# 	Imports
+#
 from AspireTUI import tui
 from AspireTUI._PrintUtils import STATUS
-#from aspire.aspire_data_status import dict_status
 
 
 tui.header("Simple Data Presentation")
+
+#
+#   tui.progress
+#
 tui.title("Progress Bar")
+tui.progress("Shows a bar: 1/10", 0.1, 1)   ; print()   # progress would go on new line automaticly on "max" aka 1/1
+tui.progress("Shows a bar: 1/3", 1, 3)      ; print()   # progress would go on new line automaticly on "max" aka 3/3
+tui.progress("Shows a bar: 1/2", 1, 2)      ; print()   # progress would go on new line automaticly on "max" aka 2/2
 
-tui.progress("Shows a bar: 1/10", 0.1, 1)
-tui.progress("Shows a bar: 1/3", 1, 3)
-tui.progress("Shows a bar: 1/2", 1, 2)
-
+#
+#   tui.yesno
+#
 tui.title("User Interactions")
 yesno = tui.yesno("Are you happy?")
 if yesno:
@@ -29,19 +32,17 @@ else:
     tui.status(STATUS.Fail,  "No, you are not happy.")
 tui.print()
 
+#
+#   tui.status
+#
 tui.title("Does also work with base bool / and + INT ")
 tui.status(yesno, "Bool result")
-tui.status(10 + yesno, "Int result: On/Off = 10+Bool")
-
-sys.exit()
-#tui.print()
-#tui.title("Call by dict")
-#for key in dict_status:
-    # It requires specificly INT or BOOL, since i'm just parsing key's here, they're any and wont work
-    # So I had to fallback using EVAL, eventhough that is not recomended.
-#    tui.print(f"tui.status({key}, 'Some text'", f"[ {eval(dict_status[key]).value} ]")
-
+tui.status(10 + int(yesno), "Int result: On/Off = 10+Bool")
 tui.print()
+
+#
+#   tui.status, again
+#
 tui.title("Call by Enum")
 for es in STATUS:
     tui.status(es, f"tui.status({es}, 'Message to user')")
