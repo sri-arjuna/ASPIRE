@@ -74,6 +74,8 @@ This is how "Hello World" (using ``header``, ``title`` and ``print``) can look l
 
 ![HelloWorld](https://github.com/sri-arjuna/Aspire/blob/master/docs/img/HelloWorld.jpg?raw=true)
 
+Here's just a screenshot of how "data" or "progress" could be shown to your users, or how they could interact with your programm.
+
 ![User Interactions](https://github.com/sri-arjuna/Aspire/blob/master/docs/img/yesno_status.jpg?raw=true)
 
 
@@ -93,6 +95,6 @@ This is just a preview of the "official" themes.
 
 You can further customize the appearance by using the ``Custom`` theme.
 
-___Please see [help](https://github.com/sri-arjuna/Aspire/blob/master/docs/help) and [examples](https://github.com/sri-arjuna/Aspire/blob/master/docs/examples) for detailed information.___
+___Please see [help](https://github.com/sri-arjuna/Aspire/blob/master/docs/Help.md) and [examples](https://github.com/sri-arjuna/Aspire/blob/master/docs/examples) for detailed information.___
 
 ![Themes Preview](https://github.com/sri-arjuna/Aspire/blob/master/docs/img/themes.jpg?raw=true)
