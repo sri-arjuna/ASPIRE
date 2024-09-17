@@ -1,4 +1,8 @@
-# 0.5 - 17.09.2024
+# 0.5.1 - 17.09.2024
+- Hotfix: Links of the readme led to a dir instead of file
+- Hotfix: Some images were not shown properly
+
+# 0.5.0 - 17.09.2024
 - Added: Path.gen_filename()
 - Updated: Path.exists()
 - Updated: Classes.AppManager()
