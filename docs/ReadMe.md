@@ -55,7 +55,7 @@ Like:
 Usage & Preview
 ---------------
 
-___Please see [help](https://github.com/sri-arjuna/Aspire/blob/master/docs/help) and [examples](https://github.com/sri-arjuna/Aspire/blob/master/docs/examples) for detailed information.___
+___Please see [help](https://github.com/sri-arjuna/Aspire/blob/master/docs/Help.md) and [examples](https://github.com/sri-arjuna/Aspire/blob/master/docs/examples) for detailed information.___
 
 The code for the previous preview would look as simple as this, which is how you can use it as library in your projects:
 

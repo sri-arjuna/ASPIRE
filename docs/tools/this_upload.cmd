@@ -1,4 +1,4 @@
 @echo off
 REM ## twine upload dist/*
-cd ..
+REM cd ../..
 py -m twine upload --repository pypi dist/*

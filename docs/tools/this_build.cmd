@@ -1,6 +1,6 @@
 @echo off
 echo Creating package build data...
-cd ..
+REM cd ../..
 py -m build
 
 
