@@ -67,7 +67,7 @@ classifiers = [  # Optional
 "Homepage" = "https://github.com/sri-arjuna/ASPIRE"
 "Bug Reports" = "https://github.com/sri-arjuna/ASPIRE/issues"
 "Source" = "https://github.com/sri-arjuna/ASPIRE/"
-"Help / Manual" = "https://github.com/sri-arjuna/ASPIRE/tree/master/docs/help"
+"Help / Manual" = "https://github.com/sri-arjuna/ASPIRE/tree/master/docs/Help.md"
 #"Funding" = "https://donate.pypi.org"
 #"Say Thanks!" = "http://saythanks.io/to/example"
 
