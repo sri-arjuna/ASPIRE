@@ -77,6 +77,9 @@ def _isGUI():
 		# Check if running in a non-Windows environment
 		return any(_os.getenv(var) for var in ["XDG_CURRENT_DESKTOP", "DESKTOP_SESSION", "XAUTHORITY", "TERM"]) is not None
 
+# Assign the function to variable (as this wont change during runtime)
+IS_GUI = _isGUI()
+
 def isVerOS(minimal=None, bDual=False):
 	"""
 	Checks if the OS version is at least "minimal". \n
@@ -134,11 +137,12 @@ def isVerPy(minimal: float = 3.9, bDual=False):
 	# init
 	ret = False
 	msg = _MSG.os_not_found_python
+
 	# Check for proper format:
 	if not isinstance(minimal, float):
-	#if 1 < str(minimal).count("."):
 		# Is not just Major.Minor
 		raise ValueError(_MSG.cl_log_err_must_float, minimal)
+	
 	# Prepare for version check
 	maj, min = 0, 0
 	maj = int(str(minimal).split(".")[0])
@@ -154,4 +158,98 @@ def isVerPy(minimal: float = 3.9, bDual=False):
 		return ret
 
 
-IS_GUI = _isGUI()
+def file_lock_on(filename, bVerbose: bool=False):
+	"""
+	Enable OS wide file lock, cross platform (Unix-likes & Windows)
+	
+	Must be called after you: `with open(filename, mode, encoding) as file:`
+	"""
+	# Verify a filename was passed
+	if not filename: print("No file-handle passed to OS.file_lock_on") ; return False
+
+	# Lets make messages nice
+	import tui as _tui
+	ret_bool = False
+	size = 0
+	
+	# Import according to OS
+	if IS_WINDOWS:	import msvcrt  ; size = _os.path.getsize(filename)
+	else:			import fcntl
+
+	#
+	# Try locking file
+	#
+	try:
+		if IS_WINDOWS: 	msvcrt.locking(filename.fileno(), 	msvcrt.LK_LOCK, size)
+		else: 			fcntl.flock(filename.fileno(), 		fcntl.LOCK_EX)
+		
+		# Has not failed yet, lets say it succeeded
+		ret_bool = True
+	
+	# Handle possible exceptions
+	except FileNotFoundError:	ret_err_msg = f"Error: File ({filename}) not found."
+	except PermissionError:		ret_err_msg = "Error: Permission denied."
+	except OSError:				ret_err_msg = "Error: File is corrupted or other OS-related issue."
+	except Exception as e:		ret_err_msg = f"Unexpected error: {str(e)}"
+
+	#
+	#	Lets handle messaging
+	#
+	if not ret_bool:
+		# It failed, be verbose
+		_tui.status(_tui.STATUS.ERROR.value, ret_err_msg)
+	elif bVerbose:
+		# Success and verbose
+		msg_locked = "Locked:"
+		_tui.status(ret_bool, msg_locked, filename)
+	
+	# return to user
+	return ret_bool
+
+def file_lock_off(filename, bVerbose: bool=False):
+	"""
+	Disables the OS wide file lock, cross platform (Unix-likes & Windows)
+	
+	Must be called after you: `with open(filename, mode, encoding) as file:` ; OS.file_lock_on(file)
+	"""
+	# Verify a filename was passed
+	if not filename: print("No file-handle passed to OS.file_lock_on") ; return False
+
+	# Lets make messages nice
+	import tui as _tui
+	ret_bool = False
+	size = 0
+
+	# Import according to OS
+	if IS_WINDOWS:	import msvcrt  ; size = _os.path.getsize(filename)
+	else:			import fcntl
+
+	#
+	# Try locking file
+	#
+	try:
+		if IS_WINDOWS: 	msvcrt.locking(filename.fileno(), 	msvcrt.LK_UNLCK, size)
+		else: 			fcntl.flock(filename.fileno(), 		fcntl.LOCK_UN)
+		
+		# Has not failed yet, lets say it succeeded
+		ret_bool = True
+
+	# Handle possible exceptions
+	except FileNotFoundError:	ret_err_msg = f"Error: File ({filename}) not found."
+	except PermissionError:		ret_err_msg = "Error: Permission denied."
+	except OSError:				ret_err_msg = "Error: File is corrupted or other OS-related issue."
+	except Exception as e:		ret_err_msg = f"Unexpected error: {str(e)}"
+
+	#
+	#	Lets handle messaging
+	#
+	if not ret_bool:
+		# It failed, be verbose
+		_tui.status(_tui.STATUS.ERROR.value, ret_err_msg)
+	elif bVerbose:
+		# Success and verbose
+		msg_unlocked = "Unlocked:"
+		_tui.status(ret_bool, msg_unlocked, filename)
+	
+	# return to user
+	return ret_bool
