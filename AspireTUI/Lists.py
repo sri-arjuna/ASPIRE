@@ -130,25 +130,3 @@ encodings = [
     'cp500',        # IBM EBCDIC International
 ]
 
-def verify_encoding(encoding: str = None, bDual:bool = False):
-	"""Compares provided encoding with the encodings list
-	
-Returns True if valid, returns False otherwise
-	"""
-	# Vars
-	ret_bool = False
-
-	# Verify something was passed
-	if not encoding: return ret_bool
-
-	# Verify it is in the list
-	if encoding.lower in encodings:
-			ret_bool = True 
-			ret_msg = f"Provided encoding ({encoding}) is valid."
-	else: 	ret_msg = f"Could not verify provided encoding ({encoding})."
-	
-	# Return to user
-	if bDual:
-		return ret_bool, ret_msg
-	else:
-		return ret_bool
