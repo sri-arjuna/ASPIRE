@@ -25,6 +25,7 @@ import sys as _sys
 import platform as _platform
 from . import IS_WINDOWS
 from . import _MSG
+import io
 #
 #	Constants / Vars
 #
@@ -157,15 +158,28 @@ def isVerPy(minimal: float = 3.9, bDual=False):
 	else:
 		return ret
 
+def _get_size_from_file_object(file: io.IOBase):
+	"""
+	Internal function go retrieve the file size while handling a file object
+	"""
+	# Move the pointer to the end of the file to get its size
+	file.seek(0, 2)  # Seek to the end of the file
+	size = file.tell()  # Get the current position (which is the file size)
+	return size
 
-def file_lock_on(filename, bVerbose: bool=False):
+def file_lock_on(file: io.IOBase, bVerbose: bool=False):
 	"""
 	Enable OS wide file lock, cross platform (Unix-likes & Windows)
 	
 	Must be called after you: `with open(filename, mode, encoding) as file:`
 	"""
 	# Verify a filename was passed
-	if not filename: print("No file-handle passed to OS.file_lock_on") ; return False
+	if not file: print("No file-handle passed to OS.file_lock_on") ; return False
+
+	# Verify its a file object
+	if not isinstance(file, io.IOBase):
+		raise ValueError("Invalid file object passed")
+		return False
 
 	# Lets make messages nice
 	import tui as _tui
@@ -173,21 +187,21 @@ def file_lock_on(filename, bVerbose: bool=False):
 	size = 0
 	
 	# Import according to OS
-	if IS_WINDOWS:	import msvcrt  ; size = _os.path.getsize(filename)
+	if IS_WINDOWS:	import msvcrt  ; size = _get_size_from_file_object(file)
 	else:			import fcntl
 
 	#
 	# Try locking file
 	#
 	try:
-		if IS_WINDOWS: 	msvcrt.locking(filename.fileno(), 	msvcrt.LK_LOCK, size)
-		else: 			fcntl.flock(filename.fileno(), 		fcntl.LOCK_EX)
+		if IS_WINDOWS: 	msvcrt.locking(file.fileno(), 	msvcrt.LK_LOCK, size)
+		else: 			fcntl.flock(file.fileno(), 		fcntl.LOCK_EX)
 		
 		# Has not failed yet, lets say it succeeded
 		ret_bool = True
 	
 	# Handle possible exceptions
-	except FileNotFoundError:	ret_err_msg = f"Error: File ({filename}) not found."
+	except FileNotFoundError:	ret_err_msg = f"Error: File ({file}) not found."
 	except PermissionError:		ret_err_msg = "Error: Permission denied."
 	except OSError:				ret_err_msg = "Error: File is corrupted or other OS-related issue."
 	except Exception as e:		ret_err_msg = f"Unexpected error: {str(e)}"
@@ -201,55 +215,53 @@ def file_lock_on(filename, bVerbose: bool=False):
 	elif bVerbose:
 		# Success and verbose
 		msg_locked = "Locked:"
-		_tui.status(ret_bool, msg_locked, filename)
+		_tui.status(ret_bool, msg_locked, file)
 	
 	# return to user
 	return ret_bool
 
-def file_lock_off(filename, bVerbose: bool=False):
+def file_lock_off(file: io.IOBase, bVerbose: bool=False):
 	"""
 	Disables the OS wide file lock, cross platform (Unix-likes & Windows)
 	
 	Must be called after you: `with open(filename, mode, encoding) as file:` ; OS.file_lock_on(file)
 	"""
 	# Verify a filename was passed
-	if not filename: print("No file-handle passed to OS.file_lock_on") ; return False
+	if not file: print("No file-handle passed to OS.file_lock_on") ; return False
 
+	# Verify its a file object
+	if not isinstance(file, io.IOBase):
+		raise ValueError("Invalid file object passed")
+		return False
+	
 	# Lets make messages nice
 	import tui as _tui
 	ret_bool = False
 	size = 0
 
 	# Import according to OS
-	if IS_WINDOWS:	import msvcrt  ; size = _os.path.getsize(filename)
-	else:			import fcntl
+	# and unlock file
+	if IS_WINDOWS:
+		import msvcrt  ; size =  _get_size_from_file_object(file)
+		msvcrt.locking(file.fileno(), 	msvcrt.LK_UNLCK, size)
+	else:
+		import fcntl
+		fcntl.flock(file.fileno(), 		fcntl.LOCK_UN)
 
-	#
-	# Try locking file
-	#
-	try:
-		if IS_WINDOWS: 	msvcrt.locking(filename.fileno(), 	msvcrt.LK_UNLCK, size)
-		else: 			fcntl.flock(filename.fileno(), 		fcntl.LOCK_UN)
-		
-		# Has not failed yet, lets say it succeeded
-		ret_bool = True
-
-	# Handle possible exceptions
-	except FileNotFoundError:	ret_err_msg = f"Error: File ({filename}) not found."
-	except PermissionError:		ret_err_msg = "Error: Permission denied."
-	except OSError:				ret_err_msg = "Error: File is corrupted or other OS-related issue."
-	except Exception as e:		ret_err_msg = f"Unexpected error: {str(e)}"
+	# Has not failed yet, lets say it succeeded
+	ret_bool = True
 
 	#
 	#	Lets handle messaging
 	#
 	if not ret_bool:
 		# It failed, be verbose
-		_tui.status(_tui.STATUS.ERROR.value, ret_err_msg)
+		ret_err_msg = "An error occoured while unlocked the file:" #{file}"
+		_tui.status(_tui.STATUS.ERROR.value, ret_err_msg, file)
 	elif bVerbose:
 		# Success and verbose
 		msg_unlocked = "Unlocked:"
-		_tui.status(ret_bool, msg_unlocked, filename)
+		_tui.status(ret_bool, msg_unlocked, file)
 	
 	# return to user
 	return ret_bool
