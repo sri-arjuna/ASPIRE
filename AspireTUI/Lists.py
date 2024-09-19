@@ -88,3 +88,67 @@ morse_code = {
     '"': '.-..-.', '$': '...-..-', '@': '.--.-.',
     ' ': '/'
 }
+
+encodings = [
+    'utf-8',        # UTF-8 (most common and default encoding in Python)
+    'utf-16',       # UTF-16 encoding
+    'utf-32',       # UTF-32 encoding
+    'ascii',        # ASCII encoding (7-bit)
+    'latin-1',      # Latin-1 (ISO-8859-1)
+    'iso-8859-1',   # Another name for Latin-1
+    'iso-8859-2',   # ISO Latin-2 (Central and Eastern European languages)
+    'iso-8859-3',   # ISO Latin-3 (South European and miscellaneous languages)
+    'iso-8859-4',   # ISO Latin-4 (North European languages)
+    'iso-8859-5',   # ISO Latin/Cyrillic alphabet
+    'iso-8859-6',   # ISO Latin/Arabic alphabet
+    'iso-8859-7',   # ISO Latin/Greek alphabet
+    'iso-8859-8',   # ISO Latin/Hebrew alphabet
+    'iso-8859-9',   # ISO Latin-5 (Turkish)
+    'iso-8859-10',  # ISO Latin-6 (Nordic languages)
+    'windows-1250', # Windows Central and Eastern European
+    'windows-1251', # Windows Cyrillic
+    'windows-1252', # Windows Latin-1 (Western European)
+    'windows-1253', # Windows Greek
+    'windows-1254', # Windows Turkish
+    'windows-1255', # Windows Hebrew
+    'windows-1256', # Windows Arabic
+    'windows-1257', # Windows Baltic
+    'windows-1258', # Windows Vietnamese
+    'cp437',        # DOS Latin US (Code Page 437)
+    'cp850',        # DOS Western European (Code Page 850)
+    'cp852',        # DOS Central European (Code Page 852)
+    'cp866',        # DOS Cyrillic (Code Page 866)
+    'shift_jis',    # Shift JIS (Japanese)
+    'euc-jp',       # Extended Unix Code (Japanese)
+    'gb2312',       # Simplified Chinese (Mainland China)
+    'big5',         # Traditional Chinese (Taiwan, Hong Kong)
+    'koi8-r',       # KOI8-R (Cyrillic script)
+    'koi8-u',       # KOI8-U (Ukrainian)
+    'mac-roman',    # Macintosh Roman
+    'mac-cyrillic', # Macintosh Cyrillic
+    'cp037',        # IBM EBCDIC US/Canada
+    'cp500',        # IBM EBCDIC International
+]
+
+def verify_encoding(encoding: str = None, bDual:bool = False):
+	"""Compares provided encoding with the encodings list
+	
+Returns True if valid, returns False otherwise
+	"""
+	# Vars
+	ret_bool = False
+
+	# Verify something was passed
+	if not encoding: return ret_bool
+
+	# Verify it is in the list
+	if encoding.lower in encodings:
+			ret_bool = True 
+			ret_msg = f"Provided encoding ({encoding}) is valid."
+	else: 	ret_msg = f"Could not verify provided encoding ({encoding})."
+	
+	# Return to user
+	if bDual:
+		return ret_bool, ret_msg
+	else:
+		return ret_bool

@@ -1,3 +1,9 @@
+# 0.5.2 - 
+- Help-Url fix for PyPi page
+- Added: OS.file_lock_{on|off} : handles *nix-like & windows systems (incl fruits)
+- Rewritten Classes.Conf()
+- Added: Lists.encodings and Lists.verify_encoding(encoding)
+
 # 0.5.1 - 17.09.2024
 - Hotfix: Links of the readme led to a dir instead of file
 - Hotfix: Some images were not shown properly
