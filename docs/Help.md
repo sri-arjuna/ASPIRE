@@ -300,7 +300,14 @@ __For a full list of the functions, please read the functions of Conf and Log ac
 	# If no filename is passed you can still use it access/manage "runtime settings"
 	myConf = Classes.AppManager("MyAppName.ini")
 
-*This class is a wrapper for (aka: unifies/ 2 in 1) Conf & Log classes, and allows to ease change the theme.*
+Unlike configparser, this preverses comments at these locations: 
+* file top
+* above sections
+* above individual keys
+
+It is also optimized for TUI output (if bVerbose=True) and can even work without an actual config file!
+
+*Default behaviour requires you to use ``myConf.save()`` to actualy apply the changes made to the memory cache.*
 
 | Name | Description |
 |------|-------------|
@@ -309,7 +316,7 @@ __For a full list of the functions, please read the functions of Conf and Log ac
 | list_sections	| Returns a list of sections
 | list_keys		| Returns a list of keys of passed section
 | read			| Reads the config file to memory
-| write			| Writes the config file from memory
+| save			| Writes the config file from memory
 | 			| 
 | 			| 
 
