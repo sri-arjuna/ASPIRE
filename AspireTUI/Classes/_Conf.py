@@ -22,6 +22,7 @@ Based on my TUI & SWARM for the BASH shell © 2011
 #	Imports for filetype wrappers
 #
 from io import TextIOWrapper
+from collections import OrderedDict
 from typing import Union
 # Use Union to specify that it can be either str or bytes
 StrOrBytesPath = Union[str, bytes]
