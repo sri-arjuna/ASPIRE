@@ -521,3 +521,38 @@ def verify_encoding_name(encoding: str = None, bDual:bool = False):
 		return ret_bool, ret_msg
 	else:
 		return ret_bool
+
+def read_first_n_lines(filename, n=10, abort_on: list=None):
+	"""
+	Read the first n=10 lines of a file.
+
+	Or until any entry of passed list of abort_on was found.
+	"""
+	 # Initialize abort_on to an empty list if not provided
+	if abort_on is None: abort_on = [] 
+	# Initalize output
+	out = []
+
+	# Read the file
+	try:
+		with open(filename, 'r') as file:
+			for i in range(n):
+				line = file.readline()
+				if not line:  # Stop if we reach the end of the file
+					break
+				line = line.strip()  # Remove leading/trailing whitespace
+				out.append(line)  # Print the line
+				
+				# Check if any of the abort_on items are in the current line
+				if any(item in line for item in abort_on):
+					# Return with output
+					return out
+		# Return with output
+		return out
+	# Handle errors
+	except FileNotFoundError:
+		print(f"The file '{filename}' does not exist.")
+		return False
+	except Exception as e:
+		print(f"An error occurred: {e}")
+		return False
