@@ -535,7 +535,7 @@ def read_first_n_lines(filename, n=10, abort_on: list=None):
 
 	# Read the file
 	try:
-		with open(filename, 'r') as file:
+		with open(filename, 'r', encoding='UTF-8') as file:
 			for i in range(n):
 				line = file.readline()
 				if not line:  # Stop if we reach the end of the file
