@@ -81,27 +81,36 @@ def split_calc_char_pos(LineLength: int, Percentage: int):
 
 def split_string_preserve_words(text, max_chars):
 	"""
-	Split string at provided length, preferred at whitespace.
-	Returns 2 strings: line0, line1
+	Split string at provided length, preferring whitespace when possible.
+	If no whitespace exists, split mid-word as a last resort.
+	Returns a list with two strings: [line0, line1].
 	"""
-	words = text.split()
+	#print(f"DEBUG: text='{text}', max_chars={max_chars}")
+	max_chars = int(max_chars)
+	if len(text) <= max_chars:
+		return [text.strip(), ""]
+
+	# Prefer splitting at whitespace
 	line0 = ""
 	current_length = 0
-	rem_words = []
-	# Parse each word
+
+	words = text.split()
 	for word in words:
-		if current_length + len(word) <= max_chars:
-			line0 += word + " "
-			current_length += len(word) + 1  # Add 1 for space
-			rem_words.append(word)
+		if current_length + len(word) + (1 if line0 else 0) <= max_chars:  # Add space only if line0 isn't empty
+			line0 += (" " if line0 else "") + word
+			current_length += len(word) + 1  # Word length plus one space
 		else:
 			break
-	# Remove used words
-	for w in rem_words:
-		words.remove(w)
-	# Fill line1
-	line1 = text[current_length:].strip()
+	if line0.strip() == "":
+		# Handle case where no spaces are present and the first word exceeds max_chars
+		line0 = text[:max_chars]
+		line1 = text[max_chars:]
+	else:
+		# Normal case: split remaining words
+		line1 = text[len(line0):].strip()
+
 	return [line0.strip(), line1.strip()]
+
 
 def shorten(txt: str, char_count: int, cut_from_middle: bool = False) -> str:
 	"""
