@@ -590,22 +590,16 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		cls.read()
 		MAX = len(cls._sections)
 		out = None
-		#print("DEBUG - MAX:", MAX)
 		while C <= MAX:
-			if False:
-				print("passed sec/key: ", Section, Key)
-				print("DEBUG - C:", C)
-				print("DEBUG - sec:", cls._sections[C])
-				print("DEBUG - key:", cls._keys[C])
-				print("DEBUG - val:", cls._values[C])
-			
 			if cls._sections[C] == Section and cls._keys[C] == Key:
 				out = cls._values[C]
-				#print("Found out: ", out)
 				break
 			C+=1
+			if C == MAX: 
+				break
 		if out is None:
-			return "?"
+			_tui.status(False, "Could not retrieve Value for:", f"Section: {Section} / Key: {Key}")
+			return None
 		else:
 			return out
 	
@@ -621,7 +615,6 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		
 		# If not found, add a new entry
 		if Key not in cls._keys:
-			#cls._sections
 			i = len(cls._keys)
 			cls._sections.append(Section)
 			cls._keys.append(Key)
@@ -636,9 +629,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			while C <= MAX:
 				#print("DEBUG: set_custom: ", C, MAX, Section, Key, Value)
 				if cls._sections[C] == Section and cls._keys[C] == Key:
-					#print("DEUG found entry to update")
 					if {cls._values[C]} != Value:
-						#print("DEUG found entry values: " ,cls._values[C] , Value )
 						if bVerbose: 
 							cls.DEBUG(f"cfg - Set: Update value from '{cls._values[C]}' to '{Value}' in '{Section}' '{Key}'")
 						cls._values[C] = Value
@@ -650,12 +641,10 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		#
 		# Instant save?
 		#
-		if cls._self.bAutoSave: cls.save()
-			#if cls.save():
-			#	print("all good")
-			#else:
-			#	print("save failed")
-		if bVerbose: _tui.status(ret_bool, f"{Key}={Value}")
+		if cls._self.bAutoSave: 
+			cls.save()
+		if bVerbose: 
+			_tui.status(ret_bool, f"{Key}={Value}")
 		return ret_bool
 	
 	###############################################################################################################
@@ -699,11 +688,6 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		cls._sections.append(T) , cls._keys.append("THEME_COLOR") 	, cls._values.append(cls._self.theme_color)
 		cls._sections.append(T) , cls._keys.append("THEME_STYLE") 	, cls._values.append(cls._self.theme_style)
 
-		if False:
-			# Deubg
-			print("sections:\t ", cls._sections)
-			print("keys:    \t ", cls._keys)
-			print("values:  \t ", cls._values)
 		#
 		# Wrap around configparser
 		# No need to try reading (or create) a config file
@@ -733,7 +717,6 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 					if section in "Theme, Log":
 						# its an internal config, update it
 						cu = 0 # ConfigUpdate
-						#print("before endless loop: ", section, key)
 						while cu <= len(cls._keys):
 							if section == cls._sections[cu] and key == cls._keys[cu]:
 								# Update this
@@ -764,11 +747,15 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		#	Make initial update of theme, expecting proper values
 		#
 		if True:
-			cls._self.theme 		= this_config.get("Theme", "THEME") #cls.get_custom("Theme", "THEME")
-			cls._self.theme_style	= this_config.get("Theme", "THEME_STYLE") #cls.get_custom("Theme", "THEME_STYLE")
-			cls._self.theme_color	= this_config.get("Theme", "THEME_COLOR") #cls.get_custom("Theme", "THEME_COLOR")
-			_tui._Theme.set(cls._self.theme, cls._self.theme_style, cls._self.theme_color)
-			#print("deug :", cls._self.theme, cls._self.theme_style, cls._self.theme_color)
+			cls._self.theme 		= this_config.get("Theme", "THEME")
+			cls._self.theme_style	= this_config.get("Theme", "THEME_STYLE")
+			cls._self.theme_color	= this_config.get("Theme", "THEME_COLOR")
+			_tui._Theme.set(cls._self.theme, cls._self.theme_style, cls._self.theme_color)		
+		
+		# This is the update TUI according to config:
+		_tui._settings["theme"] = cls._self.theme
+		_tui._settings["theme_color"] = cls._self.theme_color
+		_tui._settings["theme_style"] = cls._self.theme_style
 
 
 		# Check for valid theme entry / value
@@ -795,15 +782,22 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 				# Apply theme that is neither "Default" nor literal "Random"
 				settings["theme"] = rnd_theme
 				_tui._Theme.set(cls._self.theme)
+				cls.DEBUG(f"Theme applied (RANDOM): {cls._self.theme}")
 		elif "custom" == str(this_theme).lower():
 			# This should apply the custom color and style to the _settings
+			#print("should apply custom")
 			_tui._Theme.set("Custom", cls._self.theme_style, cls._self.theme_color)
+			cls.DEBUG(f"Theme applied (CUSTOM): STYLE={cls._self.theme_style}, COLOR={cls._self.theme_color}")
+			#_tui._Theme.get()
 		else:
 			#cls._self.theme = this_theme
 			_tui._Theme.set(cls._self.theme)
-		#print("theme applied: ", cls._self.theme)
+			cls.DEBUG(f"Theme applied: {cls._self.theme}")
 		
-		# asdf
+		# This _should_ update the theme according to what theme was set previously
+		
+		#cls.DEBUG(_tui._settings)
+		#_tui._Theme.get()
 		return True
 	
 	def save(cls):

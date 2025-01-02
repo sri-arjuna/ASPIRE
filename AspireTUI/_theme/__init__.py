@@ -127,6 +127,7 @@ def set(newTheme: str, theme_style=None, theme_color=None):
 			return False
 	else:
 		# Default behaviour
+		# More precice handling below
 		pass
 	
 	if newTheme in _ThemesList.__members__:
@@ -167,6 +168,8 @@ def get():
 		_settings["theme"] = theme_name
 		this_color = str(_settings["theme_color"])
 		this_style = str(_settings["theme_style"])
+
+		#print("DEUBG: custom:: ", this_color, this_style )
 		
 		# Verify values exist
 		if not this_color in _ListColor.__members__ or not this_style in _ListStyle.__members__:
@@ -185,7 +188,7 @@ def get():
 			# Assign custom enum theme to same var like the other themes
 			theme_raw = _ThisCustom.CustomTheme.value
 	elif "random" == theme_name.lower():
-		asdf
+		print("Random Theme not supported (yet??)")
 	else:
 		# Provided theme name is not handled
 		print(f"The theme name used '{theme_name}' is not supported." , f"\nFalling back to default theme!")

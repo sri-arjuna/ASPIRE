@@ -26,43 +26,29 @@
 from .. import _MSG
 from .. import tui as _tui
 from typing import Union as _Union
-#################################################################################################################
-#####                                           Class: LOG                                                  #####
-#################################################################################################################
+
 #
-# 	Strings for internal use
+#	Strings for internal use
 #
-SEVERITY =[]
-_SEVERITY_TRANSLATED = []
 from ..Lists import LOG_LEVEL as LEVEL
 from ..Lists import LOG_SEVERITY as SEVERITY
 
-
-class _Settings:
-	# Prepare get/set functions
-	@property
-	def description(self):
-		return self.description
-	@description.setter
-	def description(self, new_val: str):
-		msg = _MSG.cl_log_err_must_str
-		if not isinstance(new_val, str):
-			self.WARNING(msg)
-			raise ValueError(msg)
-		self.description = new_val
-
+#################################################################################################################
+#####                                           Class: LOG                                                  #####
+#################################################################################################################
 class Log:
 	def __init__(self, 
 		filename: str=None,
-		bVerbose: bool=False, 
-		bAutoSave: bool=True,
-		bDaily: bool=False,
+		name: str=None,
 		iSaveLog: int=0,
 		iShowUser: int=2,
-		name: str=None,
+		bVerbose: bool=False, 
+		bAutoWrite: bool=True,
+		bDaily: bool=False,
 		comment: str=None,
 		encoding: str="UTF-8",
-		format = "%H.%M.%S.%f"
+		format = "%H.%M.%S.%f",
+		config :str=None
 		):
 		
 		""""
@@ -71,9 +57,7 @@ class Log:
 __Basic Usage:__
 
     from AspireTUI import Classes
-    logfile = "myApp.log"
-    log = Classes.Log(logfile)
-    log.header = "Line 1 \nLine 2 \nLine 3... and so on"
+    log = Classes.Log("myApp.log", comment="Line 1 \nLine 2 \nLine 3... and so on")
     log.INFO("Logfile initialized")
 
 Or you could do:
@@ -90,7 +74,7 @@ __Option Overview:__
 
 	bVerbose	\tThis will produce some AspireTUI output during creation of the log class
 
-	bAutoSave	\tThis toggles wether you write directly to the logfile or not. Default=True\n\t\tIf you want to save the messages, you will need to call:\n\t    log.
+	bAutoWrite	\tThis toggles wether you write directly to the logfile or not. Default=True\n\t\tIf you want to save the messages, you will need to call:\n\t    log.
 
 	iSaveLog	\tLogLevel at which messages will be shown to user
 
@@ -122,12 +106,12 @@ SEVERITY[5] = "FATAL" 		\n
 		#
 		def _SaveMessages(cls):
 			"""
-			If log.settings.bAutoSave is False, all messages go to: log.messages
+			If log.settings.bAutoWrite is False, all messages go to: log.messages
 
 			Requires a log.settings.log.file or at least log.setting.name when using log.save()
 			"""
-			#global bAutoSave
-			if bAutoSave:
+			#global bAutoWrite
+			if bAutoWrite:
 				_tui.status(1, "autosafe chjeck on SaveMessages().... why?... and why twice?!")
 			
 		#
@@ -140,7 +124,7 @@ SEVERITY[5] = "FATAL" 		\n
 		_conf_file = None
 		# Apply arguments
 		self.settings.name = name
-		self.settings.bAutoSave = bAutoSave
+		self.settings.bAutoWrite = bAutoWrite
 		self.settings.bVerbose = bVerbose
 		self.settings.bDaily = bDaily
 		self.settings.encoding = encoding
@@ -168,7 +152,7 @@ SEVERITY[5] = "FATAL" 		\n
 			if bVerbose:
 				_tui.status(LEVEL.INFO.value, "TODO: Filename (ini):", filename)
 			else:
-				self.settings.bAutoSave = False
+				self.settings.bAutoWrite = False
 				if bVerbose:
 					_tui.status(LEVEL.INFO.value, "Empty instance of AspireTui.Classes.Log" , "No logfile will be saved.")
 		#
@@ -287,7 +271,7 @@ SEVERITY[5] = "FATAL" 		\n
 			msg_out = f"{formatted_time}\t\t{level}\t{name}\t\t{message}"
 
 			# Save outpout
-			if cls.settings.bAutoSave and fn is not None:
+			if cls.settings.bAutoWrite and fn is not None:
 				with open(fn, 'at' , encoding=encoding) as thisLOG:
 					print(f"{msg_out}", file=thisLOG)
 			else:
