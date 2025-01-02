@@ -1,29 +1,45 @@
 """
-Description:
-		Class: 	Classes/_shared
-		Detail:	Provides functions used by the actual classes for tool access and generic class settings/configuration.
+	Description:
+			Functions used for several classes
+			
+			Detail:	Provides functions used to access/handle several data of classes in ./Classes/*
 
 
-Notes:
-		If a LOG_CONFIG= is passed and the file exists, it will be read.
-		If it does not exist, the default/passed settings will be written into LOG_CONFIG
-		See: myLog.settings for details.
-========================================================
-Created on:		2024 Jun. 03
-Created by:		Simon Arjuna Erat
-License:		MIT
-URL:			https://www.github.com/sri-arjuna/AspireTUI
+	Notes:
+			If a LOG_CONFIG= is passed and the file exists, it will be read.
+			If it does not exist, the default/passed settings will be written into LOG_CONFIG
+			See: myLog.settings for details.
 
-Based on my TUI & SWARM for the BASH shell © 2011
+	========================================================
+
+	Created on:		2024 Jun. 03
+
+	Created by:		Simon Arjuna Erat
+
+	License:		MIT
+
+	URL:			https://www.github.com/sri-arjuna/AspireTUI
+
+	Based on my TUI & SWARM for the BASH shell © 2011
 """
 #
 #	Imports
 #
 from .._MESSAGES import current as _MSG
-
+from .. import tui as _tui
+from .. import Strings as _stew
+from .. import Path as _Path
 #
 #	Shared functions
 #
+
+
+
+
+
+
+
+
 # Prepare generic settings
 class SectionSettings():
 	def __init__(self):
