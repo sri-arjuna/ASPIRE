@@ -48,6 +48,7 @@ class AppManager:
 			bDisableConf: bool=False,
 			iShowUser: int=2,
 			iSaveLog: int=1,
+			iKeepLogs: int=5,
 			encoding: str="UTF-8",
 			log_format: str="%F %H:%M:%S.%f",
 			ext_log: str="log",
@@ -127,6 +128,8 @@ iSaveLog: int	= Set to 0-5 to only save error levels of that int or higher
 
 iShowUser: int	= Set to 0-5 to only show messages of that error level or higher
 
+iKeepLogs: int	= Set to any integer to preserve this many daily logs
+
 encoding: str	= Replace 'UTF-8' with any valid encoding format
 
 format: datetime	= Set to a 'datetime-format' to be used to prefix written log messages in the logfile
@@ -166,6 +169,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 					bDisableConf: bool=False,		## NEW TODO
 					iShowUser: int=2,
 					iSaveLog: int=0,
+					iKeepLogs: int=5,
 					encoding: str="UTF-8",
 					log_format: str='%F %H:%M:%S.%f',
 					ext_conf: str="cfg",
@@ -191,6 +195,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 				self.bDisableConf = bDisableConf
 				self.iShowUser = iShowUser
 				self.iSaveLog = iSaveLog
+				self.iKeepLogs = iKeepLogs
 				self.encoding = encoding
 				self.log_format = log_format
 				self.ext_conf = ext_conf
@@ -217,6 +222,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			bDisableConf = bDisableConf,
 			iShowUser = iShowUser,
 			iSaveLog = iSaveLog,
+			iKeepLogs = iKeepLogs,
 			encoding = encoding,
 			log_format = log_format,
 			ext_conf = ext_conf,
@@ -262,7 +268,8 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			# No path provided, use current dir (usualy where the script/bin is)
 			self._file_dir = _tui._os.path.abspath(base_filename).replace("\\","/")
 		# Adjust dir to not have basefilename
-		self._file_dir = self._file_dir.replace(base_filename,"")
+		#self._file_dir = self._file_dir.replace(base_filename,"",1)
+		self._file_dir = str(_tui._os.path.abspath(base_filename)[:-len(base_filename)]).replace("\\","/")
 		
 		# Create filenames from passed base_filename
 		self._file_conf = f"{self._file_dir}/{self.__get_name_conf()}"
@@ -277,6 +284,27 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		
 		# Read config file data
 		self.read()
+
+		#
+		#	init: apply some config values
+		#
+		if self._self.bDaily:
+			# Yes it uses daily logs, apply: iKeepLogs
+			keepMax = self._self.iKeepLogs
+			keepFilesTotalData = _Path.hasFiles(f"{base_filename}-*{self._self.ext_log}", self._file_dir, True)
+			keepFilesTotal = []
+			keepFilesTotal = list(keepFilesTotalData[1])
+			if keepFilesTotal is None: 
+				self.DEBUG("iKeepLogs: List is none")
+			else:
+				keepFilesDel = keepFilesTotal[:keepFilesTotal.count(self._self.ext_log) - keepMax]
+				for thisFile in keepFilesDel:
+					if _OS._os.path.exists(thisFile):
+						# File exists, remove it
+						if _OS._os.remove(thisFile):
+							self.DEBUG(f"Removed old log: {thisFile}")
+						else:
+							self.DEBUG(f"Failed to remov old log: {thisFile}")
 
 	###############################################################################################################
 	####                                       Internal Tools                                                  ####
@@ -679,6 +707,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		L = "Log"
 		cls._sections.append(L) , cls._keys.append("iSaveLog") 	, cls._values.append(cls._self.iSaveLog)
 		cls._sections.append(L) , cls._keys.append("iShowUser") , cls._values.append(cls._self.iShowUser)
+		cls._sections.append(L) , cls._keys.append("iKeepLogs") , cls._values.append(cls._self.iKeepLogs)
 		cls._sections.append(L) , cls._keys.append("bDaily") 	, cls._values.append(cls._self.bDaily)
 		cls._sections.append(L) , cls._keys.append("encoding") 	, cls._values.append(cls._self.encoding)
 		cls._sections.append(L) , cls._keys.append("format") 	, cls._values.append(cls._self.log_format)
@@ -721,8 +750,6 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 							if section == cls._sections[cu] and key == cls._keys[cu]:
 								# Update this
 								cls._values[cu] = _stew.strip_quotes(val)
-								#print("val: ", val)
-								#print("_values: ", cls._values[cu])
 								break
 							cu += 1
 					else:
