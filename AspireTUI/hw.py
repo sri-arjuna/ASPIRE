@@ -38,7 +38,7 @@ def drive_letters() -> list:
 
 	if IS_WINDOWS:
 		for drive in _string.ascii_uppercase:
-			if _os.path.exists(drive):
+			if _os.path.exists(f"{drive}:"):
 				drives.append(drive)
 	else:
 		# *nix-style systems, like iOS, BSD, Linux
