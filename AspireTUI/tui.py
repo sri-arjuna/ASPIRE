@@ -463,7 +463,11 @@ def pick(*args, text: str =_MSG.tui_pick_please_pick, bDual=False, bMenu=False, 
 		index_input = _internal.get_input_charcount(_len)
 
 		# Make sure it is int (to work with)
-		selected_index = int(index_input)
+		try:
+			selected_index = int(index_input)
+		except ValueError as e:
+			# invalid intput, lets continue loop
+			continue
 		
 		# Zero is only allowed if Menu -> check range_min
 		if selected_index >= range_min:
