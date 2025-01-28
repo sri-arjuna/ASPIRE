@@ -5,9 +5,13 @@
 					from AspireTUI.Classes import CrashLog
 
 	========================================================
+
 	Created on:		2024 Jan. 04
+	
 	Created by:		Simon Arjuna Erat
+	
 	License:		MIT
+	
 	URL:			https://www.github.com/sri-arjuna/ASPIRE
 
 	Based on my TUI & SWARM for the BASH shell © 2011
