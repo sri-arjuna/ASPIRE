@@ -117,6 +117,8 @@ args_title			= _("Title accepts only 1 string argument!")
 file_not_found 		= _("File/Directory not found.")
 file_exists 		= _("File/Directory exists.")
 dir_not_found 		= _("Directory not found.")
+dir_not_created		= _("Could not create directory -")
+dir_created 		= _("Create directory")
 
 ################################################################################################################
 #####                                            Files and Folders                                         #####

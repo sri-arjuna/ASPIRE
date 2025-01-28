@@ -524,8 +524,54 @@ Use 'bUnique = True' to create a new filename like: {fn_base}({count}).{fn_ext}
 				this_path = this_check
 				if bVerbose: _tui.print(_MSG.path_genfn_unique, this_path)
 				break
-	
 	#
 	# Return result
 	#
 	return this_path
+
+def make_dir(entry: str=None, bVerbose=False) -> bool:
+	"""
+	Create a directory at the specified path (absolute or relative).
+	If the top-level directory doesn't exist, prompt the user before proceeding.
+
+	Args:
+		entry (str): The directory path to create.
+
+	Returns:
+		bool: True if the directory was successfully created, False otherwise.
+	"""
+	# Check for non-empty entry
+	if not entry:
+		_tui.status(False, "AspireTUI.Path.make_dir: " + _MSG.args_missing)
+		return False
+	
+	# Normalize the path
+	entry_path = _pathlib.Path(entry).resolve()  # Resolve handles both absolute and relative paths
+
+	# Check if the directory already exists
+	if entry_path.exists():
+		if bVerbose: _tui.status(_tui.STATUS.Info, f"{_MSG.file_exists}: {entry_path}")
+		return True
+	
+	# Get the top-level parent directory
+	top_level = entry_path
+	while top_level.parent != top_level:  # Find the top-most parent
+		top_level = top_level.parent
+		if top_level.exists():
+			break
+
+	# If the top-level parent does not exist, ask the user for confirmation
+	if not top_level.exists():
+		if not _tui.yesno(f"The top-level directory '{top_level}' does not exist. Create it?"):
+			if bVerbose: _tui.status(False, f"Directory creation aborted for: {entry_path}")
+			return False
+	
+	# Try to create path "entry"
+	# Attempt to create the directory
+	try:
+		entry_path.mkdir(parents=True, exist_ok=True)  # Recursively create directories
+		if bVerbose: _tui.status(True, f"{_MSG.dir_created}: {entry_path}")
+		return True
+	except Exception as e:
+		_tui.status(False, f"{_MSG.dir_not_created} '{entry_path}': {e}")
+		return False
