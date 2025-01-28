@@ -30,6 +30,7 @@ from .. import _VersionInfo
 from ..Lists import LOG_LEVEL as LEVEL
 from ..Lists import LOG_SEVERITY as SEVERITY
 from .. import _settings_console as settings
+DEBUG = False
 #
 #	Defaults
 #
@@ -238,6 +239,9 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		###############################################################################################################
 		####                                                 INIT                                                  ####
 		###############################################################################################################
+		
+		if DEBUG: print("DEBUG: " , "AppManager: init")
+
 		import configparser as _cfgp
 		from .. import Path as _Path
 		from .. import OS as _OS
@@ -347,24 +351,22 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			# No values passed, abort
 			_tui.status(False, err_msg)
 			return False
-		# Prepare message from *args
-		if isinstance(args[0], int):
-			#if level == args[1]
-			level = args[0]
-			args_new = args[1:]
-		else:
-			args_new = args
-
-		if len(args_new) == 1:
-			message = args_new[0]
-		else:
-			msg_str = args_new[0]
-			try:
-				message = msg_str % args_new[1:]
-			except:
-				message = msg_str
-				for a in args:
-					message = f"{message} {a}"
+		
+		# Prepare message
+		try:
+			if len(args) == 1:
+				message = args[0]
+			else:
+				# Check if the first argument is a format string
+				if "%" in args[0]:
+					message = args[0] % tuple(args[1:])  # Format the string
+				else:
+					# Otherwise, join all arguments into a single string
+					message = " ".join(map(str, args))
+		except Exception as e:
+			# Fallback if formatting fails
+			_tui.status(False, f"Failed to format log message: {e}")
+			return False
 		
 		# Prepare DateTime string
 		current_time = _stew._datetime.now()
@@ -500,6 +502,9 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 
 		Skip this function if no conf file is used
 		"""
+		
+		if DEBUG: print("DEBUG: " , "AppManager: Create config")
+
 		message: str=None
 		if self._self.bDefaultComment:
 			message = f"{_VersionInfo.FileGenComment}\n"
@@ -833,6 +838,9 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 
 		If only data related to [AspireTUI] (log) is available, it skips writing the file.
 		"""
+		
+		if DEBUG: print("DEBUG: " , "AppManager: Save")
+
 		# Skip with success if bDisableConf AND bDisableLog are True.
 		if cls._self.bDisableConf and cls._self.bDisableLog:
 			return True
