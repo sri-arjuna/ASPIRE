@@ -634,6 +634,23 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			_tui.status(False, "Could not retrieve Value for:", f"Section: {Section} / Key: {Key}")
 			return None
 		else:
+			# Prepare for bool
+			if str(out).strip().lower() == "true": return True
+			if str(out).strip().lower() == "false": return False
+			
+			# Handle int
+			tmp = str(out).strip().replace('"', "")
+			try:
+				if "." in tmp:
+					# Float values contain a dot
+					return float(tmp)
+				else:
+					# Otherwise, try parsing as an int
+					return int(tmp)
+			except ValueError:
+				# Well, its no INT, so lets move on to regular string output
+				pass
+			# Return regular string
 			return out
 	
 	def set_custom(cls, Section: str=None, Key: str=None, Value: str=None, bVerbose=False) -> bool:
