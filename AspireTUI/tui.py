@@ -249,7 +249,7 @@ def status(ID: _Union[int, bool, _put._Entry, STATUS], *args, align_right=True, 
 	else:
 		return ret_value
 
-def progress( text: str, cur: int, max: int, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
+def progress_org( text: str, cur: int, max: int, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
 	"""
 	Prints a leading 'text' with a progress indicator according to passed style.	\n
 	If no 'text' is passed (read: empty-string=""), the progress bar fills all of the screen, otherwise its 50/50.
@@ -295,6 +295,59 @@ def progress( text: str, cur: int, max: int, style: str = "bar", cut_from_end: b
 	import sys as _sys
 	_sys.stdout.flush()
 	return True
+
+def progress(text: str, cur: int, max: int, style: str = "bar", cut_from_end: bool = True, reverse: bool = False):
+	"""
+	Prints a leading 'text' with a progress indicator according to the passed style.
+
+	If no 'text' is passed (empty-string=""), the progress bar fills all of the screen; otherwise, it's 50/50.
+	Default style is 'bar'.  
+
+	Valid styles are: bar, num, dash
+	"""
+	_put._update()
+	space_raw = _settings["inner"]
+	space_text = len(text)
+	space_bar = space_raw
+
+	if text:
+		width = space_raw // 2
+	else:
+		width = _settings["inner"] - 12
+
+	# Static variable to track animation state
+	if not hasattr(progress, "_dash_state"):
+		progress._dash_state = 0  # Initialize if not set
+
+	dash_frames = ["/", "-", "\\", "|"]
+
+	# Styles
+	if style == "num":
+		prog_out = f"[ {cur} / {max} ]"
+	elif style == "bar":
+		prog_out = f"{_put.bar(cur, max, width, reverse=reverse)}"
+	elif style == "dash":
+		prog_out = dash_frames[progress._dash_state]
+		progress._dash_state = (progress._dash_state + 1) % len(dash_frames)  # Cycle to the next frame
+	else:
+		raise ValueError(_MSG.tui_progress_bar)
+
+	if text == "":
+		text_new = ""
+	else:
+		if cut_from_end:
+			text_new = _internal.shorten(text, width)
+		else:
+			text_new = _internal.shorten(text, width, True)
+
+	_put.border()
+	final = "\n" if cur == max else ""
+	_put.text(text_new, prog_out, end=final)
+
+	import sys as _sys
+	_sys.stdout.flush()
+	#return True
+
 
 def wait(Time: _Union[float, int] ,  msg=None, unit="s",hidden=False, bar=False, iIntervall=1):
 	"""
