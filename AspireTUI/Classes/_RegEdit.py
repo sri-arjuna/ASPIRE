@@ -189,39 +189,38 @@ class Registry:
 	def _load_registry_tree(self, hkey, path, parent_dict):
 		"""Recursively loads registry subkeys and values into `parent_dict`."""
 		try:
-			_tui.progress(f"Loading {path}...", 0, 0, style="dash")  # Indicate loading process
-
-			with _winreg.OpenKey(hkey, path, 0, _winreg.KEY_READ) as key:
+			with _winreg.OpenKey(hkey, path, 0, _winreg.KEY_READ | _winreg.KEY_WOW64_32KEY) as key:
 				values_count, subkeys_count, _ = _winreg.QueryInfoKey(key)
 
-				# Ensure values are stored separately
 				parent_dict["__values__"] = {}
 
-				# Store values
+				# Print debug info
+				_tui.progress(f"Loading key: {path} -> {subkeys_count} subkeys, {values_count} values...", 0, 0, style="dash")
+
+				# Load values
 				for i in range(values_count):
 					try:
-						_tui.progress(f"Loading value {i+1}/{values_count} in {path}...", 0, 0, style="dash")
 						value_name, value_data, _ = _winreg.EnumValue(key, i)
-						_tui.progress(f"Loading value {key}/{value_name}...", 0, 0, style="dash")
+						_tui.progress(f"Loaded value: {value_name} = {value_data}", 0, 0, style="dash")
 						parent_dict["__values__"][value_name] = value_data
 					except OSError:
-						_tui.status(False, f"Error reading value at {path}")
+						_tui.status(False, f"Error reading value at {path}: {value_name} / {value_data}")
 
-				# Store subkeys recursively (only if they exist)
+				# Load subkeys (ensuring full path is used)
 				for i in range(subkeys_count):
 					try:
-						_tui.progress(f"Loading subkey {i+1}/{subkeys_count} in {path}...", 0, 0, style="dash")
-						subkey_name = _winreg.EnumKey(key, i)
-						_tui.progress(f"Loading subkey {i+1}/{subkeys_count} of {subkey_name}...", 0, 0, style="dash")
-						subkey_path = f"{path}\\{subkey_name}"
-						parent_dict[subkey_name] = {}
-						self._load_registry_tree(hkey, subkey_path, parent_dict[subkey_name])
+						subkey_name = _winreg.EnumKey(key, i)  # Get only subkey name
+						subkey_path = f"{path}\\{subkey_name}"  # Build FULL path
+
+						_tui.progress(f"Found subkey: {subkey_path} -> Loading...", 0, 0, style="dash")
+
+						parent_dict[subkey_name] = {}  # Ensure subkey is added properly
+						self._load_registry_tree(hkey, subkey_path, parent_dict[subkey_name])  # Recursively load
 					except OSError:
 						_tui.status(False, f"Error reading subkey at {path}")
 
 		except Exception as e:
-			_tui.status(False, f"Error reading registry: {path} -> {e}")
-
+			_tui.status(False, f"Error reading registry: {path} ->  parent_dict:{parent_dict} ==--> {e}")
 
 
 	def search(self, value: str) -> list:
@@ -229,22 +228,21 @@ class Registry:
 		results = []
 
 		def _recursive_search(data, path):
+			# Print debug info to check what keys we are searching
+			_tui.progress(f"Searching in {path}...", 0, 0, style="dash")
+
 			# Check values in this key
 			if "__values__" in data:
 				for key, val in data["__values__"].items():
-					_tui.progress(f"Searching in value: {key}...", 0, 0, style="dash")
 					if isinstance(val, str) and value.lower() in val.lower():
 						results.append((path, key, val))  # Match found
+						_tui.progress(f"Match found: {path} -> {key} = {val}", 0, 0, style="dash")
 
-			# Check subkeys recursively
+			# Recursively search subkeys
 			for key, val in data.items():
 				if key == "__values__":
 					continue  # Skip values key (already searched above)
-				_tui.progress(f"Searching subkey: {key}...", 0, 0, style="dash")
 				_recursive_search(val, f"{path}\\{key}")
 
 		_recursive_search(self.data, self.path)
 		return results
-
-
-
