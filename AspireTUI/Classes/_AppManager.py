@@ -341,7 +341,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		else:
 			return None
 		
-	def __write_log(cls, level, *args):
+	def __write_log(cls, level:int, msg:str , *args):
 		"""
 		Write the actual log entries
 		"""
@@ -353,27 +353,32 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			return False
 		
 		# Prepare message
-		try:
-			if len(args) == 1:
-				message = args[0]
-			else:
-				# Check if the first argument is a format string
-				if "%" in args[0]:
-					message = args[0] % tuple(args[1:])  # Format the string
-				else:
-					# Otherwise, join all arguments into a single string
-					message = " ".join(map(str, args))
-		except Exception as e:
-			# Fallback if formatting fails
-			_tui.status(False, f"Failed to format log message: {e}")
-			return False
+		if args:
+			try:
+				#if len(args) == 1:
+				#	message = args[0]
+				#else:
+					# Check if the first argument is a format string
+				#	if "%" in args[0]:
+				#		message = args[0] % tuple(args[1:])  # Format the string
+				#	else:
+						# Otherwise, join all arguments into a single string
+				#		message = " ".join(map(str, args))
+				message = msg % tuple(args)
+			except Exception as e:
+				# Fallback if formatting fails
+				_tui.status(False, f"Failed to format log message: {e}")
+				print(e.with_traceback())
+				return False
+		else:
+			message = msg
 		
 		# Prepare DateTime string
 		current_time = _stew._datetime.now()
 		formatted_time = current_time.strftime(cls._self.log_format)	#  . strftime // strptime
 		
 		# Final actions
-		global SEVERITY
+		#global SEVERITY
 		iSaveLog = int(cls._self.iSaveLog)
 		iShowUser = int(cls._self.iShowUser) 
 		if level >= iShowUser: # - 1:
@@ -557,36 +562,36 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 	###############################################################################################################
 	####                                      Log functions                                                    ####
 	###############################################################################################################
-	def DEBUG(cls, *args):
+	def DEBUG(cls, msg:str, *args):
 		""""
 		Show / Save message to user / file
 		"""
-		cls.__write_log(0, *args)
-	def INFO(cls, *args):
+		cls.__write_log(0, msg , *args)
+	def INFO(cls, msg:str , *args):
 		""""
 		Show / Save message to user / file
 		"""
-		cls.__write_log(1, *args)
-	def WARNING(cls, *args):
+		cls.__write_log(1, msg , *args)
+	def WARNING(cls, msg:str , *args):
 		""""
 		Show / Save message to user / file
 		"""
-		cls.__write_log(2, *args)
-	def ERROR(cls, *args):
+		cls.__write_log(2, msg, *args)
+	def ERROR(cls, msg:str , *args):
 		""""
 		Show / Save message to user / file
 		"""
-		cls.__write_log(3, *args)
-	def CRITICAL(cls, *args):
+		cls.__write_log(3, msg , *args)
+	def CRITICAL(cls, msg:str , *args):
 		""""
 		Show / Save message to user / file
 		"""
-		cls.__write_log(4, *args)
-	def FATAL(cls, *args):
+		cls.__write_log(4, msg , *args)
+	def FATAL(cls, msg:str , *args):
 		""""
 		Show / Save message to user / file
 		"""
-		cls.__write_log(5, *args)
+		cls.__write_log(5, msg , *args)
 	
 		###############################################################################################################
 	####                                  Conf functions - get() & set()                                       ####
