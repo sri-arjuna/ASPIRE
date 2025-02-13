@@ -54,18 +54,26 @@ DIRS_DICT = {
 def dir_cur():
 	"""
 	Returns the absolute current working directory in *nix-style format (/)
+
+	Returns path in *nix style format: C:/././
 	"""
 	return _os.path.abspath(_os.getcwd()).replace("\\","/")
 
-def dir_app():
+def dir_app(myApp: __file__):
 	"""
 	Returns the absolute path of the app that is running / calling this function.
+
+	Returns path in *nix style format: C:/././
 	"""
-	if hasattr(__file__, 'read'):
+	if not myApp:
+		_tui.status(False, "AspireTUI.Path.dir_app: Must pass '__file__' for proper detection.")
+		return None
+	if hasattr(myApp, 'read'):
 		# We're in an interactive session
 		return _os.path.abspath(_os.getcwd()).replace("\\","/")
 	else:
-		return _pathlib.Path(_os.path.abspath(__file__)).parent.replace("\\","/")
+		#return _pathlib.Path(_os.path.abspath(__file__)).parent.replace("\\","/")
+		return _os.path.abspath(myApp).replace("\\","/")
 
 # FileDescriptorOrPath
 def exists(filename: StrOrBytesPath=None, bVerbose=False, bDual=False, bShowFull=False) -> StrOrBytesPath:
@@ -411,13 +419,23 @@ def list_content(location: str=None,
 		return output
 
 
-def hasFiles(pattern, path='.', bDual=False):
+def hasFiles(pattern, path: StrOrBytesPath='.', bDual=False):
 	"""
 	Looks for pattern in path and returns bool if found.
 
 	if bDual is true, it retuns {bool list} like: True, [a,b,c]
 	"""
 	#return [f for f in _os.listdir(path) if _fnmatch.fnmatch(f, '*.' + extension)]
+
+	"""
+		if isinstance(path, bytes):
+			path = path.decode("utf-8")  # Ensure path is a string
+
+		ret_bool = False
+		ret_list = [f for f in _os.listdir(path) if _fnmatch.fnmatch(f, pattern)]
+
+	"""
+
 	ret_bool = False
 	ret_list = []
 	ret_list = [f for f in _os.listdir(path) if _fnmatch.fnmatch(f, pattern)]
