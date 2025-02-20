@@ -438,7 +438,10 @@ def hasFiles(pattern, path: StrOrBytesPath='.', bDual=False):
 
 	ret_bool = False
 	ret_list = []
-	ret_list = [f for f in _os.listdir(path) if _fnmatch.fnmatch(f, pattern)]
+	if _os.path.exists(path):
+		ret_list = [f for f in _os.listdir(path) if _fnmatch.fnmatch(f, pattern)]
+	else:
+		_tui.status(False, _MSG.dir_not_found, path)
 	if ret_list: ret_bool = True
 	if bDual:
 		return ret_bool, ret_list
