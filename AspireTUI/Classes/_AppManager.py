@@ -379,8 +379,11 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		
 		# Final actions
 		#global SEVERITY
-		iSaveLog = int(cls._self.iSaveLog)
-		iShowUser = int(cls._self.iShowUser) 
+		#iSaveLog = int(cls._self.iSaveLog)
+		#iShowUser = int(cls._self.iShowUser)
+		#print("DEBUG: ", iShowUser, iSaveLog)
+		iSaveLog = int(cls.get_custom("Log", "iSaveLog"))
+		iShowUser = int(cls.get_custom("Log", "iShowUser")) #int(cls._self.iShowUser) 
 		if level >= iShowUser: # - 1:
 			num = 1000 + level
 			#print("DEBUG: ", num, message)
@@ -625,7 +628,7 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			cls.ERROR(msg)
 			return False
 		C=0
-		cls.read()
+		#cls.read()		# Seriously... read() caused a wrongful update
 		MAX = len(cls._sections)
 		out = None
 		while C <= MAX:
@@ -771,12 +774,14 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 					val = this_config.get(section, key)
 					# Check if internal (update) or append (from file)
 					if section in "Theme, Log":
+						#print("DEBUG: read-section" , section)
 						# its an internal config, update it
 						cu = 0 # ConfigUpdate
 						while cu <= len(cls._keys):
 							if section == cls._sections[cu] and key == cls._keys[cu]:
 								# Update this
 								cls._values[cu] = _stew.strip_quotes(val)
+								#print("DEBUG: updated key:" , key, val)
 								break
 							cu += 1
 					else:
