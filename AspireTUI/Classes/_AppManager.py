@@ -355,15 +355,6 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		# Prepare message
 		if args:
 			try:
-				#if len(args) == 1:
-				#	message = args[0]
-				#else:
-					# Check if the first argument is a format string
-				#	if "%" in args[0]:
-				#		message = args[0] % tuple(args[1:])  # Format the string
-				#	else:
-						# Otherwise, join all arguments into a single string
-				#		message = " ".join(map(str, args))
 				message = msg % tuple(args)
 			except Exception as e:
 				# Fallback if formatting fails
@@ -375,27 +366,20 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		
 		# Prepare DateTime string
 		current_time = _stew._datetime.now()
-		formatted_time = current_time.strftime(cls._self.log_format)	#  . strftime // strptime
+		formatted_time = current_time.strftime(cls._self.log_format)
 		
 		# Final actions
-		#global SEVERITY
-		#iSaveLog = int(cls._self.iSaveLog)
-		#iShowUser = int(cls._self.iShowUser)
-		#print("DEBUG: ", iShowUser, iSaveLog)
 		iSaveLog = int(cls.get_custom("Log", "iSaveLog"))
-		iShowUser = int(cls.get_custom("Log", "iShowUser")) #int(cls._self.iShowUser) 
+		iShowUser = int(cls.get_custom("Log", "iShowUser"))
 		if level >= iShowUser: # - 1:
 			num = 1000 + level
-			#print("DEBUG: ", num, message)
-			for stat in _tui._put.STATUS: #.__reversed__():
+			for stat in _tui._put.STATUS:
 				if num in stat.value:
 					break
 				if num == stat.value.id:
-					#_tui.status(num, f"DEBUG stat.value.id == {num}")
 					break
 			ret = _tui.status(stat.value, message)
-			#cls.DEBUG(f"DEBUG: {stat.value}")
-		if level >= iSaveLog: # <= : # - 1:
+		if level >= iSaveLog:
 			# Prepare output
 			n = SEVERITY[level]
 			if len(n) <= 6:
@@ -408,11 +392,10 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 				output = f"{output}\t{tmp}"
 			output = f"{output}\t{message}"
 			# Write to log
-			if bool(cls._self.bDisableLog): # or not cls._self.base_filename:
+			if bool(cls._self.bDisableLog):
 				cls.messages.append(output)
 			else:
 				fn = cls.__get_name_log()
-				#print(f"Should write: {output} --> {fn}")
 				# Verify we have a filename or section name
 				if fn:
 					with open(fn, 'a' , encoding=cls._self.encoding) as thisLOG:
@@ -540,8 +523,8 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			cfg_defaults += f"format=\"{self._self.log_format}\"\n"
 			
 			# Prepare theme variales
-			tmp_list = "" #_tui._Theme.list()
-			tmp_colors = "" #_tui._Theme.list_color()
+			tmp_list = ""
+			tmp_colors = ""
 			for tt in _tui._Theme.list():
 				tmp_list += f", {tt}"
 			for tc in _tui._Theme.list_color():
@@ -685,7 +668,6 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			C=0
 			MAX = len(cls._sections)
 			while C <= MAX:
-				#print("DEBUG: set_custom: ", C, MAX, Section, Key, Value)
 				if cls._sections[C] == Section and cls._keys[C] == Key:
 					if {cls._values[C]} != Value:
 						if bVerbose: 
@@ -774,14 +756,12 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 					val = this_config.get(section, key)
 					# Check if internal (update) or append (from file)
 					if section in "Theme, Log":
-						#print("DEBUG: read-section" , section)
 						# its an internal config, update it
 						cu = 0 # ConfigUpdate
 						while cu <= len(cls._keys):
 							if section == cls._sections[cu] and key == cls._keys[cu]:
 								# Update this
 								cls._values[cu] = _stew.strip_quotes(val)
-								#print("DEBUG: updated key:" , key, val)
 								break
 							cu += 1
 					else:
@@ -844,19 +824,14 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 				cls.DEBUG(f"Theme applied (RANDOM): {cls._self.theme}")
 		elif "custom" == str(this_theme).lower():
 			# This should apply the custom color and style to the _settings
-			#print("should apply custom")
 			_tui._Theme.set("Custom", cls._self.theme_style, cls._self.theme_color)
 			cls.DEBUG(f"Theme applied (CUSTOM): STYLE={cls._self.theme_style}, COLOR={cls._self.theme_color}")
-			#_tui._Theme.get()
 		else:
 			#cls._self.theme = this_theme
 			_tui._Theme.set(cls._self.theme)
 			cls.DEBUG(f"Theme applied: {cls._self.theme}")
 		
-		# This _should_ update the theme according to what theme was set previously
-		
-		#cls.DEBUG(_tui._settings)
-		#_tui._Theme.get()
+		# Return to user
 		return True
 	
 	def save(cls):
@@ -875,8 +850,8 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		#
 		# Get file names
 		#
-		fn = cls._file_conf #cls.__get_name_conf()
-		logfile = cls._file_log #cls.__get_name_log() # TODO: ?? cls._file_log
+		fn = cls._file_conf
+		logfile = cls._file_log
 
 		#################################################################################
 		#
@@ -960,31 +935,19 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 			
 			# Lets check if filename is provided by check for its existence directly
 			if _Path.isFile(fn):
-				#print("DEUG file: " , cls._file_conf)
 				# A conf file can only be read if it exists
 				import configparser as _cfgp
-				#this_config = _cfgp.ConfigParser(interpolation=None)
 				this_config, lines_raw = read_with_comments(fn)
-
-				# Preserve CaseSensitify
-				#this_config.optionxform = str
-				
-				# Open file (TODO: I guess this is needed, not sure if this will mess up the save process)
-				#this_config.read(fn)
-
 				# Conf file exists, lets parse memory storage and pass it to configparse
 				C=0
 				MAX = len(cls._values)
 
 				# Lets parse through memory storage
-				#print("4 save loop")
-				#print("DEUG - save loop: " , C, MAX)
 				while C <= MAX:
 					# Get current setting
 					cur_sec = str(cls._sections[C])
 					cur_key = str(cls._keys[C])
 					cur_val = str(cls._values[C])
-					#print("DEUG - save loop: " , C, MAX, cur_val)
 
 					# Ensure section exist in conf file:
 					if not this_config.has_section(cur_sec):
@@ -997,18 +960,6 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 					C += 1
 					if C == MAX: break	# TODO Weird, it does not work with: while C << MAX
 				
-				# DEBUG configparser content
-				#print("\nSections and values before saving:\n")
-				#val = invalid_func(asfd)
-				#for section in this_config.sections():
-				#	print(f"[{section}]")
-				#	for key, value in this_config.items(section):
-				#		print(f"{key} = {value}")
-
-				# Write file using configparser
-				#this_config.write(fn)
-				#with open(fn, 'w') as configfile:
-				#	this_config.write(configfile)
 				write_with_comments(fn, this_config, lines_raw)
 
 				return True
