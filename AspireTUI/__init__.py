@@ -14,6 +14,13 @@ Based on my TUI & SWARM for the BASH shell © 2011
 #
 import os as _os
 import sys as _sys
+
+#
+#	Set True during local testing
+#	Only commit with False
+#
+if False: _sys.dont_write_bytecode = True
+
 #
 #	Simplify language access
 #
