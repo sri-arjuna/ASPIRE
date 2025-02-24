@@ -206,3 +206,10 @@ cl_conf_				= _("")
 #####                                            Path library                                              #####
 ################################################################################################################
 path_genfn_unique = "New filename:"
+
+################################################################################################################
+#####                                           App Manager                                                #####
+################################################################################################################
+am_msg_err_format	= "Failed to format log message."
+am_hint_msg_err_format = "Are you sure that 'msg' contains '%s' for your args?"
+am_hint_write_log = "To log a message, you must pass a level (=int) and a message (msg=str)."

@@ -31,6 +31,10 @@ from ..Lists import LOG_LEVEL as LEVEL
 from ..Lists import LOG_SEVERITY as SEVERITY
 from .. import _settings_console as settings
 DEBUG = False
+
+if True:
+	# Pesudo lang handling for now
+	from .._MESSAGES import current as MSG
 #
 #	Defaults
 #
@@ -345,21 +349,30 @@ format: datetime	= Set to a 'datetime-format' to be used to prefix written log m
 		"""
 		Write the actual log entries
 		"""
-		err_msg = "To log a message, you must pass a level (int) and a message (str)."
+		err_msg = MSG.am_hint_write_log
 		# Verify passed arguments
-		if level is None or args is None:
+		if level is None or msg is None:
 			# No values passed, abort
 			_tui.status(False, err_msg)
 			return False
 		
 		# Prepare message
 		if args:
+			if DEBUG: print("DEBUG args ::", msg, args)
 			try:
 				message = msg % tuple(args)
+			except TypeError as e:
+				#_tui.status(False, MSG.am_msg_err_format, e)
+				print()
+				_tui.status(False, MSG.am_hint_msg_err_format)
+				print("DEBUG 'msg': ", msg)
+				print("DEBUG 'args': ", args)
+				print()
+				raise TypeError
 			except Exception as e:
 				# Fallback if formatting fails
-				_tui.status(False, f"Failed to format log message: {e}")
-				print(e.with_traceback())
+				_tui.status(False, MSG.am_msg_err_format , e)
+				print(e.with_traceback(args))
 				return False
 		else:
 			message = msg
